@@ -13,18 +13,17 @@ spring:
       hibernate:
         format_sql: true
 
-
   devtools:
     livereload:
       enabled: true
     restart:
-      enabled: false3
+      enabled: false
   thymeleaf:
     cache: false
 
   messages:
     basename: messages, errors
-1
+
 
 logging.level:
   org.hibernate.SQL: debug

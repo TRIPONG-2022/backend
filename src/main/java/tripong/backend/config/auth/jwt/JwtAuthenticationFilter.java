@@ -5,15 +5,17 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import tripong.backend.config.auth.CustomAuthenticationManager;
+import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.dto.account.NormalLoginRequestDto;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,7 +25,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final CustomAuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public void setUsernameParameter(String usernameParameter) {
@@ -44,7 +46,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             e.printStackTrace();
         }
 
-        log.info(normalLoginDto.toString());
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
@@ -69,15 +70,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication authResult) throws IOException, ServletException {
         log.info("시작: successfulAuthentication");
 
-        String loginId = authResult.getPrincipal().toString();
-        System.out.println("loginId = " + loginId);
+        PrincipalDetail principal = (PrincipalDetail)authResult.getPrincipal();
+        System.out.println("principal.getUsername(): " + principal.getUsername());
+        System.out.println("principal.getUser(): " + principal.getUser());
 
         String jwtToken = JWT.create()
-                .withSubject("JWD_INFO") //토큰명
+                .withSubject(principal.getUsername()) //토큰명
                 .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME))) //만료시간 10분
-                .withClaim("username", loginId)
+                .withClaim("loginId", principal.getUser().getLoginId())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
+
+
+//        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, jwtToken);
+        response.addCookie(cookie);
+
         log.info("종료: successfulAuthentication");
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken); //헤더 담아 응답
     }
 }
+
+
+
