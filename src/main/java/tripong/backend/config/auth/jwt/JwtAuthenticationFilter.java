@@ -55,7 +55,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Authentication authentication =
                 authenticationManager.authenticate(authenticationToken); //로그인안되면 401에러
-        //성공시 홀더에 삽입(권한처리 용이)
 
 
         //성공 실패핸들러 추가예정

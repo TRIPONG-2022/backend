@@ -19,5 +19,6 @@ public class AuditConfig implements AuditorAware<String> {
             return null;
         }
         return Optional.of(authentication.getName());
+
     }
 }
