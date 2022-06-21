@@ -6,8 +6,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.entity.user.User;
-import tripong.backend.entity.user.JoinType;
-import tripong.backend.entity.user.RoleType;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.repository.user.UserRepository;
 
@@ -22,14 +20,25 @@ public class AccountService {
 
     @Transactional
     public void normalJoin(NormalJoinRequestDto dto){
-        dto.setPassword(encoder.encode(dto.getPassword()));
-        dto.setRole(RoleType.User);
-        dto.setJoinMethod(JoinType.Normal);
-        dto.setAuthentication(0);
-        User user = dto.toEntity();
+        log.info("시작: AccountService 일반회원가입");
 
+        boolean loginId_dup = userRepository.existsByLoginId(dto.getLoginId());
+        boolean nickName_dub = userRepository.existsByNickName(dto.getNickName());
+
+        if(loginId_dup && nickName_dub){
+            throw new IllegalStateException("아이디&닉네임 중복");
+        }
+        if(loginId_dup){
+            throw new IllegalStateException("아이디 중복");
+        }
+        if(nickName_dub){
+            throw new IllegalStateException("닉네임 중복");
+        }
+
+        dto.setPassword(encoder.encode(dto.getPassword()));
+        User user = dto.toEntity();
         userRepository.save(user);
-        System.out.println("종료: 회원가입서비스");
+        log.info("종료: AccountService 일반회원가입");
     }
 
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,19 +18,18 @@ public class AccountController {
 
     private final AccountService accountService;
 
-
+    /**
+     * 일반 회원가입 API
+     */
     @PostMapping("/users/signup/normal")
-        public ResponseEntity normalJoin(@RequestBody NormalJoinRequestDto dto){
-            System.out.println("dto = " + dto);
-            accountService.normalJoin(dto);
+    public ResponseEntity normalJoin(@Validated @RequestBody NormalJoinRequestDto dto){
+        log.info("시작: AccountController 회원가입" + dto);
+        accountService.normalJoin(dto);
 
-            //성공 201,실패 400
-            HttpStatus status = HttpStatus.CREATED;
 
+        //성공 201,실패 400
+        HttpStatus status = HttpStatus.CREATED;
+        log.info("종료: AccountController 회원가입");
         return new ResponseEntity<>(status);
     }
-
-
-
-
 }

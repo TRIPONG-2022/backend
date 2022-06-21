@@ -10,63 +10,41 @@ import tripong.backend.entity.user.RoleType;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
 public class NormalJoinRequestDto {
 
     @NotBlank
+    @Size(max= 11, message = "닉네임은 11자 이하") //소셜 자동 생성 닉네임과 중복고려
+    private String nickName;
+    @NotBlank
     private String loginId;
     @NotBlank
     private String password;
-    @NotBlank
-    private String name;
-    @NotBlank
-    private String nickName;
     @Email
     private String email;
-    @NotBlank
-    private LocalDate birthDate;
-    @NotBlank
-    private GenderType gender;
-    @NotBlank
-    private String address;
 
-    private RoleType role;
-
-    private JoinType joinMethod;
-
-    private Integer authentication;
 
     @Builder
-    public NormalJoinRequestDto(String loginId, String password, String name, String nickName, String email, LocalDate birthDate, GenderType gender, String address, RoleType role, JoinType joinMethod, Integer authentication) {
+    public NormalJoinRequestDto(String nickName, String loginId, String password,  String email) {
+        this.nickName = nickName;
         this.loginId = loginId;
         this.password = password;
-        this.name = name;
-        this.nickName = nickName;
         this.email = email;
-        this.birthDate = birthDate;
-        this.gender = gender;
-        this.address = address;
-        this.role = role;
-        this.joinMethod = joinMethod;
-        this.authentication = authentication;
     }
 
     public User toEntity(){
         return User.builder()
                 .loginId(loginId)
                 .password(password)
-                .name(name)
                 .nickName(nickName)
                 .email(email)
-                .birthDate(birthDate)
-                .gender(gender)
-                .address(address)
-                .role(role)
-                .joinMethod(joinMethod)
-                .authentication(authentication)
+                .role(RoleType.User)
                 .build();
     }
 }
+
