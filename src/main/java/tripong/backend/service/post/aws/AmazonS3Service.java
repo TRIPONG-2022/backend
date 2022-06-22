@@ -1,9 +1,8 @@
 package tripong.backend.service.post.aws;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
+import com.amazonaws.util.IOUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,6 +26,16 @@ public class AmazonS3Service {
 
     private final AmazonS3Client amazonS3Client;
 
+    public byte[] getFile(String fileName) {
+        S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucket, fileName));
+        try(S3ObjectInputStream objectContent = object.getObjectContent()){
+            byte[] bytes = IOUtils.toByteArray(objectContent);
+            return bytes;
+        } catch(IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 다운로드에 실패했습니다.");
+        }
+    }
+
     public String uploadFile(MultipartFile file) {
         String fileName = createStoreFileName(file.getOriginalFilename());
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -38,7 +47,6 @@ public class AmazonS3Service {
         } catch(IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
         }
-
         return fileName;
     }
 

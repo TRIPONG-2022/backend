@@ -1,7 +1,10 @@
 package tripong.backend.service.post;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.post.User;
@@ -21,6 +24,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final AmazonS3Service amazonS3Service;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public Post save(PostRequestDto requestDto) {
@@ -49,8 +53,34 @@ public class PostService {
     }
 
     @Transactional
-    public Post findById(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+    public MultiValueMap<String, Object> findById(Long id) {
+        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
+        Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+        formData.add("postId", post.getId());
+        formData.add("author", post.getAuthor().getName());
+        formData.add("title", post.getTitle());
+        formData.add("content", post.getContent());
+        formData.add("category", post.getCategory().toString());
+        formData.add("tags", post.getTags());
+        formData.add("latitude", post.getLatitude());
+        formData.add("longitude", post.getLongitude());
+        formData.add("startDate", post.getStartDate());
+        formData.add("endDate", post.getEndDate());
+        formData.add("curHeadCount", post.getCurHeadCount());
+        formData.add("totalHeadCount", post.getTotalHeadCount());
+        formData.add("budget", post.getBudget());
+        formData.add("recommendationCount", post.getRecommendationCount());
+        formData.add("viewCount", post.getViewCount());
+
+        post.getImages()
+                .forEach(fileName -> {
+                    byte[] image = amazonS3Service.getFile(fileName);
+                    formData.add("images",image);
+                });
+        byte[] thumbnail = amazonS3Service.getFile(post.getThumbnail());
+        formData.add("thumbnail",thumbnail);
+
+        return formData;
     }
 
     @Transactional

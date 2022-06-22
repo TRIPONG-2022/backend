@@ -3,7 +3,9 @@ package tripong.backend.controller.post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.post.Post;
@@ -24,10 +26,10 @@ public class PostApiController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @GetMapping("/gathering/{postId}")
-    public ResponseEntity<Post> getGathering(@PathVariable Long postId) {
-        Post post = postService.findById(postId);
-        return new ResponseEntity<>(post, HttpStatus.OK);
+    @GetMapping(value = "/gathering/{postId}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MultiValueMap<String,Object>> getGathering(@PathVariable Long postId) {
+        MultiValueMap<String, Object> formData = postService.findById(postId);
+        return new ResponseEntity<>(formData, HttpStatus.OK);
     }
 
     @DeleteMapping("/gathering/{postId}")
