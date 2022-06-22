@@ -1,7 +1,7 @@
 package tripong.backend.repository.post;
 
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import tripong.backend.entity.post.Post;
 
-public interface PostRepository extends Repository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long> {
 }

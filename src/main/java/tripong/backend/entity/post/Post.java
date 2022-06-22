@@ -25,7 +25,7 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User author;
 
     @Column(nullable = false)
     private String title;
@@ -73,9 +73,8 @@ public class Post extends BaseTimeEntity {
     private Integer viewCount;
 
     @Builder
-    public Post(Long id, User user, String title, String content, Category category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer curHeadCount, Integer totalHeadCount, List<String> images, String thumbnail, Integer budget, Integer recommendationCount, Integer viewCount) {
-        this.id = id;
-        this.user = user;
+    public Post(User author, String title, String content, Category category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer curHeadCount, Integer totalHeadCount, List<String> images, String thumbnail, Integer budget, Integer recommendationCount, Integer viewCount) {
+        this.author = author;
         this.title = title;
         this.content = content;
         this.category = category;

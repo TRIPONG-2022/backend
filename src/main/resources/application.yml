@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: aws
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/tripong?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -11,3 +13,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+#logging:
+#  level:
+#    org:
+#      apache:
+#        coyote:
+#          http11: debug
