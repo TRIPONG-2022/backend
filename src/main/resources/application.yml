@@ -13,24 +13,23 @@ spring:
       hibernate:
         format_sql: true
 
-    mail:
-      host: smtp.gmail.com
-      port: 587
-      username: tripong2022@gmail.com
-      password: travel1234
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
-              required: true
-            connectiontimeout: 5000
-            timeout: 5000
-            writetimeout: 5000
-
-logging.level:
-  org.hibernate.SQL: debug
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tripong2022@gmail.com
+    password: travel1234
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 server:
   port: 8089
+
+
