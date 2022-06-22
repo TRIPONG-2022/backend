@@ -51,7 +51,6 @@ public class User extends BaseTimeEntity {
 
     private BigDecimal longitude;
 
-    //
     @Builder
     public User(String loginId, String password, String name, String nickName,
                 String email, LocalDate birthDate, GenderType gender, JoinType joinMethod,
