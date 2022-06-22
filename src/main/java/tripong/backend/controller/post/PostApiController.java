@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.post.Post;
 import tripong.backend.service.post.PostService;
-import tripong.backend.service.post.aws.AmazonS3Service;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,9 +20,20 @@ public class PostApiController {
     @PostMapping("/gathering")
     public ResponseEntity<Object> saveGathering(@ModelAttribute PostRequestDto postRequestDto) {
         Post post = postService.save(postRequestDto);
-        log.info("postId = {}", post.getId());
-
+        log.info("saved postId = {}", post.getId());
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/gathering/{postId}")
+    public ResponseEntity<Post> getGathering(@PathVariable Long postId) {
+        Post post = postService.findById(postId);
+        return new ResponseEntity<>(post, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/gathering/{postId}")
+    public ResponseEntity<Object> deleteGathering(@PathVariable Long postId) {
+        postService.delete(postId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -48,4 +48,17 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    @Transactional
+    public Post findById(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+        post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
+        amazonS3Service.deleteFile(post.getThumbnail());
+        postRepository.delete(post);
+    }
+
 }

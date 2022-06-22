@@ -39,8 +39,7 @@ public class AmazonS3Service {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
         }
 
-        String imageUrl = "https://"+bucket+".s3."+region+".amazonaws.com/"+fileName;
-        return imageUrl;
+        return fileName;
     }
 
     public void deleteFile(String fileName) {

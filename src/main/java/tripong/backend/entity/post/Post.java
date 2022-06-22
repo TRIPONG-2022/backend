@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import tripong.backend.entity.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -13,6 +15,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @Setter
 @NoArgsConstructor
