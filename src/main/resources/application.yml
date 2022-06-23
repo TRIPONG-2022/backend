@@ -5,6 +5,10 @@ spring:
     username: root
     password: 1234
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -17,7 +21,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: tripong2022@gmail.com
-    password: travel1234
+    password: iczqcfrestuyeapu
     properties:
       mail:
         smtp:
@@ -29,7 +33,21 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: false
+  thymeleaf:
+    cache: false
+
+  messages:
+    basename: messages, errors
+
 server:
   port: 8089
+
+logging.level:
+  org.hibernate.SQL: debug
 
 

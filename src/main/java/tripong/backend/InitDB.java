@@ -46,7 +46,7 @@ public class InitDB {
                     .birthDate(LocalDate.of(1995,1,1))
                     .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)
-                    .authentication(1)
+                    .authentication(0)
                     .role(RoleType.User)
                     .address("서울특별시").build();
             User user2 = User.builder()
@@ -58,7 +58,7 @@ public class InitDB {
                     .birthDate(LocalDate.of(1996,2,2))
                     .gender(GenderType.F)
                     .joinMethod(JoinType.Normal)
-                    .authentication(1)
+                    .authentication(0)
                     .role(RoleType.User)
                     .address("경기도").build();
             User user3 = User.builder()
@@ -70,7 +70,7 @@ public class InitDB {
                     .birthDate(LocalDate.of(1997,3,3))
                     .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)
-                    .authentication(1)
+                    .authentication(0)
                     .role(RoleType.User)
                     .address("경상도").build();
 

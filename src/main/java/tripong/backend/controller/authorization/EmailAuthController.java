@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import tripong.backend.dto.authorization.EmailAuthRequestDto;
 import tripong.backend.service.authorization.EmailAuthService;
 
@@ -17,21 +19,27 @@ public class EmailAuthController {
     private final EmailAuthService emailAuthService;
 
     // 이메일 유효링크 인증
-    @GetMapping("/users/auth/email/send/{email}")
-    public ResponseEntity emailAuth(@RequestBody EmailAuthRequestDto earDto){
+    @ResponseBody
+    @GetMapping("/users/auth/email/send")
+    public void emailAuth(@RequestBody EmailAuthRequestDto earDto){
 
-        // 성공 302, 실패 400
-        HttpStatus status = HttpStatus.FOUND;
+        // 이메일 유효 링크 서비스 호출
+        emailAuthService.createEmailValidLik(earDto);
 
-        return new ResponseEntity<>(status);
     }
 
     // 유효 링크 매핑
     @GetMapping("/users/auth/email/confirm")
-    public ResponseEntity emailConfirm(@RequestParam String emailValidLink){
+    public ResponseEntity<Integer> emailConfirm(@Validated @RequestParam String emailValidLink){
 
-        HttpStatus status = HttpStatus.FOUND;
+        // 이메일 유효 링크 확인 서비스 호출
+        int emailAuthConfrim = emailAuthService.emailConfirm(emailValidLink);
 
-        return new ResponseEntity<>(status);
+        if(emailAuthConfrim == 1){
+            return new ResponseEntity<>(HttpStatus.FOUND);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
