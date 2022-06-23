@@ -2,14 +2,21 @@ package tripong.backend.controller.account;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import tripong.backend.config.auth.jwt.JwtProperties;
+import tripong.backend.config.auth.oauth.GoogleUser;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.service.account.AccountService;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +24,7 @@ import tripong.backend.service.account.AccountService;
 public class AccountController {
 
     private final AccountService accountService;
+
 
     /**
      * 일반 회원가입 API
@@ -32,4 +40,21 @@ public class AccountController {
         log.info("종료: AccountController 회원가입");
         return new ResponseEntity<>(status);
     }
+
+
+    /**
+     * 구글 로그인 or 회원가입
+     */
+    @PostMapping("/users/signup/google")
+    public ResponseEntity googleJoin(@RequestBody Map<String, Object> data, HttpServletResponse response){
+        GoogleUser googleInfo = new GoogleUser((Map<String, Object>) data.get("profileObj"));
+        String jwtToken = accountService.googleJoin(googleInfo);
+
+        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, jwtToken);
+        response.addCookie(cookie);
+
+        HttpStatus status = HttpStatus.CREATED;
+        return new ResponseEntity<>(status);
+    }
+
 }

@@ -29,5 +29,10 @@ spring:
       matching-strategy: ant_path_matcher
 
 
+
 logging.level:
   org.hibernate.SQL: debug
+
+
+tripong:
+  skey: t1234
