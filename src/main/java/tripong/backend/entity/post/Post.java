@@ -1,9 +1,6 @@
 package tripong.backend.entity.post;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -19,6 +16,8 @@ import java.util.List;
 @DynamicUpdate
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Post extends BaseTimeEntity {
@@ -42,6 +41,7 @@ public class Post extends BaseTimeEntity {
     private Category category;
 
     @ElementCollection
+    @Builder.Default
     private List<String> tags = new ArrayList<>();
 
     @Column(precision = 13, scale = 10)
@@ -63,6 +63,7 @@ public class Post extends BaseTimeEntity {
     private Integer totalHeadCount;
 
     @ElementCollection
+    @Builder.Default
     private List<String> images = new ArrayList<>();
 
     private String thumbnail;
@@ -76,23 +77,4 @@ public class Post extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer viewCount;
 
-    @Builder
-    public Post(User author, String title, String content, Category category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer curHeadCount, Integer totalHeadCount, List<String> images, String thumbnail, Integer budget, Integer recommendationCount, Integer viewCount) {
-        this.author = author;
-        this.title = title;
-        this.content = content;
-        this.category = category;
-        this.tags.addAll(tags);
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.curHeadCount = curHeadCount;
-        this.totalHeadCount = totalHeadCount;
-        this.images.addAll(images);
-        this.thumbnail = thumbnail;
-        this.budget = budget;
-        this.recommendationCount = recommendationCount;
-        this.viewCount = viewCount;
-    }
 }

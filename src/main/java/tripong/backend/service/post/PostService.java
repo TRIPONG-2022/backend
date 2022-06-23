@@ -2,10 +2,11 @@ package tripong.backend.service.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import tripong.backend.dto.post.PostRequestDto;
+import tripong.backend.dto.post.PostResponseDto;
+import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.post.User;
 import tripong.backend.repository.post.PostRepository;
@@ -16,6 +17,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,60 +29,45 @@ public class PostService {
     private final ObjectMapper objectMapper;
 
     @Transactional
+    public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
+        return postRepository.findByCategory(category, pageable)
+                .stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
+    }
+    @Transactional
     public Post save(PostRequestDto requestDto) {
         List<String> imageUrlList = new ArrayList<>();
         requestDto.getImages().forEach(file -> imageUrlList.add(amazonS3Service.uploadFile(file)));
         String thumbnailUrl = amazonS3Service.uploadFile(requestDto.getThumbnail());
         Optional<User> author = userRepository.findById(requestDto.getAuthor());
 
-        Post post = Post.builder()
-                .author(author.orElseThrow())
-                .title(requestDto.getTitle())
-                .content(requestDto.getContent())
-                .category(requestDto.getCategory())
-                .tags(requestDto.getTags())
-                .latitude(requestDto.getLatitude())
-                .longitude(requestDto.getLongitude())
-                .startDate(requestDto.getStartDate())
-                .endDate(requestDto.getEndDate())
-                .totalHeadCount(requestDto.getTotalHeadCount())
-                .images(imageUrlList)
-                .thumbnail(thumbnailUrl)
-                .budget(requestDto.getBudget())
-                .build();
+        Post post = requestDto.toEntity();
+        
+        /* author, images, thumbnail 별도 처리 */
+        post.setAuthor(author.orElseThrow());
+        post.setImages(imageUrlList);
+        post.setThumbnail(thumbnailUrl);
 
         return postRepository.save(post);
     }
 
     @Transactional
-    public MultiValueMap<String, Object> findById(Long id) {
-        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
+    public PostResponseDto findById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
-        formData.add("postId", post.getId());
-        formData.add("author", post.getAuthor().getName());
-        formData.add("title", post.getTitle());
-        formData.add("content", post.getContent());
-        formData.add("category", post.getCategory().toString());
-        formData.add("tags", post.getTags());
-        formData.add("latitude", post.getLatitude());
-        formData.add("longitude", post.getLongitude());
-        formData.add("startDate", post.getStartDate());
-        formData.add("endDate", post.getEndDate());
-        formData.add("curHeadCount", post.getCurHeadCount());
-        formData.add("totalHeadCount", post.getTotalHeadCount());
-        formData.add("budget", post.getBudget());
-        formData.add("recommendationCount", post.getRecommendationCount());
-        formData.add("viewCount", post.getViewCount());
+        PostResponseDto postResponseDto = new PostResponseDto(post);
 
+        List<String> images = new ArrayList<>();
         post.getImages()
                 .forEach(fileName -> {
                     String image = amazonS3Service.getFile(fileName);
-                    formData.add("images",image);
+                    images.add(image);
                 });
+        postResponseDto.setImages(images);
         String thumbnail = amazonS3Service.getFile(post.getThumbnail());
-        formData.add("thumbnail",thumbnail);
+        postResponseDto.setThumbnail(thumbnail);
 
-        return formData;
+        return postResponseDto;
     }
 
     @Transactional

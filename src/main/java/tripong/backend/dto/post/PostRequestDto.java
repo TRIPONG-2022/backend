@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.entity.post.Category;
+import tripong.backend.entity.post.Post;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,5 +47,20 @@ public class PostRequestDto {
         this.images.addAll(images);
         this.thumbnail = thumbnail;
         this.budget = budget;
+    }
+
+    public Post toEntity() {
+        return Post.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .tags(tags)
+                .latitude(latitude)
+                .longitude(longitude)
+                .startDate(startDate)
+                .endDate(endDate)
+                .totalHeadCount(totalHeadCount)
+                .budget(budget)
+                .build();
     }
 }
