@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.UUID;
 
 @Service
@@ -26,11 +27,13 @@ public class AmazonS3Service {
 
     private final AmazonS3Client amazonS3Client;
 
-    public byte[] getFile(String fileName) {
+    public String getFile(String fileName) {
         S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucket, fileName));
         try(S3ObjectInputStream objectContent = object.getObjectContent()){
-            byte[] bytes = IOUtils.toByteArray(objectContent);
-            return bytes;
+            Base64.Encoder encoder = Base64.getEncoder();
+            byte[] bytes = encoder.encode(IOUtils.toByteArray(objectContent));
+            String file = new String(bytes, "UTF-8");
+            return file;
         } catch(IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 다운로드에 실패했습니다.");
         }

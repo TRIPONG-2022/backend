@@ -74,10 +74,10 @@ public class PostService {
 
         post.getImages()
                 .forEach(fileName -> {
-                    byte[] image = amazonS3Service.getFile(fileName);
+                    String image = amazonS3Service.getFile(fileName);
                     formData.add("images",image);
                 });
-        byte[] thumbnail = amazonS3Service.getFile(post.getThumbnail());
+        String thumbnail = amazonS3Service.getFile(post.getThumbnail());
         formData.add("thumbnail",thumbnail);
 
         return formData;
