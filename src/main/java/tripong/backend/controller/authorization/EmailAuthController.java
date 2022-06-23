@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tripong.backend.dto.authorization.EmailAuthRequestDto;
 import tripong.backend.service.authorization.EmailAuthService;
 
+import javax.mail.MessagingException;
+
 @Controller
 @RequiredArgsConstructor
 public class EmailAuthController {
@@ -21,7 +23,7 @@ public class EmailAuthController {
     // 이메일 유효링크 인증
     @ResponseBody
     @GetMapping("/users/auth/email/send")
-    public void emailAuth(@RequestBody EmailAuthRequestDto earDto){
+    public void emailAuth(@RequestBody EmailAuthRequestDto earDto) throws MessagingException {
 
         // 이메일 유효 링크 서비스 호출
         emailAuthService.createEmailValidLik(earDto);

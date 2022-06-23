@@ -11,10 +11,13 @@ import tripong.backend.entity.authorization.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authorization.EmailAuthRepository;
 import tripong.backend.repository.user.UserRepository;
-
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class EmailAuthService {
     private final UserRepository userRepository;
 
     // 이메일 유효링크 인증
-    public void createEmailValidLik(EmailAuthRequestDto earDto) {
+    public void createEmailValidLik(EmailAuthRequestDto earDto) throws MessagingException {
 
         // 이메일 유효링크 저장
         EmailValidLink validLink = EmailValidLink.createEmailValidLink(earDto.getUserId());
@@ -37,12 +40,35 @@ public class EmailAuthService {
 
     // 비동기식 이메일 발송
     @Async
-    public void sendEmail(EmailAuthRequestDto earDto, EmailValidLink validLink){
+    public void sendEmail(EmailAuthRequestDto earDto, EmailValidLink validLink) throws MessagingException {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(earDto.getEmail());
+        MimeMessage message = mailSender.createMimeMessage();
+        String text = "";
+        String link = "http://localhost:8089/users/auth/email/confirm?emailValidLink=" + validLink.getId();
+
+
+        message.setRecipients(RecipientType.TO, earDto.getEmail());
         message.setSubject("회원가입 이메일 인증");
-        message.setText("http://localhost:8089/users/auth/email/confirm?emailValidLink=" + validLink.getId());
+
+        text += "<html><body>";
+        text += "<div style = 'margin:100px; border-top: 3px solid #0DC5D6; border-bottom: 1px solid #7A7A7A; padding: 30px 0 30px 0;'>";
+        text += "<br>";
+        text += "<h1><span style='color: #0DC5D6;'>메일 인증</span> 안내입니다.</h1>";
+        text += "<br>";
+        text += "<p style='font-size: 14px'>여행 커뮤니티 서비스, <span style='color: #0DC5D6; font-weight: bold;'>Tripong</span>에 가입하신것을 환영합니다.</p>";
+        text += "<p style='font-size: 14px'>아래 <span style='color: #0DC5D6; font-weight: bold;'>링크</span>를 클릭하시면 인증이 정상적으로 완료됩니다.</p>";
+        text += "<p style='font-size: 11px'>인증링크는 메일이 발송된 시점부터 5분간만 유효합니다.</p>";
+        text += "<br>";
+        text += "<div align='center' style='background-color: #F7F7F7;padding: 40px;'>";
+        text += link;
+        text += "</div>";
+        text += "<br>";
+        text += "<p style='font-size: 14px'>감사합니다.</p>";
+        text += "<br>";
+        text += "</div>";
+        text += "</body></html>";
+
+        message.setText(text, "utf-8", "html");
 
         mailSender.send(message);
     }
