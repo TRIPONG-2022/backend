@@ -42,7 +42,7 @@ public class AccountController {
 
 
     /**
-     * 구글 로그인 or 회원가입
+     * 구글 로그인 or 회원가입 API
      */
     @PostMapping("/users/signup/google")
     public ResponseEntity googleJoin(@RequestBody Map<String, Object> data, HttpServletResponse response){
