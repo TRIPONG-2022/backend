@@ -24,17 +24,12 @@ public class PostApiController {
 
     @GetMapping("/{category}")
     public ResponseEntity<List<PostResponseDto>> getListGathering(@PathVariable Category category, Pageable pageable) {
-        log.info("postType = {}", category);
-        log.info("page = {}", pageable.getPageNumber());
-        log.info("size = {}", pageable.getPageSize());
-        log.info("sort = {}", pageable.getSort());
         List<PostResponseDto> postResponseDtoList = postService.findByCategory(category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{category}/{postId}")
     public ResponseEntity<PostResponseDto> getGathering(@PathVariable Long postId) {
-        log.info("get postId = {}", postId);
         PostResponseDto postResponseDto = postService.findById(postId);
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
@@ -48,14 +43,12 @@ public class PostApiController {
 
     @PatchMapping("/{category}/{postId}")
     public ResponseEntity<Object> saveGathering(@PathVariable Long postId, @ModelAttribute PostRequestDto postRequestDto) {
-        log.info("update postId = {}", postId);
         postService.update(postId, postRequestDto);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/{category}/{postId}")
     public ResponseEntity<Object> deleteGathering(@PathVariable Long postId) {
-        log.info("delete postId = {}", postId);
         postService.delete(postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

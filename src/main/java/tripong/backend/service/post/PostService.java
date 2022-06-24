@@ -81,6 +81,9 @@ public class PostService {
         List<String> imageUrlList = new ArrayList<>();
         postRequestDto.getImages().forEach(fileName -> imageUrlList.add(amazonS3Service.uploadFile(fileName)));
         String thumbnailUrl = amazonS3Service.uploadFile(postRequestDto.getThumbnail());
+        /* 장애 예방을 위해 delete를 나중에 수행 */
+        post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
+        amazonS3Service.deleteFile(post.getThumbnail());
         post.update(postRequestDto, imageUrlList, thumbnailUrl);
     }
 
