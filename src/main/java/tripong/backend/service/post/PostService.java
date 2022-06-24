@@ -30,29 +30,14 @@ public class PostService {
 
     @Transactional
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
-        List<PostResponseDto> postResponseDtoList = postRepository.findByCategory(category, pageable)
-                                                            .stream()
-                                                            .map(PostResponseDto::new)
-                                                            .collect(Collectors.toList());
+        List<PostResponseDto> postResponseDtoList =
+                postRepository.findByCategory(category, pageable)
+                .stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
 
         postResponseDtoList.forEach(postResponseDto -> postResponseDto.setThumbnail(amazonS3Service.getFile(postResponseDto.getThumbnail())));
         return postResponseDtoList;
-    }
-    @Transactional
-    public Post save(PostRequestDto requestDto) {
-        List<String> imageUrlList = new ArrayList<>();
-        requestDto.getImages().forEach(file -> imageUrlList.add(amazonS3Service.uploadFile(file)));
-        String thumbnailUrl = amazonS3Service.uploadFile(requestDto.getThumbnail());
-        Optional<User> author = userRepository.findById(requestDto.getAuthor());
-
-        Post post = requestDto.toEntity();
-        
-        /* author, images, thumbnail 별도 처리 */
-        post.setAuthor(author.orElseThrow());
-        post.setImages(imageUrlList);
-        post.setThumbnail(thumbnailUrl);
-
-        return postRepository.save(post);
     }
 
     @Transactional
@@ -71,6 +56,32 @@ public class PostService {
         postResponseDto.setThumbnail(thumbnail);
 
         return postResponseDto;
+    }
+
+    @Transactional
+    public Post save(PostRequestDto requestDto) {
+        List<String> imageUrlList = new ArrayList<>();
+        requestDto.getImages().forEach(file -> imageUrlList.add(amazonS3Service.uploadFile(file)));
+        String thumbnailUrl = amazonS3Service.uploadFile(requestDto.getThumbnail());
+        Optional<User> author = userRepository.findById(requestDto.getAuthor());
+
+        Post post = requestDto.toEntity();
+        
+        /* author, images, thumbnail 별도 처리 */
+        post.setAuthor(author.orElseThrow());
+        post.setImages(imageUrlList);
+        post.setThumbnail(thumbnailUrl);
+
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public void update(Long postId, PostRequestDto postRequestDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+        List<String> imageUrlList = new ArrayList<>();
+        postRequestDto.getImages().forEach(fileName -> imageUrlList.add(amazonS3Service.uploadFile(fileName)));
+        String thumbnailUrl = amazonS3Service.uploadFile(postRequestDto.getThumbnail());
+        post.update(postRequestDto, imageUrlList, thumbnailUrl);
     }
 
     @Transactional

@@ -3,7 +3,6 @@ package tripong.backend.dto.post;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
 import java.math.BigDecimal;
@@ -56,7 +55,7 @@ public class PostResponseDto {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.category = post.getCategory();
-        this.tags.addAll(post.getTags());
+        this.tags = post.getTags();
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
         this.startDate = post.getStartDate();

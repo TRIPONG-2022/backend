@@ -1,6 +1,7 @@
 package tripong.backend.dto.post;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.entity.post.Category;
@@ -27,26 +28,32 @@ public class PostRequestDto {
     private LocalDate startDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+    private Integer curHeadCount;
     private Integer totalHeadCount;
     private List<MultipartFile> images;
     private MultipartFile thumbnail;
     private Integer budget;
+    private Integer recommendationCount;
+    private Integer viewCount;
 
     @Builder
-    public PostRequestDto(Long author, String title, String content, String category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer totalHeadCount, List<MultipartFile> images, MultipartFile thumbnail, Integer budget) {
+    public PostRequestDto(Long author, String title, String content, Category category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer curHeadCount, Integer totalHeadCount, List<MultipartFile> images, MultipartFile thumbnail, Integer budget, Integer recommendationCount, Integer viewCount) {
         this.author = author;
         this.title = title;
         this.content = content;
-        this.category = Category.valueOf(category);
-        this.tags.addAll(tags);
+        this.category = category;
+        this.tags = tags;
         this.latitude = latitude;
         this.longitude = longitude;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.curHeadCount = curHeadCount;
         this.totalHeadCount = totalHeadCount;
-        this.images.addAll(images);
+        this.images = images;
         this.thumbnail = thumbnail;
         this.budget = budget;
+        this.recommendationCount = recommendationCount;
+        this.viewCount = viewCount;
     }
 
     public Post toEntity() {

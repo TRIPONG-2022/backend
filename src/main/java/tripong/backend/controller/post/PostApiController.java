@@ -23,13 +23,20 @@ public class PostApiController {
     private final PostService postService;
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<PostResponseDto>> getListGathering(@PathVariable String category, Pageable pageable) {
+    public ResponseEntity<List<PostResponseDto>> getListGathering(@PathVariable Category category, Pageable pageable) {
         log.info("postType = {}", category);
         log.info("page = {}", pageable.getPageNumber());
         log.info("size = {}", pageable.getPageSize());
         log.info("sort = {}", pageable.getSort());
-        List<PostResponseDto> postResponseDtoList = postService.findByCategory(Category.valueOf(category.toUpperCase()), pageable);
+        List<PostResponseDto> postResponseDtoList = postService.findByCategory(category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{category}/{postId}")
+    public ResponseEntity<PostResponseDto> getGathering(@PathVariable Long postId) {
+        log.info("get postId = {}", postId);
+        PostResponseDto postResponseDto = postService.findById(postId);
+        return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/{category}")
@@ -39,11 +46,11 @@ public class PostApiController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/{category}/{postId}")
-    public ResponseEntity<PostResponseDto> getGathering(@PathVariable Long postId) {
-        log.info("get postId = {}", postId);
-        PostResponseDto postResponseDto = postService.findById(postId);
-        return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
+    @PatchMapping("/{category}/{postId}")
+    public ResponseEntity<Object> saveGathering(@PathVariable Long postId, @ModelAttribute PostRequestDto postRequestDto) {
+        log.info("update postId = {}", postId);
+        postService.update(postId, postRequestDto);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/{category}/{postId}")
