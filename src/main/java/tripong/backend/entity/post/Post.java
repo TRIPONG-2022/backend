@@ -84,13 +84,10 @@ public class Post extends BaseTimeEntity {
         this.longitude = postRequestDto.getLongitude();
         this.startDate = postRequestDto.getStartDate();
         this.endDate = postRequestDto.getEndDate();
-        this.curHeadCount = postRequestDto.getCurHeadCount();
         this.totalHeadCount = postRequestDto.getTotalHeadCount();
         this.budget = postRequestDto.getBudget();
         this.images = imageUrlList;
         this.thumbnail = thumbnailUrl;
-        this.recommendationCount = postRequestDto.getRecommendationCount();
-        this.viewCount = postRequestDto.getViewCount();
     }
 
 }
