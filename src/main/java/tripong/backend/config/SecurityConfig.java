@@ -12,13 +12,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import tripong.backend.config.auth.PrincipalService;
 import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
+import tripong.backend.config.auth.handler.CustomLogoutHandler;
 import tripong.backend.config.auth.jwt.JwtAuthenticationFilter;
 import tripong.backend.config.auth.jwt.JwtAuthorizationFilter;
 import tripong.backend.repository.user.UserRepository;
+
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +58,10 @@ public class SecurityConfig{
                     .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                     .anyRequest().authenticated();
         http
-                .apply(new MyCustomDsl());
+                .apply(new MyCustomDsl())
+                .and()
+                .logout()
+                .addLogoutHandler(new CustomLogoutHandler());
 
         return http.build();
     }
@@ -81,6 +87,7 @@ public class SecurityConfig{
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
+            jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
 
             http
                     .addFilter(corsConfig.corsFilter())

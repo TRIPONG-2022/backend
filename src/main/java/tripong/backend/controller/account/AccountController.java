@@ -2,7 +2,6 @@ package tripong.backend.controller.account;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -47,14 +46,14 @@ public class AccountController {
      */
     @PostMapping("/users/signup/google")
     public ResponseEntity googleJoin(@RequestBody Map<String, Object> data, HttpServletResponse response){
-        GoogleUser googleInfo = new GoogleUser((Map<String, Object>) data.get("profileObj"));
-        String jwtToken = accountService.googleJoin(googleInfo);
+            GoogleUser googleInfo = new GoogleUser((Map<String, Object>) data.get("profileObj"));
+            String jwtToken = accountService.googleJoin(googleInfo);
 
-        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, jwtToken);
-        response.addCookie(cookie);
-
-        HttpStatus status = HttpStatus.CREATED;
+            response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+            HttpStatus status = HttpStatus.CREATED;
         return new ResponseEntity<>(status);
     }
+
+
 
 }

@@ -15,7 +15,6 @@ import tripong.backend.repository.user.UserRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,34 +33,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("시작: JwtAuthorizationFilter");
 
-        Cookie[] cookies = request.getCookies();
-        Cookie auth_cookie = null;
-        if(cookies!=null){
-            for(Cookie cookie: cookies){
-                if(cookie.getName().equals("Authorization")){
-                    auth_cookie = cookie;
-                }
-            }
-        }
-        if(auth_cookie==null){
+        String header = request.getHeader(JwtProperties.HEADER_STRING);
+        if(header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)){
             log.info("종료: JwtAuthorizationFilter - 인가 불가(jwt 토큰 없음)");
-            chain.doFilter(request, response);
+            chain.doFilter(request,response);
             return;
         }
-        String token = auth_cookie.getValue();
+
+        String token = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
         String loginId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)
                 .getClaim("loginId").asString();
-
-//        String header = request.getHeader(JwtProperties.HEADER_STRING);
-//        if(header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)){
-//            log.info("종료: JwtAuthorizationFilter - 인가 불가(jwt 토큰 없음)");
-//            chain.doFilter(request,response);
-//            return;
-//        }
-//
-//        String token = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
-//        String loginId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)
-//                .getClaim("loginId").asString();
 
         if(loginId != null){
             User user = userRepository.findByLoginId(loginId)
