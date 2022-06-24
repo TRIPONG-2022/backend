@@ -1,7 +1,6 @@
 package tripong.backend.dto.post;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.entity.post.Category;

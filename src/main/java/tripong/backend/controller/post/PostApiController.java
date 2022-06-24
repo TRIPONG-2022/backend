@@ -23,32 +23,32 @@ public class PostApiController {
     private final PostService postService;
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<PostResponseDto>> getListGathering(@PathVariable Category category, Pageable pageable) {
+    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.findByCategory(category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{category}/{postId}")
-    public ResponseEntity<PostResponseDto> getGathering(@PathVariable Long postId) {
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
         PostResponseDto postResponseDto = postService.findById(postId);
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/{category}")
-    public ResponseEntity<Object> saveGathering(@ModelAttribute PostRequestDto postRequestDto) {
+    public ResponseEntity<Object> savePost(@ModelAttribute PostRequestDto postRequestDto) {
         Post post = postService.save(postRequestDto);
         log.info("saved postId = {}", post.getId());
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @PatchMapping("/{category}/{postId}")
-    public ResponseEntity<Object> saveGathering(@PathVariable Long postId, @ModelAttribute PostRequestDto postRequestDto) {
+    public ResponseEntity<Object> updatePost(@PathVariable Long postId, @ModelAttribute PostRequestDto postRequestDto) {
         postService.update(postId, postRequestDto);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/{category}/{postId}")
-    public ResponseEntity<Object> deleteGathering(@PathVariable Long postId) {
+    public ResponseEntity<Object> deletePost(@PathVariable Long postId) {
         postService.delete(postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

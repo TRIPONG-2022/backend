@@ -1,9 +1,9 @@
 package tripong.backend.service.post;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.Category;
@@ -26,7 +26,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final AmazonS3Service amazonS3Service;
-    private final ObjectMapper objectMapper;
 
     @Transactional
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
@@ -36,7 +35,12 @@ public class PostService {
                 .map(PostResponseDto::new)
                 .collect(Collectors.toList());
 
-        postResponseDtoList.forEach(postResponseDto -> postResponseDto.setThumbnail(amazonS3Service.getFile(postResponseDto.getThumbnail())));
+        postResponseDtoList.forEach(postResponseDto -> {
+            String fileName = postResponseDto.getThumbnail();
+            if (fileName != null) {
+                postResponseDto.setThumbnail(amazonS3Service.getFile(fileName));
+            }
+        });
         return postResponseDtoList;
     }
 
@@ -52,25 +56,37 @@ public class PostService {
                     images.add(image);
                 });
         postResponseDto.setImages(images);
-        String thumbnail = amazonS3Service.getFile(post.getThumbnail());
-        postResponseDto.setThumbnail(thumbnail);
+        String fileName = post.getThumbnail();
+        if (fileName != null) {
+            String thumbnail = amazonS3Service.getFile(fileName);
+            postResponseDto.setThumbnail(thumbnail);
+        }
 
         return postResponseDto;
     }
 
     @Transactional
     public Post save(PostRequestDto requestDto) {
-        List<String> imageUrlList = new ArrayList<>();
-        requestDto.getImages().forEach(file -> imageUrlList.add(amazonS3Service.uploadFile(file)));
-        String thumbnailUrl = amazonS3Service.uploadFile(requestDto.getThumbnail());
-        Optional<User> author = userRepository.findById(requestDto.getAuthor());
+        List<String> imagefileNameList = new ArrayList<>();
 
         Post post = requestDto.toEntity();
-        
+
         /* author, images, thumbnail 별도 처리 */
+        Optional<User> author = userRepository.findById(requestDto.getAuthor());
         post.setAuthor(author.orElseThrow());
-        post.setImages(imageUrlList);
-        post.setThumbnail(thumbnailUrl);
+
+        requestDto.getImages().forEach(file -> {
+            if (file.getSize() != 0) {
+                imagefileNameList.add(amazonS3Service.uploadFile(file));
+            }
+        });
+        post.setImages(imagefileNameList);
+
+        MultipartFile thumbnail = requestDto.getThumbnail();
+        if (thumbnail.getSize() != 0){
+            String fileName = amazonS3Service.uploadFile(thumbnail);
+            post.setThumbnail(fileName);
+        }
 
         return postRepository.save(post);
     }
@@ -78,20 +94,30 @@ public class PostService {
     @Transactional
     public void update(Long postId, PostRequestDto postRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
-        List<String> imageUrlList = new ArrayList<>();
-        postRequestDto.getImages().forEach(fileName -> imageUrlList.add(amazonS3Service.uploadFile(fileName)));
-        String thumbnailUrl = amazonS3Service.uploadFile(postRequestDto.getThumbnail());
+        List<String> imagefileNameList = new ArrayList<>();
+        postRequestDto.getImages().forEach(fileName -> imagefileNameList.add(amazonS3Service.uploadFile(fileName)));
+        MultipartFile thumbnail = postRequestDto.getThumbnail();
+        String thumbnailFileName = null;
+        if (thumbnail.getSize() != 0){
+            thumbnailFileName = amazonS3Service.uploadFile(postRequestDto.getThumbnail());
+        }
         /* 장애 예방을 위해 delete를 나중에 수행 */
         post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
-        amazonS3Service.deleteFile(post.getThumbnail());
-        post.update(postRequestDto, imageUrlList, thumbnailUrl);
+        String fileName = post.getThumbnail();
+        if (fileName != null) {
+            amazonS3Service.deleteFile(fileName);
+        }
+        post.update(postRequestDto, imagefileNameList, thumbnailFileName);
     }
 
     @Transactional
     public void delete(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
         post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
-        amazonS3Service.deleteFile(post.getThumbnail());
+        String fileName = post.getThumbnail();
+        if (fileName != null){
+            amazonS3Service.deleteFile(fileName);
+        }
         postRepository.delete(post);
     }
 

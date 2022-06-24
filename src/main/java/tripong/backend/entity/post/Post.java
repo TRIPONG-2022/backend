@@ -42,7 +42,6 @@ public class Post extends BaseTimeEntity {
     private Category category;
 
     @ElementCollection
-    @Builder.Default
     private List<String> tags = new ArrayList<>();
 
     @Column(precision = 13, scale = 10)
@@ -64,7 +63,6 @@ public class Post extends BaseTimeEntity {
     private Integer totalHeadCount;
 
     @ElementCollection
-    @Builder.Default
     private List<String> images = new ArrayList<>();
 
     private String thumbnail;
