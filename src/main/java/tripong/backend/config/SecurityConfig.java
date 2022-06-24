@@ -61,6 +61,7 @@ public class SecurityConfig{
                 .apply(new MyCustomDsl())
                 .and()
                 .logout()
+                .logoutUrl("/users/logout")
                 .addLogoutHandler(new CustomLogoutHandler());
 
         return http.build();
