@@ -30,10 +30,13 @@ public class PostService {
 
     @Transactional
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
-        return postRepository.findByCategory(category, pageable)
-                .stream()
-                .map(PostResponseDto::new)
-                .collect(Collectors.toList());
+        List<PostResponseDto> postResponseDtoList = postRepository.findByCategory(category, pageable)
+                                                            .stream()
+                                                            .map(PostResponseDto::new)
+                                                            .collect(Collectors.toList());
+
+        postResponseDtoList.forEach(postResponseDto -> postResponseDto.setThumbnail(amazonS3Service.getFile(postResponseDto.getThumbnail())));
+        return postResponseDtoList;
     }
     @Transactional
     public Post save(PostRequestDto requestDto) {

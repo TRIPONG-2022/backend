@@ -63,6 +63,7 @@ public class PostResponseDto {
         this.endDate = post.getEndDate();
         this.curHeadCount = post.getCurHeadCount();
         this.totalHeadCount = post.getTotalHeadCount();
+        this.thumbnail = post.getThumbnail();
         this.budget = post.getBudget();
         this.recommendationCount = post.getRecommendationCount();
         this.viewCount = post.getViewCount();

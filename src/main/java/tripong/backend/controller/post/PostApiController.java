@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostRequestDto;
@@ -33,21 +32,21 @@ public class PostApiController {
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
-    @PostMapping("/gathering")
+    @PostMapping("/{category}")
     public ResponseEntity<Object> saveGathering(@ModelAttribute PostRequestDto postRequestDto) {
         Post post = postService.save(postRequestDto);
         log.info("saved postId = {}", post.getId());
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/gathering/{postId}")
+    @GetMapping(value = "/{category}/{postId}")
     public ResponseEntity<PostResponseDto> getGathering(@PathVariable Long postId) {
         log.info("get postId = {}", postId);
         PostResponseDto postResponseDto = postService.findById(postId);
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
 
-    @DeleteMapping("/gathering/{postId}")
+    @DeleteMapping("/{category}/{postId}")
     public ResponseEntity<Object> deleteGathering(@PathVariable Long postId) {
         log.info("delete postId = {}", postId);
         postService.delete(postId);
