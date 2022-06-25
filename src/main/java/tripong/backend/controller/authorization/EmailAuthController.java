@@ -5,28 +5,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.authorization.EmailAuthRequestDto;
 import tripong.backend.service.authorization.EmailAuthService;
 
 import javax.mail.MessagingException;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class EmailAuthController {
 
     private final EmailAuthService emailAuthService;
 
     // 이메일 유효링크 인증
-    @ResponseBody
     @GetMapping("/users/auth/email/send")
-    public void emailAuth(@RequestBody EmailAuthRequestDto earDto) throws MessagingException {
+    public void emailAuth(@RequestBody EmailAuthRequestDto dto) throws MessagingException {
 
         // 이메일 유효 링크 서비스 호출
-        emailAuthService.createEmailValidLik(earDto);
+        emailAuthService.createEmailValidLik(dto);
 
     }
 

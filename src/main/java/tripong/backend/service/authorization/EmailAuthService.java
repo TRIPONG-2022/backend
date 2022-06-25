@@ -1,7 +1,6 @@
 package tripong.backend.service.authorization;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -10,13 +9,12 @@ import tripong.backend.dto.authorization.EmailAuthRequestDto;
 import tripong.backend.entity.authorization.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authorization.EmailAuthRepository;
-import tripong.backend.repository.user.UserRepository;
+import tripong.backend.repository.authorization.UserAuthRepository;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 @Service
@@ -25,29 +23,29 @@ public class EmailAuthService {
 
     private final JavaMailSender mailSender;
     private final EmailAuthRepository emailAuthRepository;
-    private final UserRepository userRepository;
+    private final UserAuthRepository userAuthRepository;
 
     // 이메일 유효링크 인증
-    public void createEmailValidLik(EmailAuthRequestDto earDto) throws MessagingException {
+    public void createEmailValidLik(EmailAuthRequestDto dto) throws MessagingException {
 
         // 이메일 유효링크 저장
-        EmailValidLink validLink = EmailValidLink.createEmailValidLink(earDto.getUserId());
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
         emailAuthRepository.save(validLink);
 
         //이메일 발송 서비스 호출
-        sendEmail(earDto, validLink);
+        sendEmail(dto, validLink);
     }
 
     // 비동기식 이메일 발송
     @Async
-    public void sendEmail(EmailAuthRequestDto earDto, EmailValidLink validLink) throws MessagingException {
+    public void sendEmail(EmailAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         String text = "";
         String link = "http://localhost:8089/users/auth/email/confirm?emailValidLink=" + validLink.getId();
 
 
-        message.setRecipients(RecipientType.TO, earDto.getEmail());
+        message.setRecipients(RecipientType.TO, dto.getEmail());
         message.setSubject("회원가입 이메일 인증");
 
         text += "<html><body>";
@@ -76,13 +74,12 @@ public class EmailAuthService {
     // 유효한 토큰 확인
     public EmailValidLink findByIdAndExpirationDateAfterAndExpired(String emailValidLink) {
 
-        // 정상
         Optional<EmailValidLink> validLink  = emailAuthRepository.findByIdAndExpirationDateAfterAndExpired(emailValidLink, LocalDateTime.now(), false);
 
-        // 실패: 토큰이 없다면 예외 발생
         return validLink.orElseThrow(()  -> new NoSuchElementException("valid link not found"));
     }
 
+    // 링크 유효 여부 확인 및 처리
     @Transactional
     public int emailConfirm(String emailValidLink){
 
@@ -91,13 +88,13 @@ public class EmailAuthService {
         String userId = findValidLink.getUserId();
 
         // 유저 인증 정보 가져오기
-        Optional<User> user = userRepository.findByLoginId(userId);
+        Optional<User> user = userAuthRepository.findByLoginId(userId);
 
         // 유효 링크 사용 완료 체크
         findValidLink.makeInvalidLink();
 
         if (user.isPresent()){
-            userRepository.updateauthenticationStatus(userId);
+            userAuthRepository.updateauthenticationStatus(userId);
             return 1;
         } else {
             return 2;

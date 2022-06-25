@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -28,6 +29,9 @@ public class EmailValidLink {
     private String userId;
 
     @Column
+    private LocalDateTime createdTime;
+
+    @Column
     private LocalDateTime expirationDate;
 
     @Column
@@ -35,12 +39,13 @@ public class EmailValidLink {
 
     // 이메일 유효링크 생성
     public static EmailValidLink createEmailValidLink(String userId) {
-        EmailValidLink ValidLink = new EmailValidLink();
-        ValidLink.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_VALID_LINK_EXPRIRATION_TIME_VALUE);
-        ValidLink.expired = false;
-        ValidLink.userId = userId;
+        EmailValidLink validLink = new EmailValidLink();
+        validLink.createdTime = LocalDateTime.now();
+        validLink.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_VALID_LINK_EXPRIRATION_TIME_VALUE);
+        validLink.expired = false;
+        validLink.userId = userId;
 
-        return ValidLink;
+        return validLink;
     }
 
     // 이메일 유료링크 만료 설정
@@ -48,5 +53,9 @@ public class EmailValidLink {
         this.expired = true;
     }
 
+    // 이메일 재전송: 5분에 한 번 전송 가능
+    public boolean confirmResendEmail() {
+        return this.createdTime.isBefore(LocalDateTime.now().minusMinutes(5));
+    }
 
 }

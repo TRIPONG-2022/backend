@@ -13,11 +13,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByLoginId(String loginId);
     boolean existsByLoginId(String loginId);
     boolean existsByNickName(String nickName);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE User u set u.authentication = u.authentication + 1 WHERE u.loginId = :userId")
-    int updateauthenticationStatus(String userId);
-
-
 }
