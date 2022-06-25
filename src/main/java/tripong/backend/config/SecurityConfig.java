@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import tripong.backend.config.auth.PrincipalService;
@@ -20,6 +19,8 @@ import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
 import tripong.backend.config.auth.handler.CustomLogoutHandler;
 import tripong.backend.config.auth.jwt.JwtAuthenticationFilter;
 import tripong.backend.config.auth.jwt.JwtAuthorizationFilter;
+import tripong.backend.config.auth.oauth.CustomOauthSuccessHandler;
+import tripong.backend.config.auth.oauth.PrincipalOauth2Service;
 import tripong.backend.repository.user.UserRepository;
 
 
@@ -29,7 +30,10 @@ import tripong.backend.repository.user.UserRepository;
 public class SecurityConfig{
 
     private final CorsConfig corsConfig;
+    private final BCryptPasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final PrincipalOauth2Service oauth2Service;
+    private final CustomOauthSuccessHandler customOauthSuccessHandler;
     private static final String[] SWAGGER_WHITELIST = {
             "/swagger-resources/**",
             "/swagger-ui.html",
@@ -37,11 +41,6 @@ public class SecurityConfig{
             "/webjars/**"
     };
     private final PrincipalService principalService;
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
@@ -59,10 +58,17 @@ public class SecurityConfig{
                     .anyRequest().authenticated();
         http
                 .apply(new MyCustomDsl())
+
                 .and()
                 .logout()
                 .logoutUrl("/users/logout")
-                .addLogoutHandler(new CustomLogoutHandler());
+                .addLogoutHandler(new CustomLogoutHandler())
+
+                .and()
+                .oauth2Login()
+                .loginPage("/auth/login")
+                .successHandler(customOauthSuccessHandler)
+                .userInfoEndpoint().userService(oauth2Service);//추가처리필요
 
         return http.build();
     }
@@ -102,7 +108,7 @@ public class SecurityConfig{
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
         daoAuthenticationProvider.setUserDetailsService(principalService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setPasswordEncoder(encoder);
         return daoAuthenticationProvider;
     }
 }

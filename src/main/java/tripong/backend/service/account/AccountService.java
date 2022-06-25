@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.auth.jwt.JwtProperties;
 import tripong.backend.config.auth.oauth.GoogleUser;
+import tripong.backend.config.auth.oauth.OAuthInfo;
 import tripong.backend.dto.account.OauthJoinRequestDto;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
@@ -71,33 +72,53 @@ public class AccountService {
      * -소셜 회원가입자는 이메일 인증 처리
      * */
     @Transactional
-    public String googleJoin(GoogleUser googleInfo) {
-        String LoginId = googleInfo.getProviderName() +"_"+googleInfo.getNickName() + googleInfo.getProviderId();
+    public User oauthJoin(OAuthInfo oAuthInfo){
+        OauthJoinRequestDto dto = new OauthJoinRequestDto();
+        dto.setLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
+        dto.setPassword(encoder.encode(sKey + oAuthInfo.getProviderId()));
+        dto.setEmail(oAuthInfo.getEmail());
+        dto.setNickName(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
+        dto.setJoinMethod(getJoin(oAuthInfo.getProviderName()));
+        User yet = dto.toEntity();
 
-        User user =userRepository.findByLoginId(LoginId).orElseGet(()-> {
-            OauthJoinRequestDto dto = new OauthJoinRequestDto();
-            dto.setLoginId(LoginId);
-            dto.setPassword(encoder.encode(sKey + googleInfo.getProviderId()));
-            dto.setEmail(googleInfo.getEmail());
-            dto.setNickName(LoginId);
-            dto.setJoinMethod(JoinType.Google);
-            User yet = dto.toEntity();
-            userRepository.save(yet);
-
-            return yet;
-        });
-
-
-        return JwtCreate(user);
+        return userRepository.save(yet);
     }
 
-
-    public String JwtCreate(User user){
-        String jwtToken = JWT.create()
-                .withSubject(user.getLoginId()) //토큰명
-                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME))) //만료시간 10분
-                .withClaim("loginId", user.getLoginId())
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
-        return jwtToken;
+    private JoinType getJoin(String providerName) {
+        JoinType joinType = JoinType.Normal;
+        if(providerName == "google"){
+            joinType = JoinType.Google;
+        }
+        return joinType;
     }
+
+//
+//    @Transactional
+//    public String googleJoin(GoogleUser googleInfo) {
+//        String LoginId = googleInfo.getProviderName() +"_"+googleInfo.getNickName() + googleInfo.getProviderId();
+//
+//        User user =userRepository.findByLoginId(LoginId).orElseGet(()-> {
+//            OauthJoinRequestDto dto = new OauthJoinRequestDto();
+//            dto.setLoginId(LoginId);
+//            dto.setPassword(encoder.encode(sKey + googleInfo.getProviderId()));
+//            dto.setEmail(googleInfo.getEmail());
+//            dto.setNickName(LoginId);
+//            dto.setJoinMethod(JoinType.Google);
+//            User yet = dto.toEntity();
+//            userRepository.save(yet);
+//
+//            return yet;
+//        });
+//
+//
+//        return JwtCreate(user);
+//    }
+//    public String JwtCreate(User user){
+//        String jwtToken = JWT.create()
+//                .withSubject(user.getLoginId()) //토큰명
+//                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME))) //만료시간 10분
+//                .withClaim("loginId", user.getLoginId())
+//                .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
+//        return jwtToken;
+//    }
 }
