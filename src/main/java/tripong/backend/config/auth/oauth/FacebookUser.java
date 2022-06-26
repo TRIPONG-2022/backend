@@ -2,10 +2,10 @@ package tripong.backend.config.auth.oauth;
 
 import java.util.Map;
 
-public class GoogleUser implements OAuthInfo{
+public class FacebookUser implements OAuthInfo{
 
     private Map<String, Object> attribute;
-    public GoogleUser(Map<String, Object> attribute) {
+    public FacebookUser(Map<String, Object> attribute) {
         this.attribute = attribute;
     }
 
@@ -21,11 +21,11 @@ public class GoogleUser implements OAuthInfo{
 
     @Override
     public String getProviderId() {
-        return String.valueOf(attribute.get("sub"));
+        return String.valueOf(attribute.get("id"));
     }
 
     @Override
     public String getProviderName() {
-        return "google";
+        return "facebook";
     }
 }

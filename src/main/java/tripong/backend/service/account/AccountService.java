@@ -90,6 +90,15 @@ public class AccountService {
         if(providerName == "google"){
             joinType = JoinType.Google;
         }
+        else if(providerName == "facebook"){
+            joinType = JoinType.FaceBook;
+        }
+        else if(providerName == "naver"){
+            joinType = JoinType.Naver;
+        }
+        else if(providerName == "kakao"){
+            joinType = JoinType.KaKao;
+        }
         return joinType;
     }
 

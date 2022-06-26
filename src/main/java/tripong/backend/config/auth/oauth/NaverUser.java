@@ -11,17 +11,17 @@ public class NaverUser implements OAuthInfo{
 
     @Override
     public String getNickName() {
-        return (String)attribute.get("name");
+        return String.valueOf(attribute.get("name"));
     }
 
     @Override
     public String getEmail() {
-        return (String)attribute.get("email");
+        return String.valueOf(attribute.get("email"));
     }
 
     @Override
     public String getProviderId() {
-        return (String)attribute.get("id");
+        return String.valueOf(attribute.get("id"));
     }
 
     @Override

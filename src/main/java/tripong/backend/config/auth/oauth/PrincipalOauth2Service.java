@@ -12,6 +12,7 @@ import tripong.backend.entity.user.User;
 import tripong.backend.repository.user.UserRepository;
 import tripong.backend.service.account.AccountService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,11 +28,15 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("시작: 소셜 loadUser", oAuth2User);
+        log.info("시작: 소셜 loadUser");
 
         OAuthInfo oAuthInfo = null;
         String providerName = userRequest.getClientRegistration().getRegistrationId();
-        log.info("providerName: ", providerName);
+
+        System.out.println("providerName = " + providerName);
+        System.out.println("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
+        System.out.println("userRequest.getClientRegistration() = " + userRequest.getClientRegistration());
+
         if(providerName.equals("google")){
             oAuthInfo = new GoogleUser(oAuth2User.getAttributes());
         }
@@ -39,8 +44,16 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
             oAuthInfo = new NaverUser((Map)oAuth2User.getAttributes().get("response"));
         }
         else if(providerName.equals("kakao")){
-            log.info("kakao oAuth2User.getAttributes(): ", oAuth2User.getAttributes());
-            oAuthInfo = new KakaoUser(oAuth2User.getAttributes());
+            Map<String, Object> attribute = new HashMap<>();
+            Map<String, Object> account = new HashMap<>();
+            Map<String, Object> profile = new HashMap<>();
+            attribute = oAuth2User.getAttributes();
+            account = (Map<String, Object>) attribute.get("kakao_account");
+            profile = (Map<String, Object>) account.get("profile");
+            oAuthInfo = new KakaoUser(attribute, account, profile);
+        }
+        else if(providerName.equals("facebook")){
+            oAuthInfo = new FacebookUser(oAuth2User.getAttributes());
         }
         else{
             log.info("설계된 provider 없음");
