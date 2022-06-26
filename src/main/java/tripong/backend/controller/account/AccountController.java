@@ -8,14 +8,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import tripong.backend.config.auth.jwt.JwtProperties;
-import tripong.backend.config.auth.oauth.GoogleUser;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.service.account.AccountService;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,7 +48,5 @@ public class AccountController {
 //            HttpStatus status = HttpStatus.CREATED;
 //        return new ResponseEntity<>(status);
 //    }
-
-
 
 }

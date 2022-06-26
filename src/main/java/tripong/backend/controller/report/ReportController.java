@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.dto.report.PostReportRequestDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.service.report.ReportService;
 
@@ -26,12 +27,25 @@ public class ReportController {
      * 유저 신고 API
      * -{userId}: 신고받을 유저의 pk (없는 pk 에러처리 -> 추후 설계예정)
      */
-    @PostMapping("/reports/{userId}") //jwt인데 userId를?
-    public ResponseEntity userReport(@RequestBody UserReportRequestDto dto, @PathVariable("userId") Long reportedId, @AuthenticationPrincipal PrincipalDetail principal){
-        reportService.userReport(dto, reportedId, principal);
+    @PostMapping("/reports/users/{userId}")
+    public ResponseEntity userReport(@RequestBody UserReportRequestDto dto, @PathVariable("userId") Long reportedUserId, @AuthenticationPrincipal PrincipalDetail principal){
+        reportService.userReport(dto, reportedUserId, principal);
 
         HttpStatus status = HttpStatus.CREATED;
         return new ResponseEntity<>(status);
     }
+
+    /**
+     * 게시글 신고 API
+     * -{postId}: 신고받을 게시글의 pk
+     */
+    @PostMapping("/reports/posts/{postId}")
+    public ResponseEntity postReport(@RequestBody PostReportRequestDto dto, @PathVariable("postId") Long reportedPostId, @AuthenticationPrincipal PrincipalDetail principal){
+        reportService.postReport(dto, reportedPostId, principal);
+
+        HttpStatus status = HttpStatus.CREATED;
+        return new ResponseEntity<>(status);
+    }
+
 
 }

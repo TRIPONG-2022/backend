@@ -20,12 +20,12 @@ public class UserReport extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "id", name = "report_id")
-    private User reportId;
+    @JoinColumn(referencedColumnName = "id", name = "report_user_id")
+    private User reportUserId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "id", name = "reported_id")
-    private User reportedId;
+    @JoinColumn(referencedColumnName = "id", name = "reported_user_id")
+    private User reportedUserId;
 
 
     @Enumerated(EnumType.STRING)
@@ -33,9 +33,9 @@ public class UserReport extends BaseTimeEntity {
 
     //
     @Builder
-    public UserReport(User reportedId, User reportId, ReportType kind){
-        this.reportedId = reportedId;
-        this.reportId = reportId;
+    public UserReport(User reportedUserId, User reportUserId, ReportType kind){
+        this.reportedUserId = reportedUserId;
+        this.reportUserId = reportUserId;
         this.kind=kind;
     }
 
