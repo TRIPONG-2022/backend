@@ -73,6 +73,7 @@ public class AccountService {
      * */
     @Transactional
     public User oauthJoin(OAuthInfo oAuthInfo){
+        log.info("시작: AccountService 소셜회원가입");
         OauthJoinRequestDto dto = new OauthJoinRequestDto();
         dto.setLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
         dto.setPassword(encoder.encode(sKey + oAuthInfo.getProviderId()));
@@ -80,7 +81,7 @@ public class AccountService {
         dto.setNickName(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
         dto.setJoinMethod(getJoin(oAuthInfo.getProviderName()));
         User yet = dto.toEntity();
-
+        log.info("종료: AccountService 소셜회원가입");
         return userRepository.save(yet);
     }
 

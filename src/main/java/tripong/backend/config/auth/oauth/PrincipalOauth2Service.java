@@ -12,6 +12,7 @@ import tripong.backend.entity.user.User;
 import tripong.backend.repository.user.UserRepository;
 import tripong.backend.service.account.AccountService;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -31,6 +32,9 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
         String providerName = userRequest.getClientRegistration().getRegistrationId();
         if(providerName.equals("google")){
             oAuthInfo = new GoogleUser(oAuth2User.getAttributes());
+        }
+        else if(providerName.equals("naver")){
+            oAuthInfo = new NaverUser((Map)oAuth2User.getAttributes().get("response"));
         }
         else{
             log.info("설계된 provider 없음");

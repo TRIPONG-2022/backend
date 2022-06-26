@@ -68,7 +68,7 @@ public class SecurityConfig{
                 .oauth2Login()
                 .loginPage("/auth/login")
                 .successHandler(customOauthSuccessHandler)
-                .userInfoEndpoint().userService(oauth2Service);//추가처리필요
+                .userInfoEndpoint().userService(oauth2Service);
 
         return http.build();
     }
