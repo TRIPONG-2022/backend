@@ -27,14 +27,20 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        log.info("시작: 소셜 loadUser", oAuth2User);
 
         OAuthInfo oAuthInfo = null;
         String providerName = userRequest.getClientRegistration().getRegistrationId();
+        log.info("providerName: ", providerName);
         if(providerName.equals("google")){
             oAuthInfo = new GoogleUser(oAuth2User.getAttributes());
         }
         else if(providerName.equals("naver")){
             oAuthInfo = new NaverUser((Map)oAuth2User.getAttributes().get("response"));
+        }
+        else if(providerName.equals("kakao")){
+            log.info("kakao oAuth2User.getAttributes(): ", oAuth2User.getAttributes());
+            oAuthInfo = new KakaoUser(oAuth2User.getAttributes());
         }
         else{
             log.info("설계된 provider 없음");
