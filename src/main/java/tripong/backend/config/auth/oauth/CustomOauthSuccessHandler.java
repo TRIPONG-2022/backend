@@ -2,12 +2,13 @@ package tripong.backend.config.auth.oauth;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.config.auth.jwt.JwtCookieService;
 import tripong.backend.config.auth.jwt.JwtProperties;
 
 import javax.servlet.ServletException;
@@ -18,8 +19,11 @@ import java.io.IOException;
 import java.util.Date;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class CustomOauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final JwtCookieService cookieService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -33,19 +37,12 @@ public class CustomOauthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 .withClaim("loginId", principal.getUser().getLoginId())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
 
-//        removeOauthCookies(request, response);
         Cookie[] cookies = request.getCookies();
         for(Cookie c: cookies){
             System.out.println("c = " + c.getName());
         }
 
-        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, jwtToken);
-        cookie.setMaxAge(JwtProperties.EXPIRATION_TIME);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
-
+        response.addCookie(cookieService.jwtCookieIn(jwtToken));
         getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000");
         log.info("종료: CustomOauthSuccessHandler");
     }

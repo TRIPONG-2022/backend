@@ -19,6 +19,7 @@ import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
 import tripong.backend.config.auth.handler.CustomLogoutHandler;
 import tripong.backend.config.auth.jwt.JwtAuthenticationFilter;
 import tripong.backend.config.auth.jwt.JwtAuthorizationFilter;
+import tripong.backend.config.auth.jwt.JwtCookieService;
 import tripong.backend.config.auth.oauth.CustomOauthSuccessHandler;
 import tripong.backend.config.auth.oauth.PrincipalOauth2Service;
 import tripong.backend.repository.user.UserRepository;
@@ -34,6 +35,7 @@ public class SecurityConfig{
     private final UserRepository userRepository;
     private final PrincipalOauth2Service oauth2Service;
     private final CustomOauthSuccessHandler customOauthSuccessHandler;
+    private final JwtCookieService jwtCookieService;
     private static final String[] SWAGGER_WHITELIST = {
             "/swagger-resources/**",
             "/swagger-ui.html",
@@ -62,7 +64,7 @@ public class SecurityConfig{
                 .and()
                 .logout()
                 .logoutUrl("/users/logout")
-                .addLogoutHandler(new CustomLogoutHandler())
+                .addLogoutHandler(new CustomLogoutHandler(jwtCookieService))
 
                 .and()
                 .oauth2Login()
@@ -92,7 +94,7 @@ public class SecurityConfig{
 
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
 
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtCookieService);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
             jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
 

@@ -1,25 +1,31 @@
 package tripong.backend.config.auth.handler;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
-import tripong.backend.config.auth.jwt.JwtProperties;
+import tripong.backend.config.auth.jwt.JwtCookieService;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class CustomLogoutHandler implements LogoutHandler {
+
+    private final JwtCookieService cookieService;
+
     /**
      * 로그아웃 필터
      * -쿠키 초기화
      */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addCookie(cookieService.jwtCookieExpired());
     }
+
+
 }
