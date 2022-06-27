@@ -3,10 +3,13 @@ package tripong.backend.service.account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.config.auth.oauth.oauthDetail.OAuthInfo;
+import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.OauthJoinRequestDto;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
@@ -95,33 +98,18 @@ public class AccountService {
         return joinType;
     }
 
-//
-//    @Transactional
-//    public String googleJoin(GoogleUser googleInfo) {
-//        String LoginId = googleInfo.getProviderName() +"_"+googleInfo.getNickName() + googleInfo.getProviderId();
-//
-//        User user =userRepository.findByLoginId(LoginId).orElseGet(()-> {
-//            OauthJoinRequestDto dto = new OauthJoinRequestDto();
-//            dto.setLoginId(LoginId);
-//            dto.setPassword(encoder.encode(sKey + googleInfo.getProviderId()));
-//            dto.setEmail(googleInfo.getEmail());
-//            dto.setNickName(LoginId);
-//            dto.setJoinMethod(JoinType.Google);
-//            User yet = dto.toEntity();
-//            userRepository.save(yet);
-//
-//            return yet;
-//        });
-//
-//
-//        return JwtCreate(user);
-//    }
-//    public String JwtCreate(User user){
-//        String jwtToken = JWT.create()
-//                .withSubject(user.getLoginId()) //토큰명
-//                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME))) //만료시간 10분
-//                .withClaim("loginId", user.getLoginId())
-//                .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
-//        return jwtToken;
-//    }
+    /**
+     * 추가정보 입력
+     * -필수: 이름, 성별, 생년월일, 도시(시), 도시(구)
+     * -권한: Unauth -> User 변경
+     */
+    @Transactional
+    public void firstExtraInfoPatch(FirstExtraInfoPutRequestDto dto, PrincipalDetail principal) {
+        log.info("시작: AccountService 추가정보입력");
+        User user = userRepository.findByLoginId(principal.getUser().getLoginId()).orElseThrow(()->{
+            return new UsernameNotFoundException("해당 유저의 loginId 없음");
+        });
+        user.putExtraInfo(dto);
+        log.info("종료: AccountService 추가정보입력");
+    }
 }

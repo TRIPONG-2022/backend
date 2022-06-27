@@ -37,42 +37,38 @@ public class InitDB {
         public void init1(){
             String pw = passwordEncoder.encode("1234");
 
-            User user1 = User.builder()
+            User user1 = User.builder() //일반 회원가입자 + 추가정보 미입력 + 이메일 미인증
                     .loginId("user1")
                     .password(pw)
-                    .name("홍길동")
                     .nickName("홍길동")
                     .email("abc11@naver.com")
-                    .birthDate(LocalDate.of(1995,1,1))
-                    .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)
-                    .authentication(1)
-                    .role(RoleType.User)
-                    .address("서울특별시").build();
-            User user2 = User.builder()
+                    .authentication(0)
+                    .role(RoleType.Unauth)
+                    .build();
+            User user2 = User.builder() //일반 회원가입 + 추가정보 입력 + 이메일 인증
                     .loginId("user2")
                     .password(pw)
-                    .name("심사임당")
                     .nickName("심사임당")
                     .email("abc12@naver.com")
-                    .birthDate(LocalDate.of(1996,2,2))
+                    .birthDate(LocalDate.of(1995,1,1))
                     .gender(GenderType.F)
                     .joinMethod(JoinType.Normal)
                     .authentication(1)
                     .role(RoleType.User)
-                    .address("경기도").build();
-            User user3 = User.builder()
+                    .city("서울특별시")
+                    .district("서대문구")
+                    .build();
+            User user3 = User.builder() //소셜 회원가입자 + 추가정보 미입력
                     .loginId("user3")
                     .password(pw)
                     .name("이순신")
                     .nickName("이순신")
                     .email("abc13@naver.com")
-                    .birthDate(LocalDate.of(1997,3,3))
-                    .gender(GenderType.M)
-                    .joinMethod(JoinType.Normal)
+                    .joinMethod(JoinType.Google)
                     .authentication(1)
-                    .role(RoleType.User)
-                    .address("경상도").build();
+                    .role(RoleType.Unauth)
+                    .build();
 
             em.persist(user1);
             em.persist(user2);

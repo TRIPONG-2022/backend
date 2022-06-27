@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.service.account.AccountService;
 
@@ -35,18 +36,17 @@ public class AccountController {
         return new ResponseEntity<>(status);
     }
 
+    /**
+     * 추가정보 입력 API
+     */
+    @PatchMapping("/users/extra-info")
+    public ResponseEntity firstExtraInfoPatch(@Validated @RequestBody FirstExtraInfoPutRequestDto dto, @AuthenticationPrincipal PrincipalDetail principal){
+        log.info("시작: AccountController 추가정보입력");
+        accountService.firstExtraInfoPatch(dto, principal);
 
-//    /**
-//     * 구글 로그인 or 회원가입 API
-//     */
-//    @PostMapping("/users/signup/google")
-//    public ResponseEntity googleJoin(@RequestBody Map<String, Object> data, HttpServletResponse response){
-//            GoogleUser googleInfo = new GoogleUser((Map<String, Object>) data.get("profileObj"));
-//            String jwtToken = accountService.googleJoin(googleInfo);
-//
-//            response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
-//            HttpStatus status = HttpStatus.CREATED;
-//        return new ResponseEntity<>(status);
-//    }
+        log.info("종료: AccountController 추가정보입력");
+        HttpStatus status = HttpStatus.CREATED;
+        return new ResponseEntity<>(status);
+    }
 
 }

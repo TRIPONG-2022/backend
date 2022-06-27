@@ -1,6 +1,7 @@
 package tripong.backend.entity.user;
 
 import lombok.*;
+import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -45,17 +46,29 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
-    private String address;
+    private String city;
+    private String district;
 
     private BigDecimal latitude;
 
     private BigDecimal longitude;
 
-    //
+    ////-----편의 메소드-----
+    //추가정보입력
+    public void putExtraInfo(FirstExtraInfoPutRequestDto dto){
+        this.name = dto.getName();
+        this.gender = dto.getGender();
+        this.birthDate = dto.getBirthDate();
+        this.city = dto.getCity();
+        this.district = dto.getDistrict();
+        this.role = RoleType.User;
+    }
+
+    //init 용
     @Builder
     public User(String loginId, String password, String name, String nickName,
                 String email, LocalDate birthDate, GenderType gender, JoinType joinMethod,
-                 int authentication, RoleType role, String address) {
+                 int authentication, RoleType role, String city, String district) {
         this.loginId=loginId;
         this.password=password;
         this.name=name;
@@ -66,7 +79,8 @@ public class User extends BaseTimeEntity {
         this.joinMethod=joinMethod;
         this.authentication=authentication;
         this.role=role;
-        this.address=address;
+        this.city=city;
+        this.district=district;
     }
 
 
