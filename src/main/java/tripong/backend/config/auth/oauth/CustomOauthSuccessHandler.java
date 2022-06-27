@@ -33,11 +33,20 @@ public class CustomOauthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 .withClaim("loginId", principal.getUser().getLoginId())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
 
-        removeOauthCookies(request, response);
+//        removeOauthCookies(request, response);
+        Cookie[] cookies = request.getCookies();
+        for(Cookie c: cookies){
+            System.out.println("c = " + c.getName());
+        }
+
+        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, jwtToken);
+        cookie.setMaxAge(JwtProperties.EXPIRATION_TIME);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
 
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
-        getRedirectStrategy().sendRedirect(request, response,"/");
+        getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000");
         log.info("종료: CustomOauthSuccessHandler");
     }
 

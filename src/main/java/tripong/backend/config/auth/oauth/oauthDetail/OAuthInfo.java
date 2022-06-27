@@ -1,4 +1,4 @@
-package tripong.backend.config.auth.oauth;
+package tripong.backend.config.auth.oauth.oauthDetail;
 
 public interface OAuthInfo {
     String getNickName();

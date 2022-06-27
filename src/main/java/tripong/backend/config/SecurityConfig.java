@@ -66,7 +66,7 @@ public class SecurityConfig{
 
                 .and()
                 .oauth2Login()
-                .loginPage("/auth/login")
+                .loginPage("/") // "/auth/login" -> 테스트위해 잠시 "/" 으로 변경
                 .successHandler(customOauthSuccessHandler)
                 .userInfoEndpoint().userService(oauth2Service);
 

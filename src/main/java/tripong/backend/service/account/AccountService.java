@@ -1,24 +1,17 @@
 package tripong.backend.service.account;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.jwt.JwtProperties;
-import tripong.backend.config.auth.oauth.GoogleUser;
-import tripong.backend.config.auth.oauth.OAuthInfo;
+import tripong.backend.config.auth.oauth.oauthDetail.OAuthInfo;
 import tripong.backend.dto.account.OauthJoinRequestDto;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.repository.user.UserRepository;
-
-import java.util.Date;
 
 @Slf4j
 @Service

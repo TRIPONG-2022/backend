@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.config.auth.oauth.oauthDetail.*;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.user.UserRepository;
 import tripong.backend.service.account.AccountService;
@@ -44,19 +45,16 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
             oAuthInfo = new NaverUser((Map)oAuth2User.getAttributes().get("response"));
         }
         else if(providerName.equals("kakao")){
-            Map<String, Object> attribute = new HashMap<>();
-            Map<String, Object> account = new HashMap<>();
-            Map<String, Object> profile = new HashMap<>();
-            attribute = oAuth2User.getAttributes();
-            account = (Map<String, Object>) attribute.get("kakao_account");
-            profile = (Map<String, Object>) account.get("profile");
+            Map<String, Object> attribute = oAuth2User.getAttributes();
+            Map<String, Object> account =(Map<String, Object>) attribute.get("kakao_account");
+            Map<String, Object> profile = (Map<String, Object>) account.get("profile");
             oAuthInfo = new KakaoUser(attribute, account, profile);
         }
         else if(providerName.equals("facebook")){
             oAuthInfo = new FacebookUser(oAuth2User.getAttributes());
         }
         else{
-            log.info("설계된 provider 없음");
+            log.info("지원하지 않는 Oauth2.0");
         }
 
         Optional<User> user = userRepository.findByLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());

@@ -1,6 +1,5 @@
-package tripong.backend.config.auth.oauth;
+package tripong.backend.config.auth.oauth.oauthDetail;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class KakaoUser implements OAuthInfo{
