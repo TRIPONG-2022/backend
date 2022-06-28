@@ -1,42 +1,38 @@
-package tripong.backend.controller.authorization;
+package tripong.backend.controller.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.dto.authorization.EmailAuthRequestDto;
-import tripong.backend.service.authorization.EmailAuthService;
-
+import tripong.backend.dto.authentication.EmailAuthRequestDto;
+import tripong.backend.service.authentication.EmailAuthService;
 import javax.mail.MessagingException;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
-public class EmailAuthController {
+public class EmailAuthRestController {
 
     private final EmailAuthService emailAuthService;
 
-    // 이메일 유효링크 인증
+    // 이메일 인증
     @GetMapping("/users/auth/email/send")
     public void emailAuth(@RequestBody EmailAuthRequestDto dto) throws MessagingException {
 
-        // 이메일 유효 링크 서비스 호출
         emailAuthService.createEmailValidLik(dto);
 
     }
 
-    // 유효 링크 매핑
+    // 이메일 인증: URL 매핑
     @GetMapping("/users/auth/email/confirm")
-    public ResponseEntity<Integer> emailConfirm(@Validated @RequestParam String emailValidLink){
+    public ResponseEntity<Object> emailConfirm(@Validated @RequestParam String emailValidLink){
 
-        // 이메일 유효 링크 확인 서비스 호출
-        int emailAuthConfrim = emailAuthService.emailConfirm(emailValidLink);
+        String result = emailAuthService.verifyEmail(emailValidLink);
 
-        if(emailAuthConfrim == 1){
+        if(Objects.equals(result, "SUCCESS")){
             return new ResponseEntity<>(HttpStatus.FOUND);
-        }
-        else {
+        } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

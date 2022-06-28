@@ -1,6 +1,7 @@
 package tripong.backend.entity.user;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import tripong.backend.entity.base.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -40,6 +41,7 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private JoinType joinMethod;
 
+    @ColumnDefault("0")
     private Integer authentication;
 
     @Enumerated(EnumType.STRING)

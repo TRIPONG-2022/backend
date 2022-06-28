@@ -42,7 +42,7 @@ public class InitDB {
                     .password(pw)
                     .name("홍길동")
                     .nickName("홍길동")
-                    .email("abc11@naver.com")
+                    .email("alicesykim95@gmail.com")
                     .birthDate(LocalDate.of(1995,1,1))
                     .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)

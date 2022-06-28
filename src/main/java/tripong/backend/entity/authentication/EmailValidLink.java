@@ -1,4 +1,4 @@
-package tripong.backend.entity.authorization;
+package tripong.backend.entity.authentication;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Getter

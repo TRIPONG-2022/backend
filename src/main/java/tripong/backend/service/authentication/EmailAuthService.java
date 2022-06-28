@@ -1,15 +1,15 @@
-package tripong.backend.service.authorization;
+package tripong.backend.service.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.dto.authorization.EmailAuthRequestDto;
-import tripong.backend.entity.authorization.EmailValidLink;
+import tripong.backend.dto.authentication.EmailAuthRequestDto;
+import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
-import tripong.backend.repository.authorization.EmailAuthRepository;
-import tripong.backend.repository.authorization.UserAuthRepository;
+import tripong.backend.repository.authentication.EmailAuthRepository;
+import tripong.backend.repository.authentication.UserAuthRepository;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -18,6 +18,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EmailAuthService {
 
@@ -25,7 +26,7 @@ public class EmailAuthService {
     private final EmailAuthRepository emailAuthRepository;
     private final UserAuthRepository userAuthRepository;
 
-    // 이메일 유효링크 인증
+    // 이메일 인증
     public void createEmailValidLik(EmailAuthRequestDto dto) throws MessagingException {
 
         // 이메일 유효링크 저장
@@ -36,7 +37,7 @@ public class EmailAuthService {
         sendEmail(dto, validLink);
     }
 
-    // 비동기식 이메일 발송
+    // 이메일 인증: 비동기식 JavaMailSender
     @Async
     public void sendEmail(EmailAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
 
@@ -71,7 +72,7 @@ public class EmailAuthService {
         mailSender.send(message);
     }
 
-    // 유효한 토큰 확인
+    // 이메일 인증: 유효 링크 확인
     public EmailValidLink findByIdAndExpirationDateAfterAndExpired(String emailValidLink) {
 
         Optional<EmailValidLink> validLink  = emailAuthRepository.findByIdAndExpirationDateAfterAndExpired(emailValidLink, LocalDateTime.now(), false);
@@ -79,9 +80,9 @@ public class EmailAuthService {
         return validLink.orElseThrow(()  -> new NoSuchElementException("valid link not found"));
     }
 
-    // 링크 유효 여부 확인 및 처리
+    // 이메일 인증: 유효 링크 확인 및 변경
     @Transactional
-    public int emailConfirm(String emailValidLink){
+    public String verifyEmail(String emailValidLink){
 
         // 유효 링크 확인
         EmailValidLink findValidLink = findByIdAndExpirationDateAfterAndExpired(emailValidLink);
@@ -95,9 +96,9 @@ public class EmailAuthService {
 
         if (user.isPresent()){
             userAuthRepository.updateauthenticationStatus(userId);
-            return 1;
+            return "SUCCESS";
         } else {
-            return 2;
+            return "FAIL";
         }
     }
 
