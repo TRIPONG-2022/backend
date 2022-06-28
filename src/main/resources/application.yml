@@ -1,6 +1,9 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   profiles:
-    include: aws
+    include: aws, redis
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/tripong?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

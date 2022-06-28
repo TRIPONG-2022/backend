@@ -3,6 +3,7 @@ package tripong.backend.service.post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
@@ -13,7 +14,6 @@ import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.post.UserRepository;
 import tripong.backend.service.post.aws.AmazonS3Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final AmazonS3Service amazonS3Service;
 
-    @Transactional
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList =
                 postRepository.findByCategory(category, pageable)
@@ -44,7 +44,6 @@ public class PostService {
         return postResponseDtoList;
     }
 
-    @Transactional
     public PostResponseDto findById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
         PostResponseDto postResponseDto = new PostResponseDto(post);

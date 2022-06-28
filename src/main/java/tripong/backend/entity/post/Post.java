@@ -8,6 +8,7 @@ import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.BaseTimeEntity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Post extends BaseTimeEntity {
+public class Post extends BaseTimeEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
