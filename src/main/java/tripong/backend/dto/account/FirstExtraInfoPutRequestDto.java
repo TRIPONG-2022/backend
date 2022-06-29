@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.user.GenderType;
 
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
@@ -16,10 +17,10 @@ public class FirstExtraInfoPutRequestDto {
     @NotBlank
     private String name;
 
-    @Enumerated()
+    @Enumerated(EnumType.STRING)
     private GenderType gender;
 
-    @JsonFormat(pattern = "yyyy.MM.dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     @NotBlank

@@ -3,10 +3,15 @@ package tripong.backend.entity.user;
 import lombok.*;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
+import tripong.backend.entity.role.Role;
+import tripong.backend.entity.role.RoleResource;
+import tripong.backend.entity.role.UserRole;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,6 +50,9 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserRole> userRoles = new ArrayList<>();
 
     private String city;
     private String district;

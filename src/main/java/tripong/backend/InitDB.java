@@ -8,7 +8,6 @@ import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.GenderType;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.RoleType;
-import tripong.backend.repository.user.UserRepository;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -32,7 +31,6 @@ public class InitDB {
 
         private final EntityManager em;
         private final BCryptPasswordEncoder passwordEncoder;
-        private final UserRepository userRepository;
 
         public void init1(){
             String pw = passwordEncoder.encode("1234");
