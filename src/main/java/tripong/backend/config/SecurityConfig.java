@@ -56,17 +56,19 @@ public class SecurityConfig{
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
 
-        return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                .antMatchers(SWAGGER_WHITELIST));
+        return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
+//                .antMatchers(SWAGGER_WHITELIST)); -> permitall처리
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers("/", "/users/**", "/auth/**", "/test/**", "/error/**", "/login/**", "/swagger-ui/**").permitAll()
-                    .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                    .anyRequest().authenticated();
+                        .anyRequest().permitAll();
+//                    .antMatchers("/", "/users/**", "/auth/**", "/test/**", "/error/**", "/login/**", "/swagger-ui/**").permitAll()
+//                    .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+//                    .anyRequest().authenticated();
+
         http
                 .apply(new MyCustomDsl())
 

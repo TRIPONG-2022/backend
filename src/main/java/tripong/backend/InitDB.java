@@ -48,15 +48,31 @@ public class InitDB {
 
 
         public void init0(){ //초기 세팅: 관리자만
-            Role Admin = Role.builder()
+            Role admin = Role.builder()
                     .roleName("ROLE_ADMIN")
                     .description("관리자")
                     .build();
-            roleRepository.save(Admin);
+            roleRepository.save(admin);
+            Role unauth = Role.builder()
+                    .roleName("ROLE_UNAUTH")
+                    .description("이메일_미인증_유저")
+                    .build();
+            roleRepository.save(unauth);
+            Role user = Role.builder()
+                    .roleName("ROLE_USER")
+                    .description("이메일_인증_유저")
+                    .build();
+            roleRepository.save(user);
+            Role black = Role.builder()
+                    .roleName("ROLE_BlACK")
+                    .description("블랙리스트_유저")
+                    .build();
+            roleRepository.save(black);
+
 
             List<RoleResource> roleResources = new ArrayList<>();
             RoleResource roleResource1 = RoleResource.builder()
-                    .role(Admin)
+                    .role(admin)
                     .build();
             roleResources.add(roleResource1);
 
