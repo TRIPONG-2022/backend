@@ -46,28 +46,22 @@ public class SecurityConfig{
     private final JwtCookieService jwtCookieService;
     private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
     private final PrincipalService principalService;
-    private static final String[] SWAGGER_WHITELIST = {
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/v3/api-docs",
-            "/webjars/**"
+    private static final String[] permitAllResource = {
+            "/", "/auth/**", "/error/**",
+            "/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**" //swagger API
     };
+
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
 
         return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
-//                .antMatchers(SWAGGER_WHITELIST)); -> permitall처리
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                        .anyRequest().permitAll();
-//                    .antMatchers("/", "/users/**", "/auth/**", "/test/**", "/error/**", "/login/**", "/swagger-ui/**").permitAll()
-//                    .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-//                    .anyRequest().authenticated();
+                .authorizeRequests().anyRequest().authenticated();
 
         http
                 .apply(new MyCustomDsl())
@@ -79,7 +73,7 @@ public class SecurityConfig{
 
                 .and()
                 .oauth2Login()
-                .loginPage("/") // "/auth/login" -> 테스트위해 잠시 "/" 으로 변경
+                .loginPage("/auth/login")
                 .successHandler(customOauthSuccessHandler)
                 .userInfoEndpoint().userService(oauth2Service);
 
@@ -109,7 +103,7 @@ public class SecurityConfig{
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
             jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
 
-            CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor();
+            CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor(permitAllResource);
             customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
             customFilterSecurityInterceptor.setAuthenticationManager(authenticationManager);
             customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource);
