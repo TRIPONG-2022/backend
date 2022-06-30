@@ -1,10 +1,7 @@
 package tripong.backend.entity.role;
 
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -24,4 +21,19 @@ public class RoleResource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id")
     private Resource resource;
+
+
+    ///
+    @Builder
+    public RoleResource(Role role, Resource resource){
+        this.role= role;
+        this.resource = resource;
+    }
+
+    public void injectResource(Resource resource){
+        this.resource = resource;
+    }
+
+
+
 }

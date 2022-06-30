@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,7 +17,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import tripong.backend.config.auth.PrincipalService;
+import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
+import tripong.backend.config.auth.authorization.CustomFilterSecurityInterceptor;
 import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
 import tripong.backend.config.auth.handler.CustomLogoutHandler;
 import tripong.backend.config.auth.jwt.JwtAuthenticationFilter;
@@ -23,6 +29,8 @@ import tripong.backend.config.auth.jwt.JwtCookieService;
 import tripong.backend.config.auth.oauth.CustomOauthSuccessHandler;
 import tripong.backend.config.auth.oauth.PrincipalOauth2Service;
 import tripong.backend.repository.user.UserRepository;
+
+import java.util.Arrays;
 
 
 @Configuration
@@ -36,13 +44,14 @@ public class SecurityConfig{
     private final PrincipalOauth2Service oauth2Service;
     private final CustomOauthSuccessHandler customOauthSuccessHandler;
     private final JwtCookieService jwtCookieService;
+    private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
+    private final PrincipalService principalService;
     private static final String[] SWAGGER_WHITELIST = {
             "/swagger-resources/**",
             "/swagger-ui.html",
             "/v3/api-docs",
             "/webjars/**"
     };
-    private final PrincipalService principalService;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
@@ -98,10 +107,17 @@ public class SecurityConfig{
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
             jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
 
+            CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor();
+            customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
+            customFilterSecurityInterceptor.setAuthenticationManager(authenticationManager);
+            customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource);
+
+
             http
                     .addFilter(corsConfig.corsFilter())
                     .addFilter(jwtAuthenticationFilter)
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+                    .addFilterBefore(customFilterSecurityInterceptor, FilterSecurityInterceptor.class);
         }
     }
 
@@ -112,6 +128,14 @@ public class SecurityConfig{
         daoAuthenticationProvider.setUserDetailsService(principalService);
         daoAuthenticationProvider.setPasswordEncoder(encoder);
         return daoAuthenticationProvider;
+    }
+
+
+
+    @Bean
+    public AccessDecisionManager accessDecisionManager(){
+        AffirmativeBased affirmativeBased = new AffirmativeBased(Arrays.asList(new RoleVoter()));
+        return affirmativeBased;
     }
 }
 

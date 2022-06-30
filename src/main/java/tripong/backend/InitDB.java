@@ -4,14 +4,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.entity.role.Resource;
+import tripong.backend.entity.role.ResourceType;
+import tripong.backend.entity.role.Role;
+import tripong.backend.entity.role.RoleResource;
 import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.GenderType;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.RoleType;
+import tripong.backend.repository.role.ResourceRepository;
+import tripong.backend.repository.role.RoleRepository;
+import tripong.backend.repository.user.UserRepository;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -19,8 +28,10 @@ public class InitDB {
 
     private final InitService initService;
 
+
     @PostConstruct
     public void init(){
+        initService.init0();
         initService.init1();
     }
 
@@ -31,6 +42,34 @@ public class InitDB {
 
         private final EntityManager em;
         private final BCryptPasswordEncoder passwordEncoder;
+        private final RoleRepository roleRepository;
+        private final UserRepository userRepository;
+        private final ResourceRepository resourceRepository;
+
+
+        public void init0(){ //초기 세팅: 관리자만
+            Role Admin = Role.builder()
+                    .roleName("ROLE_ADMIN")
+                    .description("관리자")
+                    .build();
+            roleRepository.save(Admin);
+
+            List<RoleResource> roleResources = new ArrayList<>();
+            RoleResource roleResource1 = RoleResource.builder()
+                    .role(Admin)
+                    .build();
+            roleResources.add(roleResource1);
+
+            Resource admin_url = Resource.builder()
+                    .resourceName("/admin/**")
+                    .methodName("")
+                    .resourceType(ResourceType.Url)
+                    .roleResources(roleResources)
+                    .priorityNum(1)
+                    .build();
+            resourceRepository.save(admin_url);
+
+        }
 
         public void init1(){
             String pw = passwordEncoder.encode("1234");
