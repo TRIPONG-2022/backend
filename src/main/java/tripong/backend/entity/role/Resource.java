@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +21,12 @@ public class Resource {
 
     private String resourceName;
 
-    private String resourceType;
+    @Enumerated(EnumType.STRING)
+    private ResourceType resourceType;
 
     private String methodName;
 
-    private int orderNum;
+    private int priorityNum;
 
     @OneToMany(mappedBy = "resource")
     private List<RoleResource> roleResources = new ArrayList<>();
