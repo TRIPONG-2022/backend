@@ -1,4 +1,4 @@
-package tripong.backend.dto.admin;
+package tripong.backend.dto.admin.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

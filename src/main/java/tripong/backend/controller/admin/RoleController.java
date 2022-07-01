@@ -5,12 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.dto.admin.CreateRoleRequestDto;
-import tripong.backend.dto.admin.DeleteRoleRequestDto;
-import tripong.backend.dto.admin.GetRoleListResponseDto;
+import tripong.backend.dto.admin.role.CreateRoleRequestDto;
+import tripong.backend.dto.admin.role.DeleteRoleRequestDto;
+import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.service.admin.RoleService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,7 +21,7 @@ public class RoleController {
     private final RoleService roleService;
 
     /**
-     * 권한 리스트 API
+     * 권한 전체 목록 API
      */
     @GetMapping("/admin/roles")
     public ResponseEntity getRoleList(){

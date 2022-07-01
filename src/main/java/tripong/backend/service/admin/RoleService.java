@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.dto.admin.CreateRoleRequestDto;
-import tripong.backend.dto.admin.DeleteRoleRequestDto;
-import tripong.backend.dto.admin.GetRoleListResponseDto;
+import tripong.backend.dto.admin.role.CreateRoleRequestDto;
+import tripong.backend.dto.admin.role.DeleteRoleRequestDto;
+import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
 import tripong.backend.repository.admin.role.RoleRepository;
 
@@ -34,7 +34,7 @@ public class RoleService {
     @Transactional
     public void createRole(CreateRoleRequestDto dto) {
         if(!dto.getRoleName().startsWith("ROLE_")){
-            throw new IllegalArgumentException("권한명 ROLE_~~ 으로 작성바랍니다.");
+            throw new IllegalArgumentException("권한명 ROLE_~~ 으로 작성해 주세요.");
         }
 
         Role role = Role.builder()

@@ -79,6 +79,23 @@ public class InitDB {
                     .priorityNum(1)
                     .build();
             resourceRepository.save(admin_url);
+
+            List<RoleResource> roleResources1 = new ArrayList<>();
+            RoleResource roleResource2 = RoleResource.builder()
+                    .role(user)
+                    .build();
+            RoleResource roleResource3 = RoleResource.builder()
+                            .role(unauth).build();
+            roleResources1.add(roleResource2);
+            roleResources1.add(roleResource3);
+
+            Resource user_rul = Resource.builder()
+                    .resourceName("/user&unauth/**")
+                    .resourceType(ResourceType.Url)
+                    .roleResources(roleResources1)
+                    .priorityNum(1)
+                    .build();
+            resourceRepository.save(user_rul);
         }
 
         public void init1(){
