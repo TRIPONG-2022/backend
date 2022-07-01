@@ -16,7 +16,7 @@ import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 import tripong.backend.dto.account.NormalJoinRequestDto;
-import tripong.backend.repository.role.RoleRepository;
+import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;

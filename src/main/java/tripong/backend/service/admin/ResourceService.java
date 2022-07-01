@@ -1,4 +1,4 @@
-package tripong.backend.service.role;
+package tripong.backend.service.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.entity.role.Resource;
-import tripong.backend.repository.role.ResourceRepository;
+import tripong.backend.repository.admin.resource.ResourceRepository;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

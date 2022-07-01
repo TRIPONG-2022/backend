@@ -6,7 +6,7 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
-import tripong.backend.service.role.ResourceService;
+import tripong.backend.service.admin.ResourceService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;

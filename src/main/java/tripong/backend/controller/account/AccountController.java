@@ -12,10 +12,9 @@ import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.service.account.AccountService;
 
-
-@RestController
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
+@RestController
 public class AccountController {
 
     private final AccountService accountService;

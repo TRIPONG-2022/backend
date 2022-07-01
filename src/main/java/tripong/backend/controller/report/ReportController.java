@@ -17,9 +17,9 @@ import tripong.backend.service.report.ReportService;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-@RestController
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
+@RestController
 public class ReportController {
 
     private final ReportService reportService;

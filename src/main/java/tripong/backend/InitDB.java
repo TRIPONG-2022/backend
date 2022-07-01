@@ -8,8 +8,8 @@ import tripong.backend.entity.role.*;
 import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.GenderType;
 import tripong.backend.entity.user.JoinType;
-import tripong.backend.repository.role.ResourceRepository;
-import tripong.backend.repository.role.RoleRepository;
+import tripong.backend.repository.admin.resource.ResourceRepository;
+import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
 import javax.annotation.PostConstruct;
@@ -74,7 +74,6 @@ public class InitDB {
 
             Resource admin_url = Resource.builder()
                     .resourceName("/admin/**")
-                    .methodName("")
                     .resourceType(ResourceType.Url)
                     .roleResources(roleResources)
                     .priorityNum(1)
