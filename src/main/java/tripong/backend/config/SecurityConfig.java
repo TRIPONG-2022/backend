@@ -23,9 +23,9 @@ import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityM
 import tripong.backend.config.auth.authorization.CustomFilterSecurityInterceptor;
 import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
 import tripong.backend.config.auth.handler.CustomLogoutHandler;
-import tripong.backend.config.auth.jwt.JwtAuthenticationFilter;
-import tripong.backend.config.auth.jwt.JwtAuthorizationFilter;
-import tripong.backend.config.auth.jwt.JwtCookieService;
+import tripong.backend.config.auth.handler.jwt.JwtAuthenticationFilter;
+import tripong.backend.config.auth.handler.jwt.JwtAuthorizationFilter;
+import tripong.backend.config.auth.handler.jwt.JwtCookieService;
 import tripong.backend.config.auth.oauth.CustomOauthSuccessHandler;
 import tripong.backend.config.auth.oauth.PrincipalOauth2Service;
 import tripong.backend.repository.user.UserRepository;
@@ -47,15 +47,14 @@ public class SecurityConfig{
     private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
     private final PrincipalService principalService;
     private static final String[] permitAllResource = {
-            "/", "/auth/**", "/error/**",
-            "/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**" //swagger API
+            "/", "/auth/**", "/error/**"
     };
-
+    private static final String[] SWAGGER_WHITELIST = {"/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**"};
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
-
-        return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
+        return (web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+                .mvcMatchers(SWAGGER_WHITELIST)); //http://localhost:8080/swagger-ui/
     }
 
     @Bean
@@ -127,11 +126,14 @@ public class SecurityConfig{
     }
 
 
-
     @Bean
     public AccessDecisionManager accessDecisionManager(){
         AffirmativeBased affirmativeBased = new AffirmativeBased(Arrays.asList(new RoleVoter()));
         return affirmativeBased;
     }
+
+
+
+
 }
 

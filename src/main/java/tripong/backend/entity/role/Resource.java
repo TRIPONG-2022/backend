@@ -25,7 +25,7 @@ public class Resource {
 
     private int priorityNum;
 
-    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RoleResource> roleResources = new ArrayList<>();
 
     //
@@ -36,8 +36,8 @@ public class Resource {
         this.resourceType = resourceType;
         this.methodName = methodName;
         this.priorityNum = priorityNum;
-        for(RoleResource role : roleResources){
-            this.addRoleResource(role);
+        for(RoleResource roleResource : roleResources){
+            this.addRoleResource(roleResource);
         }
     }
 

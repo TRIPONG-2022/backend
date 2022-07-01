@@ -1,9 +1,6 @@
 package tripong.backend.entity.role;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import tripong.backend.entity.user.User;
 
 import javax.persistence.*;
@@ -17,15 +14,21 @@ public class UserRole {
     @Id @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
     //
+    public void injectUser(User user) {this.user=user;}
 
 
+    @Builder
+    public UserRole(User user, Role role){
+        this.user=user;
+        this.role= role;
+    }
 }

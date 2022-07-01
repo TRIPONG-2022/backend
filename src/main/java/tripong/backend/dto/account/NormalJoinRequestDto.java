@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.JoinType;
-import tripong.backend.entity.user.RoleType;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -32,8 +31,9 @@ public class NormalJoinRequestDto {
     private String email;
 
 
+
     @Builder
-    public NormalJoinRequestDto(String nickName, String loginId, String password,  String email) {
+    public NormalJoinRequestDto(String nickName, String loginId, String password, String email) {
         this.nickName = nickName;
         this.loginId = loginId;
         this.password = password;
@@ -46,7 +46,6 @@ public class NormalJoinRequestDto {
                 .password(password)
                 .nickName(nickName)
                 .email(email)
-                .role(RoleType.Unauth) //추가정보 미입력자
                 .joinMethod(JoinType.Normal)
                 .build();
     }

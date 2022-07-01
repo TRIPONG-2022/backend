@@ -4,7 +4,6 @@ package tripong.backend.dto.account;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.user.JoinType;
-import tripong.backend.entity.user.RoleType;
 import tripong.backend.entity.user.User;
 
 
@@ -16,7 +15,6 @@ public class OauthJoinRequestDto {
     private String loginId;
     private String password;
     private String email;
-    private RoleType role;
     private JoinType joinMethod;
     private Integer authentication;
 
@@ -26,7 +24,6 @@ public class OauthJoinRequestDto {
                 .password(password)
                 .nickName(nickName)
                 .email(email)
-                .role(RoleType.Unauth) //추가정보 미입력자
                 .joinMethod(joinMethod)
                 .authentication(1) //소셜로그인으로 인한 이메일 인증처리
                 .build();

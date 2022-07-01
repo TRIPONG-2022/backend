@@ -1,4 +1,4 @@
-package tripong.backend.config.auth.jwt;
+package tripong.backend.config.auth.handler.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

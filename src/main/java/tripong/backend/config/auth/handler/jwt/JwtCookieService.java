@@ -1,4 +1,4 @@
-package tripong.backend.config.auth.jwt;
+package tripong.backend.config.auth.handler.jwt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

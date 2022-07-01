@@ -32,7 +32,7 @@ public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
     protected InterceptorStatusToken beforeInvocation(Object object) {
 
         boolean flag = false;
-        HttpServletRequest request_url = ((FilterInvocation) object).getRequest();//url인경우
+        HttpServletRequest request_url = ((FilterInvocation) object).getRequest(); //url 경우
         for(RequestMatcher requestMatcher : permitAllRequestMatchers){
             if(requestMatcher.matches(request_url)){
                 flag = true;

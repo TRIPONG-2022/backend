@@ -1,16 +1,16 @@
-package tripong.backend.config.auth.jwt;
+package tripong.backend.config.auth.handler.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.dto.account.NormalLoginRequestDto;
 
@@ -23,6 +23,7 @@ import java.util.Date;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;

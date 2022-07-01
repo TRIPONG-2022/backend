@@ -1,4 +1,4 @@
-package tripong.backend.config.auth.jwt;
+package tripong.backend.config.auth.handler.jwt;
 
 public interface JwtProperties {
     String SECRET = "tripong_secret_key";

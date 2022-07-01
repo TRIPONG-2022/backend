@@ -11,10 +11,16 @@ import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.config.auth.oauth.oauthDetail.OAuthInfo;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.OauthJoinRequestDto;
+import tripong.backend.entity.role.Role;
+import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 import tripong.backend.dto.account.NormalJoinRequestDto;
+import tripong.backend.repository.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -24,6 +30,7 @@ public class AccountService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final RoleRepository roleRepository;
 
     @Value("${tripong.skey}")
     private String sKey;
@@ -56,10 +63,11 @@ public class AccountService {
 
         dto.setPassword(encoder.encode(dto.getPassword()));
         User user = dto.toEntity();
+        authorize_UNAUTH(user);
+
         userRepository.save(user);
         log.info("종료: AccountService 일반회원가입");
     }
-
 
     /**
      * 소셜 회원가입
@@ -70,6 +78,7 @@ public class AccountService {
     @Transactional
     public User oauthJoin(OAuthInfo oAuthInfo){
         log.info("시작: AccountService 소셜회원가입");
+
         OauthJoinRequestDto dto = new OauthJoinRequestDto();
         dto.setLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
         dto.setPassword(encoder.encode(sKey + oAuthInfo.getProviderId()));
@@ -77,6 +86,8 @@ public class AccountService {
         dto.setNickName(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
         dto.setJoinMethod(getJoin(oAuthInfo.getProviderName()));
         User yet = dto.toEntity();
+        authorize_UNAUTH(yet);
+
         log.info("종료: AccountService 소셜회원가입");
         return userRepository.save(yet);
     }
@@ -110,6 +121,26 @@ public class AccountService {
             return new UsernameNotFoundException("해당 유저의 loginId 없음");
         });
         user.putExtraInfo(dto);
+        authorize_USER(user);
+
         log.info("종료: AccountService 추가정보입력");
     }
+
+
+    private void authorize_UNAUTH(User user){
+        Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH");
+        UserRole userRole_unauth = UserRole.builder().role(role_unauth).build();
+        List<UserRole> only_unauth_userRoles = new ArrayList<>();
+        only_unauth_userRoles.add(userRole_unauth);
+        user.addUserRole(only_unauth_userRoles);
+    }
+    private void authorize_USER(User user){
+        Role role_user = roleRepository.findByRoleName("ROLE_USER");
+        UserRole userRole_user = UserRole.builder().role(role_user).build();
+        List<UserRole> only_user_userRoles = new ArrayList<>();
+        only_user_userRoles.add(userRole_user);
+        user.addUserRole(only_user_userRoles);
+    }
+
+
 }

@@ -3,12 +3,15 @@ package tripong.backend.config.auth;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -28,9 +31,12 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-            Collection<GrantedAuthority> collectors = new ArrayList<>();
-            collectors.add(()->{ return "ROLE_" + user.getRole();});
-            return collectors;
+        Collection<GrantedAuthority> collectors = new ArrayList<>();
+        List<UserRole> userRoles = user.getUserRoles();
+        for(UserRole userRole : userRoles){
+            collectors.add(new SimpleGrantedAuthority(userRole.getRole().getRoleName()));
+        }
+        return collectors;
     }
 
     @Override

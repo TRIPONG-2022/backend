@@ -3,7 +3,6 @@ package tripong.backend.entity.user;
 import lombok.*;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
-import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.RoleResource;
 import tripong.backend.entity.role.UserRole;
 
@@ -48,10 +47,7 @@ public class User extends BaseTimeEntity {
 
     private Integer authentication;
 
-    @Enumerated(EnumType.STRING)
-    private RoleType role;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<UserRole> userRoles = new ArrayList<>();
 
     private String city;
@@ -69,14 +65,23 @@ public class User extends BaseTimeEntity {
         this.birthDate = dto.getBirthDate();
         this.city = dto.getCity();
         this.district = dto.getDistrict();
-        this.role = RoleType.User;
     }
+
+    //연관관계
+    public void addUserRole(List<UserRole> userRoles){
+        for(UserRole userRole : userRoles){
+            this.userRoles.add(userRole);
+            userRole.injectUser(this);
+        }
+    }
+
+
 
     //init 용
     @Builder
     public User(String loginId, String password, String name, String nickName,
                 String email, LocalDate birthDate, GenderType gender, JoinType joinMethod,
-                 int authentication, RoleType role, String city, String district) {
+                 int authentication, String city, String district, List<UserRole> userRoles) {
         this.loginId=loginId;
         this.password=password;
         this.name=name;
@@ -86,9 +91,9 @@ public class User extends BaseTimeEntity {
         this.gender=gender;
         this.joinMethod=joinMethod;
         this.authentication=authentication;
-        this.role=role;
         this.city=city;
         this.district=district;
+        this.addUserRole(userRoles);
     }
 
 
