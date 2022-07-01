@@ -12,16 +12,12 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserAuthService {
 
@@ -122,10 +118,11 @@ public class UserAuthService {
     @Transactional
     public String changeUserPassword(PasswordRequestDto dto){
 
-        int result = userAuthRepository.changePassword(dto.getUserId(), dto.getNewPassword());
+        String newPassword = passwordEncoder.encode(dto.getNewPassword());
+        int result = userAuthRepository.changePassword(dto.getUserId(), newPassword);
 
-        // 오류:
-        if (result == 1){
+        // 오류: 비밀번호 변경 실패
+        if (result == 0){
             return "SUCCESS TO CHANGE PASSWORD";
         } else {
             return "FAIL TO CHANGE PASSWORD";

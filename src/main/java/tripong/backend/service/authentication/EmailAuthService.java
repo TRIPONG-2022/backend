@@ -18,7 +18,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EmailAuthService {
 

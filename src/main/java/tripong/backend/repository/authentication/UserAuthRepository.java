@@ -13,13 +13,13 @@ public interface UserAuthRepository extends JpaRepository<User, String> {
 
     Optional<User> findByLoginId(String loginId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE User u set u.authentication = u.authentication + 1 WHERE u.loginId = :userId")
     void updateauthenticationStatus(String userId);
 
     Optional<User> findByEmail(String email);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE User u set u.password = :newPassword WHERE u.loginId = :userId")
     int changePassword(String newPassword, String userId);
 
