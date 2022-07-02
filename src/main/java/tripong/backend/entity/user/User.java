@@ -47,7 +47,7 @@ public class User extends BaseTimeEntity {
 
     private Integer authentication;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserRole> userRoles = new ArrayList<>();
 
     private String city;

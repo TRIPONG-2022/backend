@@ -152,8 +152,10 @@ public class InitDB {
                     .build();
 
 
-            List<UserRole> only_admin_userRoles = new ArrayList<>();
-            only_admin_userRoles.add(userRole3);
+            List<UserRole> admin_userRoles = new ArrayList<>();
+            admin_userRoles.add(userRole3);
+            UserRole userRole5 = UserRole.builder().role(role_user).build();
+            admin_userRoles.add(userRole5);
             User admin = User.builder() //관리자용
                     .loginId("admin")
                     .password(pw)
@@ -164,7 +166,7 @@ public class InitDB {
                     .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)
                     .authentication(1)
-                    .userRoles(only_admin_userRoles)
+                    .userRoles(admin_userRoles)
                     .city("서울특별시")
                     .district("서대문구")
                     .build();

@@ -8,12 +8,16 @@ import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.dto.report.PostReportRequestDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.post.Post;
+import tripong.backend.entity.report.ReportType;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.report.PostReportRepository;
 import tripong.backend.repository.report.UserReportRepository;
 import tripong.backend.repository.user.UserRepository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -74,5 +78,15 @@ public class ReportService {
         postReportRepository.save(dto.toEntity());
 
         log.info("종료: ReportService 게시물 리포트");
+    }
+
+    public List<ReportType> userReportType() {
+        List<ReportType> types = new ArrayList<>();
+        types.add(ReportType.Abuse);
+        types.add(ReportType.Ads);
+        types.add(ReportType.Impropriety);
+        types.add(ReportType.Spam);
+        types.add(ReportType.Etc);
+        return types;
     }
 }

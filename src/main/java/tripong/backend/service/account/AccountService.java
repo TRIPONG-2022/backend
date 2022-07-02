@@ -85,8 +85,8 @@ public class AccountService {
         dto.setEmail(oAuthInfo.getEmail());
         dto.setNickName(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
         dto.setJoinMethod(getJoin(oAuthInfo.getProviderName()));
+        dto.setUserRoles(authorize_oauthJoin_userRoles());
         User yet = dto.toEntity();
-        authorize_UNAUTH(yet);
 
         log.info("종료: AccountService 소셜회원가입");
         return userRepository.save(yet);
@@ -141,6 +141,12 @@ public class AccountService {
         only_user_userRoles.add(userRole_user);
         user.addUserRole(only_user_userRoles);
     }
-
+    private List<UserRole> authorize_oauthJoin_userRoles() {
+        Role role_user = roleRepository.findByRoleName("ROLE_USER");
+        UserRole userRole_user = UserRole.builder().role(role_user).build();
+        List<UserRole> only_user_userRoles = new ArrayList<>();
+        only_user_userRoles.add(userRole_user);
+        return only_user_userRoles;
+    }
 
 }

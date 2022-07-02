@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.user.UserRepository;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
+@Transactional(readOnly = true)
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
@@ -54,7 +56,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
 
         if(loginId != null){
-            User user = userRepository.findByLoginId(loginId)
+            User user = userRepository.findPrincipleServiceByLoginId(loginId)
                     .orElseThrow(()->{
                         log.info("종료: JwtAuthorizationFilter - 인가 불가(DB 사용자 없음)");
                         return new UsernameNotFoundException("해당 사용자를 찾을 수 없습니다. : "+ loginId);

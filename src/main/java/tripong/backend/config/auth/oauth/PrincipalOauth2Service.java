@@ -57,7 +57,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
             log.info("지원하지 않는 Oauth2.0");
         }
 
-        Optional<User> user = userRepository.findByLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
+        Optional<User> user = userRepository.findPrincipleServiceByLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
         if(user.isPresent()){
             return new PrincipalDetail(user.get(), oAuth2User.getAttributes());
         }

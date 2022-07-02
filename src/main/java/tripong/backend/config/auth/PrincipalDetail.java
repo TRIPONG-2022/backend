@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
 
@@ -32,9 +33,9 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collectors = new ArrayList<>();
-        List<UserRole> userRoles = user.getUserRoles();
-        for(UserRole userRole : userRoles){
+        for(UserRole userRole : user.getUserRoles()){
             collectors.add(new SimpleGrantedAuthority(userRole.getRole().getRoleName()));
+            System.out.println("userRole = " + userRole.getRole().getRoleName());
         }
         return collectors;
     }
