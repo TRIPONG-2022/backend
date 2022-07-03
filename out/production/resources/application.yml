@@ -1,0 +1,30 @@
+spring:
+  profiles:
+    include: oauth, mysql
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      use_sql_comments: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 500
+    open-in-view: false
+
+  messages:
+    basename: messages, errors
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql: trace
+

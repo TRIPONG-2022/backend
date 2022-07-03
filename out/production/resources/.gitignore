@@ -10,7 +10,8 @@ gen
 ### Example user template
 
 # IntelliJ project files
-application.yml
+application-oauth.yml
+application-mysql.yml
 .idea
 *.iml
 out
