@@ -59,7 +59,7 @@ public class ResourceService {
     public Page<GetResourceListResponseDto> getResourceList(Pageable pageable) {
         log.info("시작: ResourceService 자원리스트");
 
-        Page<Resource> page = resourceRepository.findAllWithRoles(pageable);
+        Page<Resource> page = resourceRepository.findPagingAll(pageable);
         List<GetResourceListResponseDto> result = page.stream()
                         .map(r -> new GetResourceListResponseDto(r))
                                 .collect(Collectors.toList());

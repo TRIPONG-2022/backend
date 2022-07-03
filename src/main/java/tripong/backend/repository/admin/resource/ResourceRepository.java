@@ -15,9 +15,9 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     @Query("select r from Resource r left join fetch r.roleResources where r.resourceType = 'Url' order by r.priorityNum desc")
     List<Resource> findUrlAllResources();
 
-    @EntityGraph(attributePaths = {"roleResources"})
-    @Query(value = "select r from Resource r", countQuery =  "select count(r) from Resource r")
-    Page<Resource> findAllWithRoles(Pageable pageable);
+
+    @Query(value = "select r from Resource r")
+    Page<Resource> findPagingAll(Pageable pageable);
 
     Resource findByResourceName(String resourceName);
 }

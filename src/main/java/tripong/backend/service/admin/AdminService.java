@@ -43,10 +43,10 @@ public class AdminService {
      *  -유저 pk: 추후 권한 수정을 pk로 처리하기 위해 반환
      */
     public Page<GetUserReportedListResponseDto> getUserReportedList(Pageable pageable) {
-        Page<UserReport> page = userReportRepository.findAll(pageable);
-        List<GetUserReportedListResponseDto> result = page.stream().map(ur -> new GetUserReportedListResponseDto(ur))
+        Page<UserReport> page = userReportRepository.findReportUserANDReportedUserPagingAll(pageable);
+        List<GetUserReportedListResponseDto> result = page.stream()
+                .map(ur -> new GetUserReportedListResponseDto(ur))
                 .collect(Collectors.toList());
-
 
         return new PageImpl<>(result, pageable, page.getTotalElements());
     }
@@ -113,7 +113,7 @@ public class AdminService {
     public Page<GetUserAllListDto> getUserList(Pageable pageable) {
         log.info("시작: AdminService 전체사용자리스트");
 
-        Page<User> page = userRepository.findAllWithRoles(pageable);
+        Page<User> page = userRepository.findPagingAll(pageable);
         List<GetUserAllListDto> result = page.stream()
                 .map(u -> new GetUserAllListDto(u))
                 .collect(Collectors.toList());
