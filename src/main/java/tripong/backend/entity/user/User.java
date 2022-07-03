@@ -3,7 +3,6 @@ package tripong.backend.entity.user;
 import lombok.*;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
-import tripong.backend.entity.role.RoleResource;
 import tripong.backend.entity.role.UserRole;
 
 import javax.persistence.*;

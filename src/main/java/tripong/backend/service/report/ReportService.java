@@ -80,13 +80,4 @@ public class ReportService {
         log.info("종료: ReportService 게시물 리포트");
     }
 
-    public List<ReportType> userReportType() {
-        List<ReportType> types = new ArrayList<>();
-        types.add(ReportType.Abuse);
-        types.add(ReportType.Ads);
-        types.add(ReportType.Impropriety);
-        types.add(ReportType.Spam);
-        types.add(ReportType.Etc);
-        return types;
-    }
 }

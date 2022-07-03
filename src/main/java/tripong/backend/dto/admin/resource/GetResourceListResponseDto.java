@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class GetResourceListResponseDto {
 
+    private Long resourceId;
+
     private String resourceName;
 
     @Enumerated(EnumType.STRING)
@@ -30,6 +32,7 @@ public class GetResourceListResponseDto {
 
     ///
     public GetResourceListResponseDto(Resource resource){
+        this.resourceId = resource.getId();
         this.resourceName = resource.getResourceName();
         this.resourceType = resource.getResourceType();
         this.methodName = resource.getMethodName();

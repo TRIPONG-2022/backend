@@ -6,4 +6,5 @@ import tripong.backend.entity.base.BaseTimeEntity;
 public class Like extends BaseTimeEntity {
 
 
+
 }

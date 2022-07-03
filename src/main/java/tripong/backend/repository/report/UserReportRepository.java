@@ -12,6 +12,9 @@ import tripong.backend.entity.user.User;
 public interface UserReportRepository extends JpaRepository<UserReport, Long> {
 
 
+    @EntityGraph(attributePaths = {"reportedUserId", "reportUserId"})
+    @Query(value = "select ur from UserReport ur", countQuery =  "select count(ur) from UserReport ur")
+    Page<UserReport> findAllWithUser(Pageable pageable);
 
 
 }

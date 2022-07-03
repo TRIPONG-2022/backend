@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GetRoleListResponseDto {
 
+    private Long roleId;
     private String roleName;
     private String description;
 }

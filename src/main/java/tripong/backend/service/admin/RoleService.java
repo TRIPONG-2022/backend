@@ -11,6 +11,7 @@ import tripong.backend.entity.role.Role;
 import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -49,9 +50,14 @@ public class RoleService {
      *  권한 삭제
      * */
     @Transactional
-    public void deleteRole(DeleteRoleRequestDto dto) {
-        Role role = roleRepository.findByRoleName(dto.getRoleName());
-        roleRepository.delete(role);
+    public void deleteRole(Long roleId) {
+        Optional<Role> role = roleRepository.findById(roleId);
+        if(role.isPresent()){
+            roleRepository.delete(role.get());
+        }
+        else{
+            throw new IllegalStateException("존재하지 않는 권한입니다.");
+        }
     }
 
 

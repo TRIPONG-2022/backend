@@ -14,6 +14,7 @@ import tripong.backend.service.report.ReportService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class ReportController {
     */
     @GetMapping("/reports/type")
     public ResponseEntity userReportType(){
-        List<ReportType> types = reportService.userReportType();
+        List<ReportType> types = Arrays.asList(ReportType.values());
 
         HttpStatus status = HttpStatus.CREATED;
         return new ResponseEntity<>(types, status);

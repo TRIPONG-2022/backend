@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class RoleController {
+public class RoleDataController {
 
     private final RoleService roleService;
 
@@ -35,8 +35,6 @@ public class RoleController {
         return new ResponseEntity<>(getRoleListResponseDtoList, status);
     }
 
-
-
     /**
      * 권한 등록 API
      */
@@ -54,11 +52,11 @@ public class RoleController {
     /**
      * 권한 삭제 API
      */
-    @DeleteMapping("/admin/roles")
-    public ResponseEntity deleteRole(@RequestBody DeleteRoleRequestDto dto){
+    @DeleteMapping("/admin/roles/{roleId}")
+    public ResponseEntity deleteRole(@PathVariable("roleId") Long roleId){
         log.info("시작: RoleController 권한삭제");
 
-        roleService.deleteRole(dto);
+        roleService.deleteRole(roleId);
 
         log.info("종료: RoleController 권한삭제");
         HttpStatus status = HttpStatus.OK;

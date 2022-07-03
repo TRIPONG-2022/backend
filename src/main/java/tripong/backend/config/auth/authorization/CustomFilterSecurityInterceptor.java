@@ -1,6 +1,7 @@
 package tripong.backend.config.auth.authorization;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
@@ -13,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 @RequiredArgsConstructor
 public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
 
@@ -30,7 +31,7 @@ public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
 
     @Override
     protected InterceptorStatusToken beforeInvocation(Object object) {
-
+        log.info("beforeInvocation - ");
         boolean flag = false;
         HttpServletRequest request_url = ((FilterInvocation) object).getRequest(); //url 경우
         for(RequestMatcher requestMatcher : permitAllRequestMatchers){

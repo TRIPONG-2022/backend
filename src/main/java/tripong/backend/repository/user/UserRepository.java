@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select distinct u from User u join fetch u.userRoles ur join fetch ur.role where u.loginId = :loginId")
     Optional<User> findPrincipleServiceByLoginId(@Param("loginId") String loginId);
+
+
+
 }

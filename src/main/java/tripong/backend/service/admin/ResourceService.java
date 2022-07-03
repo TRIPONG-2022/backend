@@ -11,8 +11,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
-import tripong.backend.dto.admin.resource.DeleteResourceRequestDto;
 import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
@@ -23,6 +24,7 @@ import tripong.backend.repository.admin.role.RoleRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,6 +69,14 @@ public class ResourceService {
     }
 
     /**
+     * 자원 등록 폼
+     * @return
+     */
+    public CreateResourceFormRequestDto createResourceForm() {
+        return new CreateResourceFormRequestDto(roleRepository.findRoleNamesAll());
+    }
+
+    /**
      * 자원 등록
      * -이미 존재하는 자원이면 에러 처리
      */
@@ -102,14 +112,21 @@ public class ResourceService {
      * -자원 전체 목록에서 보이는 것을 삭제하므로, DB 에러 생략
      */
     @Transactional
-    public void deleteResource(DeleteResourceRequestDto dto) {
+    public void deleteResource(Long resourceId) {
         log.info("종료: ResourceService 자원삭제");
 
-        Resource resource = resourceRepository.findByResourceName(dto.getResourceName());
-        resourceRepository.delete(resource);
+        Optional<Resource> resource = resourceRepository.findById(resourceId);
+        if(resource.isPresent()){
+            resourceRepository.delete(resource.get());
+        }
+        else{
+            throw new IllegalStateException("존재하지 않는 자원입니다.");
+        }
 
         log.info("종료: ResourceService 자원삭제");
     }
+
+
 
 
 }

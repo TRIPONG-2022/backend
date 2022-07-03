@@ -1,36 +1,23 @@
 package tripong.backend.controller.admin;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
 import tripong.backend.dto.admin.resource.DeleteResourceRequestDto;
 import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
-import tripong.backend.dto.admin.role.DeleteRoleRequestDto;
-import tripong.backend.dto.admin.role.GetRoleListResponseDto;
-import tripong.backend.entity.role.Resource;
-import tripong.backend.entity.role.ResourceType;
-import tripong.backend.repository.admin.resource.ResourceRepository;
 import tripong.backend.service.admin.ResourceService;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class ResourceController {
+public class ResourceDataController {
 
     private final ResourceService resourceService;
 
@@ -45,6 +32,19 @@ public class ResourceController {
 
         log.info("종료: ResourceController 자원리스트");
         HttpStatus status = HttpStatus.CREATED;
+        return new ResponseEntity<>(result, status);
+    }
+
+    /**
+     * 자원 등록 폼 반환 API
+     */
+    @GetMapping("/admin/resources/form")
+    public ResponseEntity createResourceForm(){
+        log.info("시작: ResourceController 자원등록폼");
+
+        CreateResourceFormRequestDto result = resourceService.createResourceForm();
+        log.info("종료: ResourceController 자원등록폼");
+        HttpStatus status = HttpStatus.OK;
         return new ResponseEntity<>(result, status);
     }
 
@@ -66,11 +66,11 @@ public class ResourceController {
     /**
      * 자원 삭제 API
      */
-    @DeleteMapping("/admin/resources")
-    public ResponseEntity deleteResource(@RequestBody DeleteResourceRequestDto dto){
+    @DeleteMapping("/admin/resources/{resourceId}")
+    public ResponseEntity deleteResource(@PathVariable("resourceId") Long resourceId){
         log.info("시작: ResourceController 자원삭제");
 
-        resourceService.deleteResource(dto);
+        resourceService.deleteResource(resourceId);
 
         log.info("종료: ResourceController 자원삭제");
         HttpStatus status = HttpStatus.OK;
