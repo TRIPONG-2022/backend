@@ -11,6 +11,7 @@ import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
 import tripong.backend.service.post.PostService;
+import tripong.backend.service.redis.RedisService;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class PostApiController {
 
     private final PostService postService;
 
+    private final RedisService redisService;
+
     @GetMapping("/{category}")
     public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.findByCategory(category, pageable);
@@ -31,6 +34,7 @@ public class PostApiController {
     @GetMapping(value = "/{category}/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
         PostResponseDto postResponseDto = postService.findById(postId);
+        log.info("현재 {}번 게시물의 조회수는 = {}", postId, redisService.getVisitCount(postId));
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
 

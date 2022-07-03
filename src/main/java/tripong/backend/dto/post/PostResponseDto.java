@@ -1,10 +1,11 @@
 package tripong.backend.dto.post;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,7 +13,9 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PostResponseDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PostResponseDto implements Serializable {
 
     private Long id;
 
@@ -30,8 +33,10 @@ public class PostResponseDto {
 
     private BigDecimal longitude;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     private Integer curHeadCount;
@@ -55,7 +60,7 @@ public class PostResponseDto {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.category = post.getCategory();
-        this.tags = post.getTags();
+        this.tags.addAll(post.getTags());
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
         this.startDate = post.getStartDate();

@@ -1,6 +1,7 @@
 package tripong.backend.service.post;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,7 @@ import tripong.backend.entity.post.Post;
 import tripong.backend.entity.post.User;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.post.UserRepository;
-import tripong.backend.service.post.aws.AmazonS3Service;
+import tripong.backend.service.aws.AmazonS3Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class PostService {
         return postResponseDtoList;
     }
 
+    @Cacheable(key = "#id", value = "post")
     public PostResponseDto findById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
         PostResponseDto postResponseDto = new PostResponseDto(post);
