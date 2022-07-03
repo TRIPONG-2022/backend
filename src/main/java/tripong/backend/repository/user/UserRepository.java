@@ -1,5 +1,7 @@
 package tripong.backend.repository.user;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findPrincipleServiceByLoginId(@Param("loginId") String loginId);
 
 
-
+    @EntityGraph(attributePaths = {"userRoles"})
+    @Query(value = "select u from User u", countQuery = "select count(u) from User u")
+    Page<User> findAllWithRoles(Pageable pageable);
 }

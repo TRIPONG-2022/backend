@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
+import tripong.backend.entity.role.UserRole;
 
 import javax.persistence.Tuple;
 import java.util.List;
@@ -18,4 +19,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     @Query("select r.roleName from Role r")
     List<String> findRoleNamesAll();
+
+
 }

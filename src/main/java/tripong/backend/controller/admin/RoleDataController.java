@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.admin.role.CreateRoleRequestDto;
-import tripong.backend.dto.admin.role.DeleteRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.service.admin.RoleService;
 
@@ -26,7 +25,6 @@ public class RoleDataController {
     @GetMapping("/admin/roles")
     public ResponseEntity getRoleList(){
         log.info("시작: RoleController 권한리스트");
-
 
         List<GetRoleListResponseDto> getRoleListResponseDtoList = roleService.getRoleList();
 
@@ -62,8 +60,6 @@ public class RoleDataController {
         HttpStatus status = HttpStatus.OK;
         return new ResponseEntity<>(status);
     }
-
-
 
 
 }

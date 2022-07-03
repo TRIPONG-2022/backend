@@ -12,8 +12,6 @@ import java.util.List;
 
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
-    Resource findByResourceNameAndMethodName(String resourceName, String methodName);
-
     @Query("select r from Resource r left join fetch r.roleResources where r.resourceType = 'Url' order by r.priorityNum desc")
     List<Resource> findUrlAllResources();
 

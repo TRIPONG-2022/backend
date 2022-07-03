@@ -29,6 +29,7 @@ public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
         }
     }
 
+
     @Override
     protected InterceptorStatusToken beforeInvocation(Object object) {
         log.info("beforeInvocation - ");

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
-import tripong.backend.dto.admin.resource.DeleteResourceRequestDto;
 import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.service.admin.ResourceService;
 
