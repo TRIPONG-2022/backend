@@ -60,12 +60,9 @@ public class ResourceService {
         log.info("시작: ResourceService 자원리스트");
 
         Page<Resource> page = resourceRepository.findPagingAll(pageable);
-        List<GetResourceListResponseDto> result = page.stream()
-                        .map(r -> new GetResourceListResponseDto(r))
-                                .collect(Collectors.toList());
 
         log.info("종료: ResourceService 자원리스트");
-        return new PageImpl<>(result, pageable, page.getTotalElements());
+        return page.map(p -> new GetResourceListResponseDto(p));
     }
 
     /**

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,7 @@ public class ResourceDataController {
      * 자원 전체 목록 API
      */
     @GetMapping("/admin/resources")
-    public ResponseEntity getResourceList(Pageable pageable){
+    public ResponseEntity getResourceList(@PageableDefault(sort = "priorityNum", direction = Sort.Direction.DESC) Pageable pageable){
         log.info("시작: ResourceController 자원리스트");
         Page<GetResourceListResponseDto> result = resourceService.getResourceList(pageable);
 

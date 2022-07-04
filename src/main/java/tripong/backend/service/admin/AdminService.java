@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.dto.admin.user.GetUserAllListDto;
 import tripong.backend.dto.admin.user.GetUserReportedListResponseDto;
 import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
@@ -44,11 +44,7 @@ public class AdminService {
      */
     public Page<GetUserReportedListResponseDto> getUserReportedList(Pageable pageable) {
         Page<UserReport> page = userReportRepository.findReportUserANDReportedUserPagingAll(pageable);
-        List<GetUserReportedListResponseDto> result = page.stream()
-                .map(ur -> new GetUserReportedListResponseDto(ur))
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(result, pageable, page.getTotalElements());
+        return page.map(ur -> new GetUserReportedListResponseDto(ur));
     }
 
     /**
@@ -114,12 +110,8 @@ public class AdminService {
         log.info("시작: AdminService 전체사용자리스트");
 
         Page<User> page = userRepository.findPagingAll(pageable);
-        List<GetUserAllListDto> result = page.stream()
-                .map(u -> new GetUserAllListDto(u))
-                .collect(Collectors.toList());
 
         log.info("종료: AdminService 전체사용자리스트");
-        return new PageImpl<>(result, pageable, page.getTotalElements());
-
+        return page.map(p -> new GetUserAllListDto(p));
     }
 }
