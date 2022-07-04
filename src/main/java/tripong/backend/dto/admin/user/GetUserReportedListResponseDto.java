@@ -1,5 +1,6 @@
 package tripong.backend.dto.admin.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import tripong.backend.entity.user.User;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +31,8 @@ public class GetUserReportedListResponseDto {
     private String nickName;
     private List<UserRolesDto> roles;
     private String reporterName;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime createdDate;
 
 
     public GetUserReportedListResponseDto(UserReport userReport){
@@ -40,7 +44,7 @@ public class GetUserReportedListResponseDto {
         this.roles = userReport.getReportedUserId().getUserRoles().stream()
                 .map(u -> new UserRolesDto(u)).collect(Collectors.toList());
         this.reporterName = userReport.getReportUserId().getLoginId();
-
+        this.createdDate = userReport.getCreatedDate();
     }
 
 

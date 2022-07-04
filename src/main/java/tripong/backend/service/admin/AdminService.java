@@ -8,9 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.dto.admin.post.GetPostReportedListResponseDto;
 import tripong.backend.dto.admin.user.GetUserAllListDto;
 import tripong.backend.dto.admin.user.GetUserReportedListResponseDto;
 import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
+import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.UserReport;
 import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
@@ -18,6 +20,7 @@ import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.admin.role.UserRoleRepository;
+import tripong.backend.repository.report.PostReportRepository;
 import tripong.backend.repository.report.UserReportRepository;
 import tripong.backend.repository.user.UserRepository;
 
@@ -36,6 +39,21 @@ public class AdminService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final PostReportRepository postReportRepository;
+
+
+    /**
+     * 사용자 전체 목록
+     */
+    public Page<GetUserAllListDto> getUserList(Pageable pageable) {
+        log.info("시작: AdminService 전체사용자리스트");
+
+        Page<User> page = userRepository.findPagingAll(pageable);
+
+        log.info("종료: AdminService 전체사용자리스트");
+        return page.map(p -> new GetUserAllListDto(p));
+    }
+
 
     /**
      * 신고 받은 사용자 전체 목록
@@ -106,12 +124,23 @@ public class AdminService {
     }
 
 
-    public Page<GetUserAllListDto> getUserList(Pageable pageable) {
-        log.info("시작: AdminService 전체사용자리스트");
+    /**
+     * 신고 받은 게시글 전체 목록
+     * 반환: 게시글 pk, 신고 이유, 게시글 제목, 게시글 작성 시간, 작성자 pk, 작성자 아이디, 작성자 닉네임, 신고자 아이디, 신고 시간
+     *  -게시글 pk: 삭제 위해 반환
+     *  -작성자 pk: 추후 권한 수정을 pk로 처리하기 위해 반환
+     */
+    public Page<GetPostReportedListResponseDto> getPostReportedList(Pageable pageable) {
+        Page<PostReport> page = postReportRepository.findReportPostANDReportedPostANDReportUserPagingAll(pageable);
+        return page.map(pr -> new GetPostReportedListResponseDto(pr));
+    }
 
-        Page<User> page = userRepository.findPagingAll(pageable);
-
-        log.info("종료: AdminService 전체사용자리스트");
-        return page.map(p -> new GetUserAllListDto(p));
+    /**
+     * 신고 받은 게시글 삭제
+     */
+    @Transactional
+    public void deletePost(Long postId) {
+        //포스트 리파지토리  머지 후 삭제.
     }
 }
+
