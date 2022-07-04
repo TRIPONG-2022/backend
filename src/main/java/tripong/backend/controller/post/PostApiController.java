@@ -34,7 +34,7 @@ public class PostApiController {
     @GetMapping(value = "/{category}/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
         PostResponseDto postResponseDto = postService.findById(postId);
-        log.info("현재 {}번 게시물의 조회수는 = {}", postId, redisService.getVisitCount(postId));
+        log.info("현재 {}번 게시물의 조회수는 = {}", postId, redisService.incVisitCount(postId));
         return new ResponseEntity<>(postResponseDto, HttpStatus.OK);
     }
 

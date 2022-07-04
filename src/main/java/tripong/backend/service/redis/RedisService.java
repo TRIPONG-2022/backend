@@ -10,7 +10,7 @@ public class RedisService {
     @Resource(name = "redisTemplate")
     ValueOperations<String, String> operations;
 
-    public Long getVisitCount(Long postId) {
+    public Long incVisitCount(Long postId) {
         Long count = 0L;
         try {
             operations.increment("viewCount::"+postId, 1);
@@ -19,5 +19,14 @@ public class RedisService {
             System.out.println(e.toString());
         }
         return count;
+    }
+
+    public Long getVisitCount(String key) {
+        try {
+            return Long.valueOf(operations.get(key));
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return 0L;
     }
 }

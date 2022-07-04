@@ -1,6 +1,7 @@
 package tripong.backend.service.post;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,9 +46,9 @@ public class PostService {
         return postResponseDtoList;
     }
 
-    @Cacheable(key = "#id", value = "post")
-    public PostResponseDto findById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+    @Cacheable(value="post", key = "#postId")
+    public PostResponseDto findById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
         PostResponseDto postResponseDto = new PostResponseDto(post);
 
         List<String> images = new ArrayList<>();
@@ -93,6 +94,7 @@ public class PostService {
     }
 
     @Transactional
+    @CacheEvict(value="post", key = "#postId")
     public void update(Long postId, PostRequestDto postRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
         List<String> imagefileNameList = new ArrayList<>();
@@ -112,14 +114,21 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + id));
+    @CacheEvict(value = "post", key = "#postId")
+    public void delete(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
         post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
         String fileName = post.getThumbnail();
         if (fileName != null){
             amazonS3Service.deleteFile(fileName);
         }
         postRepository.delete(post);
+    }
+
+    @Transactional
+    public void updateViewCount(Long postId, Long newViewCount) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
+        post.setViewCount(newViewCount + post.getViewCount());
     }
 
 }

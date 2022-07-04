@@ -51,7 +51,7 @@ public class PostResponseDto implements Serializable {
 
     private Integer recommendationCount;
 
-    private Integer viewCount;
+    private Long viewCount;
 
     @Builder
     public PostResponseDto(Post post) {

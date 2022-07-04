@@ -76,7 +76,7 @@ public class Post extends BaseTimeEntity {
     private Integer recommendationCount;
 
     @ColumnDefault("0")
-    private Integer viewCount;
+    private Long viewCount;
 
     public void update(PostRequestDto postRequestDto, List<String> imageUrlList, String thumbnailUrl) {
         this.title = postRequestDto.getTitle();

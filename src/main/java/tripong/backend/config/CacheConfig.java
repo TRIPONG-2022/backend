@@ -16,6 +16,8 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.*;
 
+import java.time.Duration;
+
 @Configuration
 public class CacheConfig {
     @Value("${spring.redis.host}")
@@ -62,11 +64,9 @@ public class CacheConfig {
     @Bean
     public CacheManager redisCacheManager(RedisSerializer<Object> redisSerializer) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(
-                                new StringRedisSerializer()))
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer));
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
+                .entryTtl(Duration.ofSeconds(60)); //60초마다 만료
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(redisConnectionFactory())
