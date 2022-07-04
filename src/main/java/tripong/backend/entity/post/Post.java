@@ -1,15 +1,13 @@
 package tripong.backend.entity.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.*;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.BaseTimeEntity;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -72,8 +70,8 @@ public class Post extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer budget;
 
-    @ColumnDefault("0")
-    private Integer recommendationCount;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostLike> like = new ArrayList<>();
 
     @ColumnDefault("0")
     private Long viewCount;
@@ -91,5 +89,4 @@ public class Post extends BaseTimeEntity {
         this.images = imageUrlList;
         this.thumbnail = thumbnailUrl;
     }
-
 }

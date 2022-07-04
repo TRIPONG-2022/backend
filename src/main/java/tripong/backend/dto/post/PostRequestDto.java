@@ -32,11 +32,11 @@ public class PostRequestDto {
     private List<MultipartFile> images;
     private MultipartFile thumbnail;
     private Integer budget;
-    private Integer recommendationCount;
+    private Integer likeCount;
     private Long viewCount;
 
     @Builder
-    public PostRequestDto(Long author, String title, String content, Category category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer curHeadCount, Integer totalHeadCount, List<MultipartFile> images, MultipartFile thumbnail, Integer budget, Integer recommendationCount, Long viewCount) {
+    public PostRequestDto(Long author, String title, String content, Category category, List<String> tags, BigDecimal latitude, BigDecimal longitude, LocalDate startDate, LocalDate endDate, Integer curHeadCount, Integer totalHeadCount, List<MultipartFile> images, MultipartFile thumbnail, Integer budget, Integer likeCount, Long viewCount) {
         this.author = author;
         this.title = title;
         this.content = content;
@@ -51,7 +51,7 @@ public class PostRequestDto {
         this.images = images;
         this.thumbnail = thumbnail;
         this.budget = budget;
-        this.recommendationCount = recommendationCount;
+        this.likeCount = likeCount;
         this.viewCount = viewCount;
     }
 

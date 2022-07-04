@@ -11,7 +11,9 @@ import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
+import tripong.backend.entity.post.PostLike;
 import tripong.backend.entity.post.User;
+import tripong.backend.repository.post.PostLikeRepository;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.post.UserRepository;
 import tripong.backend.service.aws.AmazonS3Service;
@@ -28,6 +30,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+
+    private final PostLikeRepository postLikeRepository;
     private final AmazonS3Service amazonS3Service;
 
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
@@ -129,6 +133,27 @@ public class PostService {
     public void updateViewCount(Long postId, Long newViewCount) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
         post.setViewCount(newViewCount + post.getViewCount());
+    }
+
+    @Transactional
+    public void saveLike(Long postId, Long userId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. userId=" + userId));
+        Optional<PostLike> postLike = Optional.ofNullable(postLikeRepository.findByPostIdAndUserId(postId, userId));
+        if (postLike.isEmpty()) {
+            postLikeRepository.save(PostLike.builder()
+                    .post(post)
+                    .user(user)
+                    .build());
+        }
+    }
+
+    @Transactional
+    public void deleteLike(Long postId, Long userId) {
+        Optional<PostLike> postLike = Optional.ofNullable(postLikeRepository.findByPostIdAndUserId(postId, userId));
+        if (postLike.isPresent()) {
+            postLikeRepository.delete(postLike.get());
+        }
     }
 
 }

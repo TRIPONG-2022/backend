@@ -49,7 +49,7 @@ public class PostResponseDto implements Serializable {
 
     private Integer budget;
 
-    private Integer recommendationCount;
+    private Integer likeCount;
 
     private Long viewCount;
 
@@ -69,7 +69,7 @@ public class PostResponseDto implements Serializable {
         this.totalHeadCount = post.getTotalHeadCount();
         this.thumbnail = post.getThumbnail();
         this.budget = post.getBudget();
-        this.recommendationCount = post.getRecommendationCount();
+        this.likeCount = post.getLike().size();
         this.viewCount = post.getViewCount();
     }
 }

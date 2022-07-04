@@ -57,4 +57,16 @@ public class PostApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/like/{postId}/{userId}")
+    public ResponseEntity<Object> saveLike(@PathVariable Long postId, @PathVariable Long userId) {
+        postService.saveLike(postId, userId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/like/{postId}/{userId}")
+    public ResponseEntity<Object> deleteLike(@PathVariable Long postId, @PathVariable Long userId) {
+        postService.deleteLike(postId, userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
