@@ -69,4 +69,16 @@ public class PostApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/join/{postId}/{userId}")
+    public ResponseEntity<Object> joinGathering(@PathVariable Long postId, @PathVariable Long userId) {
+        postService.saveGatheringUser(postId, userId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/join/{postId}/{userId}")
+    public ResponseEntity<Object> leaveGathering(@PathVariable Long postId, @PathVariable Long userId) {
+        postService.deleteGatheringUser(postId, userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

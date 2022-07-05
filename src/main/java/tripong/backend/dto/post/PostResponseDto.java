@@ -65,7 +65,7 @@ public class PostResponseDto implements Serializable {
         this.longitude = post.getLongitude();
         this.startDate = post.getStartDate();
         this.endDate = post.getEndDate();
-        this.curHeadCount = post.getCurHeadCount();
+        this.curHeadCount = post.getGatheringUsers().size();
         this.totalHeadCount = post.getTotalHeadCount();
         this.thumbnail = post.getThumbnail();
         this.budget = post.getBudget();

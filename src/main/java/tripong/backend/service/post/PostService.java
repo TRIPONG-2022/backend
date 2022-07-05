@@ -9,10 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
-import tripong.backend.entity.post.Category;
-import tripong.backend.entity.post.Post;
-import tripong.backend.entity.post.PostLike;
-import tripong.backend.entity.post.User;
+import tripong.backend.entity.post.*;
+import tripong.backend.repository.post.GatheringUserRepository;
 import tripong.backend.repository.post.PostLikeRepository;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.post.UserRepository;
@@ -29,9 +27,13 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+
     private final UserRepository userRepository;
 
     private final PostLikeRepository postLikeRepository;
+
+    private final GatheringUserRepository gatheringUserRepository;
+
     private final AmazonS3Service amazonS3Service;
 
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
@@ -153,6 +155,27 @@ public class PostService {
         Optional<PostLike> postLike = Optional.ofNullable(postLikeRepository.findByPostIdAndUserId(postId, userId));
         if (postLike.isPresent()) {
             postLikeRepository.delete(postLike.get());
+        }
+    }
+
+    @Transactional
+    public void saveGatheringUser(Long postId, Long userId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. userId=" + userId));
+        Optional<GatheringUser> gatheringUser = Optional.ofNullable(gatheringUserRepository.findByPostIdAndUserId(postId, userId));
+        if (gatheringUser.isEmpty()) {
+            gatheringUserRepository.save(GatheringUser.builder()
+                    .post(post)
+                    .user(user)
+                    .build());
+        }
+    }
+
+    @Transactional
+    public void deleteGatheringUser(Long postId, Long userId) {
+        Optional<GatheringUser> gatheringUser = Optional.ofNullable(gatheringUserRepository.findByPostIdAndUserId(postId, userId));
+        if (gatheringUser.isPresent()) {
+            gatheringUserRepository.delete(gatheringUser.get());
         }
     }
 

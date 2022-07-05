@@ -56,8 +56,8 @@ public class Post extends BaseTimeEntity {
     @Column(columnDefinition = "DATE")
     private LocalDate endDate;
 
-    @ColumnDefault("0")
-    private Integer curHeadCount;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
     @ColumnDefault("0")
     private Integer totalHeadCount;
