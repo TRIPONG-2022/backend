@@ -39,3 +39,4 @@ out/
 ### 사용자 정의 ###
 application-aws.yml
 application-redis.yml
+application-db.yml

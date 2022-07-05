@@ -1,3 +1,3 @@
-INSERT INTO USER(name) VALUES("가나다");
-INSERT INTO USER(name) VALUES("홍길동");
-INSERT INTO USER(name) VALUES("마바사");
+INSERT INTO user(name) VALUES("가나다");
+INSERT INTO user(name) VALUES("홍길동");
+INSERT INTO user(name) VALUES("마바사");
