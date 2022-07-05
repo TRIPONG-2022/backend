@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
@@ -16,6 +17,8 @@ import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.post.UserRepository;
 import tripong.backend.service.aws.AmazonS3Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -177,6 +180,22 @@ public class PostService {
         if (gatheringUser.isPresent()) {
             gatheringUserRepository.delete(gatheringUser.get());
         }
+    }
+
+    public List<PostResponseDto> getPersonalPostList(Long userId, Category category, LocalDate fromDate, LocalDate endDate, Pageable pageable) {
+        List<PostResponseDto> postResponseDtoList =
+                postRepository.findByIdAndCategory(userId, category.name(), fromDate, endDate, pageable)
+                        .stream()
+                        .map(PostResponseDto::new)
+                        .collect(Collectors.toList());
+
+        postResponseDtoList.forEach(postResponseDto -> {
+            String fileName = postResponseDto.getThumbnail();
+            if (fileName != null) {
+                postResponseDto.setThumbnail(amazonS3Service.getFile(fileName));
+            }
+        });
+        return postResponseDtoList;
     }
 
 }
