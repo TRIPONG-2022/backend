@@ -27,4 +27,10 @@ public class UserProfileApiController {
         List<PostResponseDto> postResponseDtoList = postService.getPersonalPostList(userId, category, fromDate, endDate, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
+
+    @GetMapping("/likes/{userId}")
+    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, Pageable pageable) {
+        List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(userId, category, pageable);
+        return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
+    }
 }

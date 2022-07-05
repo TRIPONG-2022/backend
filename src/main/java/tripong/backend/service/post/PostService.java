@@ -184,7 +184,23 @@ public class PostService {
 
     public List<PostResponseDto> getPersonalPostList(Long userId, Category category, LocalDate fromDate, LocalDate endDate, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList =
-                postRepository.findByIdAndCategory(userId, category.name(), fromDate, endDate, pageable)
+                postRepository.findByIdAndCategoryAndCreatedDate(userId, category.name(), fromDate, endDate, pageable)
+                        .stream()
+                        .map(PostResponseDto::new)
+                        .collect(Collectors.toList());
+
+        postResponseDtoList.forEach(postResponseDto -> {
+            String fileName = postResponseDto.getThumbnail();
+            if (fileName != null) {
+                postResponseDto.setThumbnail(amazonS3Service.getFile(fileName));
+            }
+        });
+        return postResponseDtoList;
+    }
+
+    public List<PostResponseDto> getPersonalLikePostList(Long userId, Category category, Pageable pageable) {
+        List<PostResponseDto> postResponseDtoList =
+                postRepository.findLikePostByIdAndCategory(userId, category.name(), pageable)
                         .stream()
                         .map(PostResponseDto::new)
                         .collect(Collectors.toList());
