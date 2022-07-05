@@ -53,7 +53,7 @@ public class ResourceDataController {
      * 자원 등록 API
      */
     @PostMapping("/admin/resources")
-    public ResponseEntity createResource(@RequestBody CreateResourceRequestDto dto){
+    public ResponseEntity createResource(@RequestBody CreateResourceRequestDto dto) throws Exception {
         log.info("시작: ResourceController 자원등록");
 
         resourceService.createResource(dto);
@@ -68,7 +68,7 @@ public class ResourceDataController {
      * 자원 삭제 API
      */
     @DeleteMapping("/admin/resources/{resourceId}")
-    public ResponseEntity deleteResource(@PathVariable("resourceId") Long resourceId){
+    public ResponseEntity deleteResource(@PathVariable("resourceId") Long resourceId) throws Exception {
         log.info("시작: ResourceController 자원삭제");
 
         resourceService.deleteResource(resourceId);

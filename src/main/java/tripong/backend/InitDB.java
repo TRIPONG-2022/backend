@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
 import tripong.backend.entity.role.*;
 import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.GenderType;
@@ -26,7 +27,7 @@ public class InitDB {
 
 
     @PostConstruct
-    public void init(){
+    public void init() throws Exception {
         initService.init0();
         initService.init1();
     }
@@ -39,8 +40,8 @@ public class InitDB {
         private final EntityManager em;
         private final BCryptPasswordEncoder passwordEncoder;
         private final RoleRepository roleRepository;
-        private final UserRepository userRepository;
         private final ResourceRepository resourceRepository;
+        private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
 
 
         public void init0(){ //초기 ROLE
@@ -98,7 +99,7 @@ public class InitDB {
             resourceRepository.save(user_rul);
         }
 
-        public void init1(){
+        public void init1() throws Exception {
             String pw = passwordEncoder.encode("1234");
 
             Role role_user = roleRepository.findByRoleName("ROLE_USER");
@@ -176,6 +177,7 @@ public class InitDB {
             em.persist(user2);
             em.persist(user3);
             em.persist(admin);
+            customFilterInvocationSecurityMetadataSource.reload();
         }
     }
 

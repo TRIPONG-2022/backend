@@ -1,6 +1,7 @@
 package tripong.backend.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,8 +21,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import tripong.backend.config.auth.PrincipalService;
+import tripong.backend.config.auth.authorization.AuthResourceService;
 import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
 import tripong.backend.config.auth.authorization.CustomFilterSecurityInterceptor;
+import tripong.backend.config.auth.authorization.UrlResourceMap;
 import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
 import tripong.backend.config.auth.handler.CustomLogoutHandler;
 import tripong.backend.config.auth.handler.jwt.JwtAuthenticationFilter;
@@ -44,8 +48,10 @@ public class SecurityConfig{
     private final PrincipalOauth2Service oauth2Service;
     private final CustomOauthSuccessHandler customOauthSuccessHandler;
     private final JwtCookieService jwtCookieService;
-    private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
     private final PrincipalService principalService;
+    private final UrlResourceMap urlResourceMap;
+    private final AuthResourceService authResourceService;
+
     private static final String[] permitAllResource = {
             "/", "/auth/**", "/error/**"
     };
@@ -105,7 +111,7 @@ public class SecurityConfig{
             CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor(permitAllResource);
             customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
             customFilterSecurityInterceptor.setAuthenticationManager(authenticationManager);
-            customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource);
+            customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource(urlResourceMap));
 
 
             http
@@ -132,7 +138,14 @@ public class SecurityConfig{
         return affirmativeBased;
     }
 
-
+    ///
+    @Bean
+    public CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource(UrlResourceMap urlResourceMap) throws Exception {
+        return new CustomFilterInvocationSecurityMetadataSource(urlResourceMap().getObject(), authResourceService);
+    }
+    private UrlResourceMap urlResourceMap(){
+        return new UrlResourceMap(authResourceService);
+    }
 
 
 }

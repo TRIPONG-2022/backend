@@ -43,6 +43,7 @@ public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
         }
 
         if(flag) {
+            log.info("permit url");
             return null;
         }
 

@@ -3,7 +3,6 @@ package tripong.backend.service.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -11,7 +10,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
 import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
 import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,22 +33,8 @@ public class ResourceService {
 
     private final ResourceRepository resourceRepository;
     private final RoleRepository roleRepository;
+    private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
 
-    /**
-     * DB 자원 requestMap 변환
-     */
-    public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getUrlRequestMap(){
-        List<Resource> resources = resourceRepository.findUrlAllResources();
-        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> beforeRequestMap = new LinkedHashMap<>();
-        resources.forEach( r->{
-            List<ConfigAttribute> configAttributeList = new ArrayList<>();
-            r.getRoleResources().forEach( role ->{
-                configAttributeList.add(new SecurityConfig(role.getRole().getRoleName()));
-            });
-            beforeRequestMap.put(new AntPathRequestMatcher(r.getResourceName()), configAttributeList);
-        });
-        return beforeRequestMap;
-    }
 
 
     /**
@@ -78,7 +62,7 @@ public class ResourceService {
      * -이미 존재하는 자원이면 에러 처리
      */
     @Transactional
-    public void createResource(CreateResourceRequestDto dto) {
+    public void createResource(CreateResourceRequestDto dto) throws Exception {
         log.info("시작: ResourceService 자원등록");
 
         Resource resource = resourceRepository.findByResourceName(dto.getResourceName());
@@ -100,6 +84,9 @@ public class ResourceService {
                 .build();
         resourceRepository.save(resource_build);
 
+        customFilterInvocationSecurityMetadataSource.reload();
+
+
         log.info("종료: ResourceService 자원등록");
     }
 
@@ -109,12 +96,13 @@ public class ResourceService {
      * -자원 전체 목록에서 보이는 것을 삭제하므로, DB 에러 생략
      */
     @Transactional
-    public void deleteResource(Long resourceId) {
+    public void deleteResource(Long resourceId) throws Exception {
         log.info("종료: ResourceService 자원삭제");
 
         Optional<Resource> resource = resourceRepository.findById(resourceId);
         if(resource.isPresent()){
             resourceRepository.delete(resource.get());
+            customFilterInvocationSecurityMetadataSource.reload();
         }
         else{
             throw new IllegalStateException("존재하지 않는 자원입니다.");
