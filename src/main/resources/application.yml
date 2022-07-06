@@ -16,5 +16,14 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-
+#logging:
+#  level:
+#    org:
+#      apache:
+#        coyote:
+#          http11: debug
+#sql:
+#  init:
+#    mode: always
+#main:
+#  allow-bean-definition-overriding: true
