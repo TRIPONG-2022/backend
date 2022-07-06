@@ -4,42 +4,34 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.reply.Reply;
+import tripong.backend.entity.user.User;
 
-import javax.validation.constraints.NotEmpty;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class ReplyRequestDto {
 
-    private BigInteger postId;
-
-    private BigInteger userId;
-
+    private Long id;
+    private Long postId;
+    private String userId;
     private String content;
-
-    private Reply parentReply;
-
-    private List<Reply> childrenReply = new ArrayList<>();
+    private Long parentReply;
 
     @Builder
-    public ReplyRequestDto(BigInteger postId, BigInteger userId, String content, Reply parentReply, List<Reply> childrenReply){
+    public ReplyRequestDto(Long id, Long postId, String userId, String content, Long parentReply){
+        this.id = id;
         this.postId = postId;
         this.userId = userId;
         this.content = content;
         this.parentReply = parentReply;
-        this.childrenReply = childrenReply;
     }
 
     public Reply toEntity() {
         return Reply.builder()
+                .id(id)
                 .postId(postId)
-                .userId(userId)
                 .content(content)
                 .parentReply(parentReply)
-                .childrenReply(childrenReply)
                 .build();
     }
 
