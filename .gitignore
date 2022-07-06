@@ -2,8 +2,13 @@ HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
+<<<<<<< HEAD
+!/src/main//build/
+!/src/test//build/
+=======
 !**/src/main/**/build/
 !**/src/test/**/build/
+>>>>>>> origin/sprint1
 
 ### STS ###
 .apt_generated
@@ -14,8 +19,13 @@ build/
 .springBeans
 .sts4-cache
 bin/
+<<<<<<< HEAD
+!/src/main//bin/
+!/src/test//bin/
+=======
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+>>>>>>> origin/sprint1
 
 ### IntelliJ IDEA ###
 .idea
@@ -23,8 +33,13 @@ bin/
 *.iml
 *.ipr
 out/
+<<<<<<< HEAD
+!/src/main//out/
+!/src/test//out/
+=======
 !**/src/main/**/out/
 !**/src/test/**/out/
+>>>>>>> origin/sprint1
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +50,33 @@ out/
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD
+
+
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+src/main/resources/application-oauth.yml
+application-mysql.yml
+.idea
+*.iml
+out
+gen
+
+
+### 사용자 정의 ###
+application-aws.yml
+application-redis.yml
+application-db.yml
+data.sql
+=======
+>>>>>>> origin/sprint1
