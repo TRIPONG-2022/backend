@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.entity.post.Post;
-import tripong.backend.repository.posttmp.PostRepository;
+import tripong.backend.repository.post.PostRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,7 +28,7 @@ public class UserService {
         
         em.flush();em.clear();
         List<Post> all = postRepository.findAll();
-        all.stream().forEach(r -> System.out.println("r.getUser() + r.getTitle() = " + r.getUser() + r.getTitle()));
+        all.stream().forEach(r -> System.out.println("r.getUser() + r.getTitle() = " + r.getAuthor() + r.getTitle()));
     }
 
 }

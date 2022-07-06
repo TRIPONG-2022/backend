@@ -9,7 +9,7 @@ import tripong.backend.dto.report.PostReportRequestDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.user.User;
-import tripong.backend.repository.posttmp.PostRepository;
+import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.report.PostReportRepository;
 import tripong.backend.repository.report.UserReportRepository;
 import tripong.backend.repository.user.UserRepository;
@@ -65,7 +65,7 @@ public class ReportService {
         if(!reported_post.isPresent()){
             throw new NullPointerException("존재하지 않는 postId를 신고");
         }
-        if(reported_post.get().getUser().getId() == principal.getUser().getId()){
+        if(reported_post.get().getAuthor().getId() == principal.getUser().getId()){
             throw new IllegalStateException("자기 자신의 게시글 신고 불가");
         }
 

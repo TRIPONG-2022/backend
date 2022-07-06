@@ -36,8 +36,8 @@ public class GetPostReportedListResponseDto {
         this.title = postReport.getReportedPostId().getTitle();
         this.postCreatedDate = postReport.getReportedPostId().getCreatedDate();
         this.userId = postReport.getReportUserId().getId();
-        this.loginId = postReport.getReportedPostId().getUser().getLoginId();
-        this.nickName = postReport.getReportedPostId().getUser().getNickName();
+        this.loginId = postReport.getReportedPostId().getAuthor().getLoginId();
+        this.nickName = postReport.getReportedPostId().getAuthor().getNickName();
 
         this.reporterLoginId = postReport.getReportUserId().getLoginId();
         this.reportCreatedDate = postReport.getCreatedDate();
