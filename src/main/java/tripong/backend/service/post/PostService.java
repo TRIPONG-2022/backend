@@ -6,19 +6,18 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.*;
+import tripong.backend.entity.user.User;
 import tripong.backend.repository.post.GatheringUserRepository;
 import tripong.backend.repository.post.PostLikeRepository;
 import tripong.backend.repository.post.PostRepository;
-import tripong.backend.repository.post.UserRepository;
+import tripong.backend.repository.user.UserRepository;
 import tripong.backend.service.aws.AmazonS3Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +83,7 @@ public class PostService {
 
         /* author, images, thumbnail 별도 처리 */
         Optional<User> author = userRepository.findById(requestDto.getAuthor());
-        post.setAuthor(author.orElseThrow());
+        post.setAuthor(author.orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다.")));
 
         requestDto.getImages().forEach(file -> {
             if (file.getSize() != 0) {

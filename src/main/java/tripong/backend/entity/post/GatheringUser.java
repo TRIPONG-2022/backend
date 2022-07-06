@@ -2,6 +2,7 @@ package tripong.backend.entity.post;
 
 import lombok.*;
 import tripong.backend.entity.BaseTimeEntity;
+import tripong.backend.entity.user.User;
 
 import javax.persistence.*;
 

@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.*;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.BaseTimeEntity;
+import tripong.backend.entity.user.User;
 
 import javax.persistence.*;
 import javax.persistence.CascadeType;
