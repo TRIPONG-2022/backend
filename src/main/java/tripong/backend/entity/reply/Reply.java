@@ -29,4 +29,3 @@ public class Reply extends BaseEntity {
 
     @ColumnDefault("0")
     private Long parentReply;
-}
