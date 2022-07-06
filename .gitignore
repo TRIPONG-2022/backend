@@ -41,5 +41,4 @@ application-aws.yml
 application-redis.yml
 application-db.yml
 application-oauth.yml
-application-mysql.yml
 data.sql
