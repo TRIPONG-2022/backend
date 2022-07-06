@@ -40,3 +40,4 @@ out/
 application-aws.yml
 application-redis.yml
 application-db.yml
+data.sql
