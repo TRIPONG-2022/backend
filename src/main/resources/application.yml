@@ -26,4 +26,3 @@ spring:
 #  init:
 #    mode: always
 #main:
-#  allow-bean-definition-overriding: true
