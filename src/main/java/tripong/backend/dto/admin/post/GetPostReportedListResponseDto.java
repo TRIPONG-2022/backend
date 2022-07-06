@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GetPostReportedListResponseDto {
 
-//  게시글 pk, 신고 이유, 게시글 제목, 게시글 작성 시간, 작성자 pk, 작성자 아이디, 작성자 닉네임, 신고자 아이디, 신고 시간
+    //  게시글 pk, 신고 이유, 게시글 제목, 게시글 작성 시간, 작성자 pk, 작성자 아이디, 작성자 닉네임, 신고자 아이디, 신고 시간
     private Long postId;
     private ReportType reportType;
     private String title;
@@ -36,12 +36,11 @@ public class GetPostReportedListResponseDto {
         this.title = postReport.getReportedPostId().getTitle();
         this.postCreatedDate = postReport.getReportedPostId().getCreatedDate();
         this.userId = postReport.getReportUserId().getId();
-        this.loginId = postReport.getReportedPostId().getUser().getLoginId();
-        this.nickName = postReport.getReportedPostId().getUser().getNickName();
+        this.loginId = postReport.getReportedPostId().getAuthor().getLoginId();
+        this.nickName = postReport.getReportedPostId().getAuthor().getNickName();
 
         this.reporterLoginId = postReport.getReportUserId().getLoginId();
         this.reportCreatedDate = postReport.getCreatedDate();
     }
 
 }
-

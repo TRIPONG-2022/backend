@@ -1,8 +1,6 @@
 spring:
   profiles:
-    include: oauth, mysql
-  main:
-    allow-bean-definition-overriding: true
+    include: oauth, aws, redis, db, mail
 
   jpa:
     hibernate:
@@ -12,21 +10,20 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 500
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
-
-  messages:
-    basename: messages, errors
 
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: debug
-        type:
-          descriptor:
-            sql: trace
-
+#logging:
+#  level:
+#    org:
+#      apache:
+#        coyote:
+#          http11: debug
+#sql:
+#  init:
+#    mode: always
+#main:
+#  allow-bean-definition-overriding: true
