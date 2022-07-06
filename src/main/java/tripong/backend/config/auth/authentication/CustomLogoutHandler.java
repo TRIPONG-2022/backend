@@ -1,11 +1,11 @@
-package tripong.backend.config.auth.handler;
+package tripong.backend.config.auth.authentication;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
-import tripong.backend.config.auth.handler.jwt.JwtCookieService;
+import tripong.backend.config.auth.authentication.jwt.JwtCookieService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

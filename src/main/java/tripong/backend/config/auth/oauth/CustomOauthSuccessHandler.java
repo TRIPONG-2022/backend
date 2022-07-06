@@ -8,8 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import tripong.backend.config.auth.PrincipalDetail;
-import tripong.backend.config.auth.handler.jwt.JwtCookieService;
-import tripong.backend.config.auth.handler.jwt.JwtProperties;
+import tripong.backend.config.auth.authentication.jwt.JwtCookieService;
+import tripong.backend.config.auth.authentication.jwt.JwtProperties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;

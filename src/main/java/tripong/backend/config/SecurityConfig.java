@@ -1,7 +1,6 @@
 package tripong.backend.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +10,6 @@ import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -21,15 +19,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import tripong.backend.config.auth.PrincipalService;
-import tripong.backend.config.auth.authorization.AuthResourceService;
-import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
-import tripong.backend.config.auth.authorization.CustomFilterSecurityInterceptor;
-import tripong.backend.config.auth.authorization.UrlResourceMap;
-import tripong.backend.config.auth.handler.CustomLoginFailureHandler;
-import tripong.backend.config.auth.handler.CustomLogoutHandler;
-import tripong.backend.config.auth.handler.jwt.JwtAuthenticationFilter;
-import tripong.backend.config.auth.handler.jwt.JwtAuthorizationFilter;
-import tripong.backend.config.auth.handler.jwt.JwtCookieService;
+import tripong.backend.config.auth.authorization.*;
+import tripong.backend.config.auth.authentication.CustomLoginFailureHandler;
+import tripong.backend.config.auth.authentication.CustomLogoutHandler;
+import tripong.backend.config.auth.authentication.jwt.JwtAuthenticationFilter;
+import tripong.backend.config.auth.authentication.jwt.JwtAuthorizationFilter;
+import tripong.backend.config.auth.authentication.jwt.JwtCookieService;
 import tripong.backend.config.auth.oauth.CustomOauthSuccessHandler;
 import tripong.backend.config.auth.oauth.PrincipalOauth2Service;
 import tripong.backend.repository.user.UserRepository;
@@ -51,6 +46,7 @@ public class SecurityConfig{
     private final PrincipalService principalService;
     private final UrlResourceMap urlResourceMap;
     private final AuthResourceService authResourceService;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     private static final String[] permitAllResource = {
             "/", "/auth/**", "/error/**"
@@ -95,6 +91,10 @@ public class SecurityConfig{
                     .and()
                     .formLogin().disable()
                     .httpBasic().disable();
+
+            http
+                    .exceptionHandling()
+                    .accessDeniedHandler(customAccessDeniedHandler);
         }
 
         @Override

@@ -1,4 +1,4 @@
-package tripong.backend.config.auth.handler;
+package tripong.backend.config.auth.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
