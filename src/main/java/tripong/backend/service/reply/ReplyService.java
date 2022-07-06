@@ -23,8 +23,8 @@ public class ReplyService {
     private final UserRepository userRepository;
 
     // 내가쓴 댓글 및 대댓글 조회
-    public List<ReplyResponseDto> getReplyListByUserId(String userId, Pageable pageable){
-        List<ReplyResponseDto> ReplyResponseDtoList = replyRepository.getReplyListByUserId(userId, pageable).stream()
+    public List<ReplyResponseDto> getReplyListByUserId(String postId, Pageable pageable){
+        List<ReplyResponseDto> ReplyResponseDtoList = replyRepository.getReplyListByUserId(postId, pageable).stream()
                 .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
         return ReplyResponseDtoList;

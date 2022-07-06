@@ -1,13 +1,6 @@
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/tripong?serverTimezone=Asia/Seoul
-    username: root
-    password: 1234
-
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
+  profiles:
+    include: oauth, aws, redis, db, mail
 
   jpa:
     hibernate:
@@ -16,38 +9,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 500
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: tripong2022@gmail.com
-    password: iczqcfrestuyeapu
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-
-  devtools:
-    livereload:
-      enabled: true
-    restart:
-      enabled: false
-  thymeleaf:
-    cache: false
-
-  messages:
-    basename: messages, errors
-
-server:
-  port: 8089
-
-logging.level:
-  org.hibernate.SQL: debug
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 

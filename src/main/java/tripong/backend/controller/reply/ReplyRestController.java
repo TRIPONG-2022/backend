@@ -16,9 +16,9 @@ public class ReplyRestController {
     private final ReplyService replyService;
 
     // 내가쓴 댓글 및 대댓글 조회
-    @GetMapping("/replies/parent/{postId}")
-    public ResponseEntity<Object> getReplyListByUserId(@PathVariable String userId, Pageable pageable){
-        List<ReplyResponseDto> replyResponseDtoList = replyService.getReplyListByUserId(userId, pageable);
+    @GetMapping("users/profile/replies/{postId}")
+    public ResponseEntity<Object> getReplyListByUserId(@PathVariable String postId, Pageable pageable){
+        List<ReplyResponseDto> replyResponseDtoList = replyService.getReplyListByUserId(postId, pageable);
         return new ResponseEntity<>(replyResponseDtoList, HttpStatus.OK);
     }
 
