@@ -15,4 +15,5 @@ public class PasswordRequestDto {
 
     @NotEmpty
     private String newPassword;
+
 }

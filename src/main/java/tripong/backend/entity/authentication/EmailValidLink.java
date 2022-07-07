@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,18 +43,12 @@ public class EmailValidLink {
         validLink.expirationDate = LocalDateTime.now().plusMinutes(EMAIL_VALID_LINK_EXPRIRATION_TIME_VALUE);
         validLink.expired = false;
         validLink.userId = userId;
-
         return validLink;
     }
 
     // 이메일 유료링크 만료 설정
     public void makeInvalidLink(){
         this.expired = true;
-    }
-
-    // 이메일 재전송: 5분에 한 번 전송 가능
-    public boolean confirmResendEmail() {
-        return this.createdTime.isBefore(LocalDateTime.now().minusMinutes(5));
     }
 
 }

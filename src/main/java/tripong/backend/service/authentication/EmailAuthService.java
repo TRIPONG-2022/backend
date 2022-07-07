@@ -10,15 +10,14 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
-
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class EmailAuthService {
 
@@ -27,14 +26,14 @@ public class EmailAuthService {
     private final UserAuthRepository userAuthRepository;
 
     // 이메일 인증
+    @Transactional
     public void createEmailValidLik(EmailAuthRequestDto dto) throws MessagingException {
 
-        // 이메일 유효링크 저장
         EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
         emailAuthRepository.save(validLink);
 
-        //이메일 발송 서비스 호출
         sendEmail(dto, validLink);
+
     }
 
     // 이메일 인증: 비동기식 JavaMailSender
@@ -73,25 +72,24 @@ public class EmailAuthService {
     }
 
     // 이메일 인증: 유효 링크 확인
+    @Transactional
     public EmailValidLink findByIdAndExpirationDateAfterAndExpired(String emailValidLink) {
 
         Optional<EmailValidLink> validLink  = emailAuthRepository.findByIdAndExpirationDateAfterAndExpired(emailValidLink, LocalDateTime.now(), false);
 
-        return validLink.orElseThrow(()  -> new NoSuchElementException("valid link not found"));
+        return validLink.orElseThrow(()  -> new IllegalArgumentException("링크가 유효하지 않습니다."));
+
     }
 
     // 이메일 인증: 유효 링크 확인 및 변경
     @Transactional
     public String verifyEmail(String emailValidLink){
 
-        // 유효 링크 확인
         EmailValidLink findValidLink = findByIdAndExpirationDateAfterAndExpired(emailValidLink);
         String userId = findValidLink.getUserId();
 
-        // 유저 인증 정보 가져오기
         Optional<User> user = userAuthRepository.findByLoginId(userId);
 
-        // 유효 링크 사용 완료 체크
         findValidLink.makeInvalidLink();
 
         if (user.isPresent()){
@@ -100,7 +98,7 @@ public class EmailAuthService {
         } else {
             return "FAIL";
         }
-    }
 
+    }
 
 }

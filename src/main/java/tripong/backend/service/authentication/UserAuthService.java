@@ -12,13 +12,13 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserAuthService {
 
@@ -29,26 +29,23 @@ public class UserAuthService {
     private final EmailAuthService emailAuthService;
 
     // 아이디 찾기
+    @Transactional
     public Optional<User> findUserId (UserAuthRequestDto dto) {
+
         return userAuthRepository.findByEmail(dto.getEmail());
+
     }
 
     // 비밀번호 찾기: 이메일 유효링크 생성
-    public String findUserPassword(UserAuthRequestDto dto) throws MessagingException {
+    @Transactional
+    public void findUserPassword(UserAuthRequestDto dto) throws MessagingException {
 
-        Optional<User> userOptional = userAuthRepository.findByEmail(dto.getEmail());
-        User user;
+        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
 
-        // 오류: 유저 정보 유무
-        if (userOptional.isPresent()){
-            user = userOptional.get();
-            EmailValidLink validLink = EmailValidLink.createEmailValidLink(user.getLoginId());
-            emailAuthRepository.save(validLink);
-            sendFindUserPasswordEmail(dto, validLink);
-            return "FIND USER";
-        } else {
-            return "FAIL TO FIND USER";
-        }
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
+        emailAuthRepository.save(validLink);
+
+        sendFindUserPasswordEmail(dto, validLink);
 
     }
 
@@ -59,7 +56,7 @@ public class UserAuthService {
         MimeMessage message = mailSender.createMimeMessage();
         String text = "";
         String link = "http://localhost:8089/users/auth/find/password/view?emailValidLink=" + validLink.getId();
-
+        // https://tripong-development.herokuapp.com
 
         message.setRecipients(Message.RecipientType.TO, dto.getEmail());
         message.setSubject("비밀번호 재설정 이메일");

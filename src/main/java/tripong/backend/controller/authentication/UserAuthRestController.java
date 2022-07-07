@@ -10,7 +10,6 @@ import tripong.backend.dto.authentication.PasswordRequestDto;
 import tripong.backend.dto.authentication.UserAuthRequestDto;
 import tripong.backend.entity.user.User;
 import tripong.backend.service.authentication.UserAuthService;
-
 import javax.mail.MessagingException;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,41 +25,27 @@ public class UserAuthRestController {
     @PostMapping("/users/auth/find/id")
     public ResponseEntity<Object> findUserId (@RequestBody UserAuthRequestDto dto){
 
-        Optional<User> userOptional = userAuthService.findUserId(dto);
-        User user;
+        String userId = String.valueOf(userAuthService.findUserId(dto).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
 
-        if (userOptional.isPresent()){
-            user = userOptional.get();
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(userId, HttpStatus.OK);
 
     }
 
-    // 비밀번호 찾기: 유효 링크 생성
+    // 비밀번호 찾기: 유효 링크 생성\
+    // /users/auth/find/password
     @ResponseBody
-    @GetMapping("/users/auth/find/password")
+    @GetMapping("/auth/verify-request")
     public ResponseEntity<Object> findUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException {
 
-        String result = userAuthService.findUserPassword(dto);
+       userAuthService.findUserPassword(dto);
 
-        if (Objects.equals(result, "FIND USER")){
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
+       return new ResponseEntity<>(HttpStatus.OK);
 
-    }
-
-    // 비밀번호 찾기: View
-    @GetMapping("/users/auth/find/password/view")
-    public String findUserPasswordView(){
-        return "test/password";
     }
 
     // 비밀번호 찾기: URL 매핑
-    @PatchMapping("/users/auth/find/password/confirm")
+    // /users/auth/find/password/confirm
+    @PatchMapping("/auth/reset-password")
     public ResponseEntity<Object> findUserPasswordEmailConfirm(@Validated @RequestBody PasswordRequestDto dto){
 
         String result = userAuthService.verifyfindUserPasswordEmail(dto);
@@ -74,7 +59,7 @@ public class UserAuthRestController {
     }
 
     // 비밀번호 바꾸기
-    @PatchMapping("/users/password/change")
+    @PatchMapping("/auth/reset-password")
     public ResponseEntity<Object> changeUserPassword(@RequestBody PasswordRequestDto dto){
 
         String result = userAuthService.changeUserPassword(dto);

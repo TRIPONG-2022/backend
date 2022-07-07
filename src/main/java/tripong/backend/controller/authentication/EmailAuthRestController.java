@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.service.authentication.EmailAuthService;
-
 import javax.mail.MessagingException;
 import java.util.Objects;
 
@@ -31,7 +30,6 @@ public class EmailAuthRestController {
     // 이메일 인증: URL 매핑
     @GetMapping("/users/auth/email/confirm")
     public ResponseEntity<Object> emailConfirm(@Validated @RequestParam String emailValidLink){
-
         String result = emailAuthService.verifyEmail(emailValidLink);
 
         if(Objects.equals(result, "SUCCESS")){
