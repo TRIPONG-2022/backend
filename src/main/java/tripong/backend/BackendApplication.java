@@ -19,4 +19,5 @@ public class BackendApplication {
 		return new BCryptPasswordEncoder();
 	}
 
+	//커밋 테스트
 }
