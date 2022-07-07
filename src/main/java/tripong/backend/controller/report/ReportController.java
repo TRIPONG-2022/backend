@@ -12,8 +12,6 @@ import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.report.ReportType;
 import tripong.backend.service.report.ReportService;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 

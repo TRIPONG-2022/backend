@@ -1,5 +1,7 @@
 package tripong.backend.dto.reply;
-import lombok.*;
+
+import lombok.Builder;
+import lombok.Data;
 import tripong.backend.entity.reply.Reply;
 
 import java.time.LocalDateTime;

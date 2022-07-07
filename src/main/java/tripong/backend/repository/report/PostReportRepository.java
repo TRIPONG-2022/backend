@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import tripong.backend.entity.post.Post;
 import tripong.backend.entity.report.PostReport;
 
 public interface PostReportRepository extends JpaRepository<PostReport, Long> {

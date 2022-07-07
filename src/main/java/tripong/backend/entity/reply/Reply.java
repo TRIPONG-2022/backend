@@ -1,10 +1,11 @@
 package tripong.backend.entity.reply;
 
 import lombok.*;
-import tripong.backend.entity.base.BaseEntity;
-import javax.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
+import tripong.backend.entity.base.BaseEntity;
 import tripong.backend.entity.user.User;
+
+import javax.persistence.*;
 
 @Entity
 @Builder

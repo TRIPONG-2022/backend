@@ -4,17 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tripong.backend.dto.admin.resource.ResourceRolesDto;
 import tripong.backend.entity.report.ReportType;
 import tripong.backend.entity.report.UserReport;
-import tripong.backend.entity.role.ResourceType;
-import tripong.backend.entity.role.UserRole;
-import tripong.backend.entity.user.User;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

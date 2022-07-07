@@ -10,18 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.config.auth.oauth.oauthDetail.OAuthInfo;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
+import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.dto.account.OauthJoinRequestDto;
 import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
-import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service

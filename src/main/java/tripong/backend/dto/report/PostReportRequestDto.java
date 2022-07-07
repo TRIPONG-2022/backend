@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.ReportType;
-import tripong.backend.entity.report.UserReport;
 import tripong.backend.entity.user.User;
 
 @Data

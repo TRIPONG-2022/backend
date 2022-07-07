@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.reply.Reply;
-import tripong.backend.entity.user.User;
 
 
 @Data

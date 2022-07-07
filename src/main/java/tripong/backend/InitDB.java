@@ -6,12 +6,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
 import tripong.backend.entity.role.*;
-import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.GenderType;
 import tripong.backend.entity.user.JoinType;
+import tripong.backend.entity.user.User;
 import tripong.backend.repository.admin.resource.ResourceRepository;
 import tripong.backend.repository.admin.role.RoleRepository;
-import tripong.backend.repository.user.UserRepository;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;

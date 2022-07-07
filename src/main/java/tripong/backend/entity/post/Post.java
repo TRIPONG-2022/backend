@@ -1,14 +1,14 @@
 package tripong.backend.entity.post;
 
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.entity.BaseTimeEntity;
 import tripong.backend.entity.user.User;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;

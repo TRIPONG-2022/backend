@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.admin.role.CreateRoleRequestDto;
-import tripong.backend.dto.admin.role.DeleteRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
 import tripong.backend.repository.admin.role.RoleRepository;
