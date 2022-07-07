@@ -1,7 +1,6 @@
 package tripong.backend.dto.admin.user;
 
 import lombok.Data;
-import tripong.backend.entity.role.RoleResource;
 import tripong.backend.entity.role.UserRole;
 
 @Data

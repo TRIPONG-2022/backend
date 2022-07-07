@@ -3,9 +3,7 @@ package tripong.backend.service.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.admin.post.GetPostReportedListResponseDto;
@@ -14,7 +12,6 @@ import tripong.backend.dto.admin.user.GetUserReportedListResponseDto;
 import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
 import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.UserReport;
-import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
@@ -27,7 +24,6 @@ import tripong.backend.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

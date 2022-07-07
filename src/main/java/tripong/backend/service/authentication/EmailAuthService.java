@@ -10,12 +10,13 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
-import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

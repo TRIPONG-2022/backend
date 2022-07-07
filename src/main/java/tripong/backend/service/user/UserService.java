@@ -25,7 +25,7 @@ public class UserService {
         Post post2 = new Post();
         postRepository.save(post1);
         postRepository.save(post2);
-
+        
         em.flush();em.clear();
         List<Post> all = postRepository.findAll();
         all.stream().forEach(r -> System.out.println("r.getUser() + r.getTitle() = " + r.getAuthor() + r.getTitle()));

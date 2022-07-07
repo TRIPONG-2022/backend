@@ -3,8 +3,8 @@ package tripong.backend.dto.account;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tripong.backend.entity.user.User;
 import tripong.backend.entity.user.JoinType;
+import tripong.backend.entity.user.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

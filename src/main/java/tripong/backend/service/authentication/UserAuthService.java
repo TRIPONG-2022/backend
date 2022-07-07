@@ -12,6 +12,7 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;

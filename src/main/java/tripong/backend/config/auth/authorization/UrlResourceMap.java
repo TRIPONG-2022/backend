@@ -1,13 +1,11 @@
 package tripong.backend.config.auth.authorization;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
-import tripong.backend.service.admin.ResourceService;
 
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -4,19 +4,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tripong.backend.dto.admin.user.UserRolesDto;
 import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.ReportType;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetPostReportedListResponseDto {
 
-
+//  게시글 pk, 신고 이유, 게시글 제목, 게시글 작성 시간, 작성자 pk, 작성자 아이디, 작성자 닉네임, 신고자 아이디, 신고 시간
     private Long postId;
     private ReportType reportType;
     private String title;
@@ -44,3 +42,4 @@ public class GetPostReportedListResponseDto {
     }
 
 }
+
