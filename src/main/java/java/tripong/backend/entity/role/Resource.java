@@ -21,7 +21,7 @@ public class Resource {
     private String resourceName;
 
     @Enumerated(EnumType.STRING)
-    private tripong.backend.entity.role.ResourceType resourceType;
+    private ResourceType resourceType;
 
     private String methodName;
 

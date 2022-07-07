@@ -20,7 +20,7 @@ public class GetUserAllListDto {
     private String name;
     private String loginId;
     private String nickName;
-    private List<tripong.backend.dto.admin.user.UserRolesDto> roles;
+    private List<UserRolesDto> roles;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdDate;
 

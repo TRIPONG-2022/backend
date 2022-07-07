@@ -29,7 +29,7 @@ public class GetResourceListResponseDto {
 
     private int priorityNum;
 
-    private List<ResourceRolesDto> roleResources = new ArrayList<>();
+    private List<tripong.backend.dto.admin.resource.ResourceRolesDto> roleResources = new ArrayList<>();
 
     ///
     public GetResourceListResponseDto(Resource resource){

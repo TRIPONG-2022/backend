@@ -44,7 +44,7 @@ public class User extends BaseTimeEntity {
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    private JoinType joinMethod;
+    private tripong.backend.entity.user.JoinType joinMethod;
 
     private Integer authentication;
 

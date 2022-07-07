@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String jwtToken = JWT.create()
                 .withSubject(principal.getUsername()) //토큰명
-                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME))) //만료시간 10분
+                .withExpiresAt(new Date(System.currentTimeMillis()+ (tripong.backend.config.auth.authentication.jwt.JwtProperties.EXPIRATION_TIME))) //만료시간 10분
                 .withClaim("loginId", principal.getUser().getLoginId())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
 
