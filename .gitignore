@@ -42,3 +42,5 @@ application-redis.yml
 application-db.yml
 application-oauth.yml
 application-mail.yml
+application-mysql.yml
+data.sql
