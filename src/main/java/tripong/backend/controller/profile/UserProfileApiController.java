@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostResponseDto;
+import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.profile.UserProfileService;
+import tripong.backend.service.reply.ReplyService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +25,10 @@ public class UserProfileApiController {
 
     private final PostService postService;
 
+    private final ReplyService replyService;
+
     private final UserProfileService userProfileService;
+
 
     @GetMapping("/posts/{userId}")
     public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate, Pageable pageable) {
@@ -36,6 +41,13 @@ public class UserProfileApiController {
         List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(userId, category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
+
+    @GetMapping("replies/{userId}")
+    public ResponseEntity<Object> getReplyListByUserId(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
+        List<ReplyResponseDto> replyResponseDtoList = replyService.getReplyListByUserId(userId, fromDate, endDate, pageable);
+        return new ResponseEntity<>(replyResponseDtoList, HttpStatus.OK);
+    }
+
 //
 //    @GetMapping("/{userId}")
 //    public ResponseEntity<List<PostResponseDto>> getUserProfile(@PathVariable Long userId) {

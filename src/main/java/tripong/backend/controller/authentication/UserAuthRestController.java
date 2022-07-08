@@ -8,11 +8,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.authentication.PasswordRequestDto;
 import tripong.backend.dto.authentication.UserAuthRequestDto;
-import tripong.backend.entity.user.User;
 import tripong.backend.service.authentication.UserAuthService;
 import javax.mail.MessagingException;
 import java.util.Objects;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -59,7 +57,7 @@ public class UserAuthRestController {
     }
 
     // 비밀번호 바꾸기
-    @PatchMapping("/auth/reset-password")
+    @PatchMapping("/users/auth/change/password")
     public ResponseEntity<Object> changeUserPassword(@RequestBody PasswordRequestDto dto){
 
         String result = userAuthService.changeUserPassword(dto);
@@ -71,8 +69,6 @@ public class UserAuthRestController {
         }
 
     }
-
-
 
 
 }

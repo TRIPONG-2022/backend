@@ -1,14 +1,15 @@
 package tripong.backend.controller.reply;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
+import tripong.backend.entity.reply.Reply;
 import tripong.backend.service.reply.ReplyService;
-
 import java.util.List;
 
 @RestController
@@ -16,13 +17,6 @@ import java.util.List;
 public class ReplyRestController {
 
     private final ReplyService replyService;
-
-    // 내가쓴 댓글 및 대댓글 조회
-    @GetMapping("users/profile/replies/{postId}")
-    public ResponseEntity<Object> getReplyListByUserId(@PathVariable String postId, Pageable pageable){
-        List<ReplyResponseDto> replyResponseDtoList = replyService.getReplyListByUserId(postId, pageable);
-        return new ResponseEntity<>(replyResponseDtoList, HttpStatus.OK);
-    }
 
     // 댓글 조회
     @GetMapping("/replies/parent/{postId}")
@@ -46,7 +40,7 @@ public class ReplyRestController {
     }
 
     // 댓글 및 대댓글 수정
-    @PatchMapping("/replies/{postId}/{id}")
+    @PatchMapping("/replies/{id}")
     public ResponseEntity<Object> updateReply(@PathVariable Long id, @RequestBody ReplyRequestDto dto){
         dto.setId(id);
         replyService.updateReply(dto);
@@ -54,7 +48,7 @@ public class ReplyRestController {
     }
 
     // 댓글 및 대댓글 삭제
-    @DeleteMapping("/replies/{postId}/{id}")
+    @DeleteMapping("/replies/{id}")
     public ResponseEntity<Object> deleteReply(@PathVariable Long id){
         replyService.deleteReply(id);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import tripong.backend.entity.base.BaseEntity;
 import tripong.backend.entity.user.User;
-
 import javax.persistence.*;
 
 @Entity

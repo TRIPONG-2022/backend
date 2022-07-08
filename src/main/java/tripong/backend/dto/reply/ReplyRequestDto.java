@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.reply.Reply;
 
-
 @Data
 @NoArgsConstructor
 public class ReplyRequestDto {

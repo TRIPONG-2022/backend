@@ -10,7 +10,7 @@ import tripong.backend.entity.reply.Reply;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.reply.ReplyRepository;
 import tripong.backend.repository.user.UserRepository;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,27 +24,28 @@ public class ReplyService {
     private final UserRepository userRepository;
 
     // 내가쓴 댓글 및 대댓글 조회
-    public List<ReplyResponseDto> getReplyListByUserId(String postId, Pageable pageable){
-        List<ReplyResponseDto> ReplyResponseDtoList = replyRepository.getReplyListByUserId(postId, pageable).stream()
+    public List<ReplyResponseDto> getReplyListByUserId(Long userId, LocalDate fromDate, LocalDate endDate, Pageable pageable){
+        List<ReplyResponseDto> ReplyList = replyRepository.getReplyListByUserId(userId, fromDate, endDate, pageable)
+                .stream()
                 .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
-        return ReplyResponseDtoList;
+        return ReplyList;
     }
 
     // 댓글 리스트
     public List<ReplyResponseDto> getListParentReply(Long postId, Pageable pageable){
-        List<ReplyResponseDto> ReplyResponseDtoList = replyRepository.findParentReplyByPostId(postId, pageable).stream()
+        List<ReplyResponseDto> ReplyList = replyRepository.findParentReplyByPostId(postId, pageable).stream()
                 .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
-        return ReplyResponseDtoList;
+        return ReplyList;
     }
 
     // 대댓글 리스트
     public List<ReplyResponseDto> getListChildrenReply(Long postId, Long parentReply, Pageable pageable){
-        List<ReplyResponseDto> ReplyResponseDtoList = replyRepository.findChildrenReplyByPostId(postId, parentReply, pageable).stream()
+        List<ReplyResponseDto> ReplyList = replyRepository.findChildrenReplyByPostId(postId, parentReply, pageable).stream()
                 .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
-        return ReplyResponseDtoList;
+        return ReplyList;
     }
 
     // 댓글 및 대댓글 작성
