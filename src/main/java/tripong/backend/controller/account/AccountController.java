@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tripong.backend.config.auth.PrincipalDetail;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.NormalJoinRequestDto;
+import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.account.AccountService;
 
 @Slf4j
@@ -27,10 +29,12 @@ public class AccountController {
      * 일반 회원가입 API
      */
     @PostMapping("/users/signup/normal")
-    public ResponseEntity normalJoin(@Validated @RequestBody NormalJoinRequestDto dto){
+    public ResponseEntity normalJoin(@Validated @RequestBody NormalJoinRequestDto dto, BindingResult bindingResult){
         log.info("시작: AccountController 회원가입" + dto);
+        if(bindingResult.hasErrors()){
+            return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
+        }
         accountService.normalJoin(dto);
-
 
         //성공 201,실패 400
         HttpStatus status = HttpStatus.CREATED;

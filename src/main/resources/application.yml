@@ -27,3 +27,6 @@ spring:
 #    mode: always
 #main:
 #  allow-bean-definition-overriding: true
+
+  messages:
+    basename: messages, errors

@@ -16,6 +16,7 @@ import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.account.AccountErrorName;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
@@ -44,21 +45,21 @@ public class AccountService {
     public void normalJoin(NormalJoinRequestDto dto){
         log.info("시작: AccountService 일반회원가입");
 
+        boolean email_dub = userRepository.existsByEmail(dto.getEmail());
+        if(email_dub){
+            throw new IllegalStateException(AccountErrorName.Email_DUP);
+        }
+
         boolean loginId_dup = userRepository.existsByLoginId(dto.getLoginId());
         boolean nickName_dub = userRepository.existsByNickName(dto.getNickName());
-        boolean email_dub = userRepository.existsByEmail(dto.getEmail());
-
-        if(email_dub){
-            throw new IllegalStateException("이미 해당 이메일로 계정이 존재");
-        }
         if(loginId_dup && nickName_dub){
-            throw new IllegalStateException("아이디&닉네임 중복");
+            throw new IllegalStateException(AccountErrorName.LoginId_NickName_DUP);
         }
         if(loginId_dup){
-            throw new IllegalStateException("아이디 중복");
+            throw new IllegalStateException(AccountErrorName.LoginId_DUP);
         }
         if(nickName_dub){
-            throw new IllegalStateException("닉네임 중복");
+            throw new IllegalStateException(AccountErrorName.NickName_DUP);
         }
 
         dto.setPassword(encoder.encode(dto.getPassword()));
