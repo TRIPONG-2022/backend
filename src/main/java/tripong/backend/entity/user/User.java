@@ -2,6 +2,8 @@ package tripong.backend.entity.user;
 
 import lombok.*;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
+import tripong.backend.dto.post.PostRequestDto;
+import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
 import tripong.backend.entity.role.UserRole;
 
@@ -95,5 +97,17 @@ public class User extends BaseTimeEntity {
         this.addUserRole(userRoles);
     }
 
+    public void update(UserProfileRequestDto userProfileRequestDto, String pictureUrl) {
+        this.nickName = userProfileRequestDto.getNickName();
+        this.picture = pictureUrl;
+        this.birthDate = userProfileRequestDto.getBirthDate();
+        this.gender = userProfileRequestDto.getGender();
+        this.introduction = userProfileRequestDto.getIntroduction();
+        this.phoneNumber = userProfileRequestDto.getPhoneNumber();
+        this.city = userProfileRequestDto.getCity();
+        this.district = userProfileRequestDto.getDistrict();
+        this.latitude = userProfileRequestDto.getLatitude();
+        this.longitude = userProfileRequestDto.getLongitude();
+    }
 
 }
