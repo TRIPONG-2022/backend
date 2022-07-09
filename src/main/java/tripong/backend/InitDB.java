@@ -96,6 +96,19 @@ public class InitDB {
                     .priorityNum(1)
                     .build();
             resourceRepository.save(user_rul);
+
+            List<RoleResource> roleResources3 = new ArrayList<>();
+            RoleResource roleResource4 = RoleResource.builder()
+                    .role(admin).build();
+            roleResources3.add(roleResource4);
+
+//            Resource user_rul1 = Resource.builder()
+//                    .resourceName("tripong.backend.service.report.ReportService.userReport")
+//                    .resourceType(ResourceType.Method)
+//                    .roleResources(roleResources3)
+//                    .priorityNum(1)
+//                    .build();
+//            resourceRepository.save(user_rul1);
         }
 
         public void init1() throws Exception {
@@ -176,7 +189,7 @@ public class InitDB {
             em.persist(user2);
             em.persist(user3);
             em.persist(admin);
-            customFilterInvocationSecurityMetadataSource.reload();
+            customFilterInvocationSecurityMetadataSource.reload_url();
         }
     }
 

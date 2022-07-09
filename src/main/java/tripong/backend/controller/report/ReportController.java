@@ -59,5 +59,4 @@ public class ReportController {
         return new ResponseEntity<>(status);
     }
 
-
 }

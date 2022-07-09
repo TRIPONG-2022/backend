@@ -1,6 +1,6 @@
 package tripong.backend.service.report;
 
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,4 +76,8 @@ public class ReportService {
         log.info("종료: ReportService 게시물 리포트");
     }
 
+
+    public void abcD(){
+        System.out.println("dd = ");
+    }
 }

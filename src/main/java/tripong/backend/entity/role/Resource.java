@@ -21,7 +21,7 @@ public class Resource {
     @Enumerated(EnumType.STRING)
     private ResourceType resourceType;
 
-    private String methodName;
+    private String description;
 
     private int priorityNum;
 
@@ -31,10 +31,10 @@ public class Resource {
     //
     @Builder
     public Resource(String resourceName, ResourceType resourceType,
-                    String methodName, int priorityNum, List<RoleResource> roleResources){
+                    String description, int priorityNum, List<RoleResource> roleResources){
         this.resourceName = resourceName;
         this.resourceType = resourceType;
-        this.methodName = methodName;
+        this.description = description;
         this.priorityNum = priorityNum;
         for(RoleResource roleResource : roleResources){
             this.addRoleResource(roleResource);

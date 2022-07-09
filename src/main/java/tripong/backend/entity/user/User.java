@@ -66,6 +66,15 @@ public class User extends BaseTimeEntity {
         this.district = dto.getDistrict();
     }
 
+    //회원탈퇴시
+    public void account_withdrawal(String skey){
+        this.name = "탈퇴한 회원";
+        this.loginId = this.email+skey;
+        this.email = "탈퇴한 회원";
+        this.nickName = "탈퇴한 회원";
+    }
+
+
     //연관관계
     public void addUserRole(List<UserRole> userRoles){
         for(UserRole userRole : userRoles){

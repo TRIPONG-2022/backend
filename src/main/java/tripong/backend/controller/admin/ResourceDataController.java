@@ -9,9 +9,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
+import tripong.backend.config.auth.authorization.MethodResourceLiveUpdateService;
 import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
+import tripong.backend.dto.admin.resource.DeleteResourceReloadDto;
 import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
+import tripong.backend.entity.role.ResourceType;
 import tripong.backend.service.admin.ResourceService;
 
 
@@ -21,6 +25,8 @@ import tripong.backend.service.admin.ResourceService;
 public class ResourceDataController {
 
     private final ResourceService resourceService;
+    private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
+    private final MethodResourceLiveUpdateService methodResourceLiveUpdateService;
 
     /**
      * 자원 전체 목록 API
@@ -58,6 +64,12 @@ public class ResourceDataController {
 
         resourceService.createResource(dto);
 
+        if(dto.getResourceType()== ResourceType.Url) {
+            customFilterInvocationSecurityMetadataSource.reload_url();
+        } else{
+            methodResourceLiveUpdateService.reload_add_method(dto.getResourceName(), dto.getRoleNames());
+        }
+
         log.info("종료: ResourceController 자원등록");
         HttpStatus status = HttpStatus.OK;
         return new ResponseEntity<>(status);
@@ -71,7 +83,14 @@ public class ResourceDataController {
     public ResponseEntity deleteResource(@PathVariable("resourceId") Long resourceId) throws Exception {
         log.info("시작: ResourceController 자원삭제");
 
-        resourceService.deleteResource(resourceId);
+        DeleteResourceReloadDto dto = resourceService.deleteResource(resourceId);
+        if(dto.getResourceType()==ResourceType.Url){
+            customFilterInvocationSecurityMetadataSource.reload_url();
+        }
+        else{
+            methodResourceLiveUpdateService.reload_delete_method(dto.getResourceName());
+        }
+
 
         log.info("종료: ResourceController 자원삭제");
         HttpStatus status = HttpStatus.OK;

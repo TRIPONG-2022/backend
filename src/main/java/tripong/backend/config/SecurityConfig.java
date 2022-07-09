@@ -5,11 +5,16 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.intercept.RunAsManager;
+import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
+import org.springframework.security.access.method.MethodSecurityMetadataSource;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -34,8 +39,9 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfig{
+public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
     private final CorsConfig corsConfig;
     private final BCryptPasswordEncoder encoder;
@@ -44,9 +50,9 @@ public class SecurityConfig{
     private final CustomOauthSuccessHandler customOauthSuccessHandler;
     private final JwtCookieService jwtCookieService;
     private final PrincipalService principalService;
-    private final UrlResourceMap urlResourceMap;
     private final AuthResourceService authResourceService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final MethodResourceMap methodResourceMap;
 
     private static final String[] permitAllResource = {
             "/", "/auth/**", "/error/**"
@@ -111,7 +117,7 @@ public class SecurityConfig{
             CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor(permitAllResource);
             customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
             customFilterSecurityInterceptor.setAuthenticationManager(authenticationManager);
-            customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource(urlResourceMap));
+            customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource(urlResourceMap()));
 
 
             http
@@ -147,6 +153,30 @@ public class SecurityConfig{
         return new UrlResourceMap(authResourceService);
     }
 
+
+    @Override
+    protected MethodSecurityMetadataSource customMethodSecurityMetadataSource() {
+        return mapBasedMethodSecurityMetadataSource(); //나중엔 밑에꺼 합쳐보기
+    }
+    @Bean
+    public MapBasedMethodSecurityMetadataSource mapBasedMethodSecurityMetadataSource(){
+        return new MapBasedMethodSecurityMetadataSource(methodResourceMap.getObject());
+    }
+
+    @Bean
+    public CustomMethodSecurityInterceptor customMethodSecurityInterceptor(MapBasedMethodSecurityMetadataSource methodSecurityMetadataSource){
+        CustomMethodSecurityInterceptor customMethodSecurityInterceptor = new CustomMethodSecurityInterceptor();
+        customMethodSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
+        customMethodSecurityInterceptor.setAfterInvocationManager(afterInvocationManager());
+        customMethodSecurityInterceptor.setSecurityMetadataSource(methodSecurityMetadataSource);
+
+        RunAsManager runAsManager = runAsManager();
+        if(runAsManager != null){
+            customMethodSecurityInterceptor.setRunAsManager(runAsManager);
+        }
+
+        return customMethodSecurityInterceptor;
+    }
 
 }
 

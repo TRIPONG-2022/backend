@@ -55,4 +55,14 @@ public class AccountController {
         return new ResponseEntity<>(status);
     }
 
+    /**
+     * 회원 탈퇴 API
+     */
+    @PatchMapping("/users/withdrawal")
+    public ResponseEntity withdrawal(@AuthenticationPrincipal PrincipalDetail principal){
+        accountService.withdrawal(principal);
+
+        HttpStatus status = HttpStatus.OK;
+        return new ResponseEntity(status);
+    }
 }

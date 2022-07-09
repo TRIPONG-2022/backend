@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
+import tripong.backend.config.auth.authorization.MethodResourceLiveUpdateService;
 import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
+import tripong.backend.dto.admin.resource.DeleteResourceReloadDto;
 import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
@@ -29,7 +31,7 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final RoleRepository roleRepository;
     private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
-
+    private final MethodResourceLiveUpdateService methodResourceLiveUpdateService;
 
 
     /**
@@ -46,7 +48,7 @@ public class ResourceService {
 
     /**
      * 자원 등록 폼
-     * @return
+     * -권한의 종류와, 적용 가능한 자원 방식을 반환
      */
     public CreateResourceFormRequestDto createResourceForm() {
         return new CreateResourceFormRequestDto(roleRepository.findRoleNamesAll());
@@ -74,13 +76,11 @@ public class ResourceService {
         Resource resource_build = Resource.builder()
                 .resourceName(dto.getResourceName())
                 .resourceType(dto.getResourceType())
+                .description(dto.getDescription())
                 .roleResources(roleResources)
                 .priorityNum(dto.getPriorityNum())
                 .build();
         resourceRepository.save(resource_build);
-
-        customFilterInvocationSecurityMetadataSource.reload();
-
 
         log.info("종료: ResourceService 자원등록");
     }
@@ -91,20 +91,21 @@ public class ResourceService {
      * -자원 전체 목록에서 보이는 것을 삭제하므로, DB 에러 생략
      */
     @Transactional
-    public void deleteResource(Long resourceId) throws Exception {
-        log.info("종료: ResourceService 자원삭제");
+    public DeleteResourceReloadDto deleteResource(Long resourceId) throws Exception {
+        log.info("시작: ResourceService 자원삭제");
 
         Optional<Resource> resource = resourceRepository.findById(resourceId);
         if(resource.isPresent()){
             resourceRepository.delete(resource.get());
-            customFilterInvocationSecurityMetadataSource.reload();
+            log.info("종료: ResourceService 자원삭제");
+
+            return new DeleteResourceReloadDto(resource.get().getResourceType(), resource.get().getResourceName());
         }
         else{
             throw new IllegalStateException("존재하지 않는 자원입니다.");
         }
-
-        log.info("종료: ResourceService 자원삭제");
     }
+
 
 
 

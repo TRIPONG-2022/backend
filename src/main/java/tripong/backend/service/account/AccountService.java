@@ -22,6 +22,7 @@ import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -151,4 +152,18 @@ public class AccountService {
     }
 
 
+    /**
+     * 회원 탈퇴
+     * -이름, 이메일, 닉네임  = "탈퇴한 회원"으로 처리
+     * -아이디: 기존이메일 + 비밀키 (고유 이메일을 남겨 관리 위함)
+     */
+    @Transactional
+    public void withdrawal(PrincipalDetail principal) {
+        log.info("시작: AccountService 회원탈퇴");
+        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(()->{
+            return new IllegalStateException("해당 유저 정보 없음");
+        });
+        user.account_withdrawal(sKey);
+        log.info("종료: AccountService 회원탈퇴");
+    }
 }
