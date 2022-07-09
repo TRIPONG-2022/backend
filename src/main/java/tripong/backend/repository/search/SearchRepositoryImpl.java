@@ -7,11 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.dto.search.SearchType;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.post.QPost;
-import tripong.backend.entity.user.QUser;
 
 import java.util.List;
 
