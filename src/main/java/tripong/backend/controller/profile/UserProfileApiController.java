@@ -43,9 +43,9 @@ public class UserProfileApiController {
     }
 
     @GetMapping("replies/{userId}")
-    public ResponseEntity<Object> getReplyListByUserId(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
-        List<ReplyResponseDto> replyResponseDtoList = replyService.getReplyListByUserId(userId, fromDate, endDate, pageable);
-        return new ResponseEntity<>(replyResponseDtoList, HttpStatus.OK);
+    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
+        List<ReplyResponseDto> replyList = replyService.getReplyListByUserId(userId, fromDate, endDate, pageable);
+        return new ResponseEntity<>(replyList, HttpStatus.OK);
     }
 
 //

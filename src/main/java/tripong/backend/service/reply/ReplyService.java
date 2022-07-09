@@ -25,8 +25,7 @@ public class ReplyService {
 
     // 내가쓴 댓글 및 대댓글 조회
     public List<ReplyResponseDto> getReplyListByUserId(Long userId, LocalDate fromDate, LocalDate endDate, Pageable pageable){
-        List<ReplyResponseDto> ReplyList = replyRepository.getReplyListByUserId(userId, fromDate, endDate, pageable)
-                .stream()
+        List<ReplyResponseDto> ReplyList = replyRepository.getReplyListByUserId(userId, fromDate, endDate, pageable).stream()
                 .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
         return ReplyList;
@@ -35,7 +34,6 @@ public class ReplyService {
     // 댓글 리스트
     public List<ReplyResponseDto> getListParentReply(Long postId, Pageable pageable){
         List<ReplyResponseDto> ReplyList = replyRepository.findParentReplyByPostId(postId, pageable).stream()
-                .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
         return ReplyList;
     }
@@ -43,7 +41,6 @@ public class ReplyService {
     // 대댓글 리스트
     public List<ReplyResponseDto> getListChildrenReply(Long postId, Long parentReply, Pageable pageable){
         List<ReplyResponseDto> ReplyList = replyRepository.findChildrenReplyByPostId(postId, parentReply, pageable).stream()
-                .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
         return ReplyList;
     }
@@ -52,8 +49,14 @@ public class ReplyService {
     @Transactional
     public void saveReply(ReplyRequestDto dto){
         Reply reply = dto.toEntity();
+
         Optional<User> user = userRepository.findByLoginId(dto.getUserId());
         reply.setUserId(user.orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userId=" + dto.getUserId())));
+
+        if (dto.getParentReply() != null){
+            reply.setParentReply(replyRepository.findById(dto.getParentReply()).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id =" + dto.getParentReply())));
+        }
+
         replyRepository.save(reply);
     }
 

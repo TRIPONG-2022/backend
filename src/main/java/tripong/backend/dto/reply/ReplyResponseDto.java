@@ -37,7 +37,7 @@ public class ReplyResponseDto {
         this.postId = reply.getPostId();
         this.userId = reply.getUserId().getLoginId();
         this.content = reply.getContent();
-        this.parentReply = reply.getParentReply();
+        this.parentReply = reply.getParentReply().getId();
     }
 
 }

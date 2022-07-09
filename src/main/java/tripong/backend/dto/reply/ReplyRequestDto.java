@@ -29,7 +29,6 @@ public class ReplyRequestDto {
                 .id(id)
                 .postId(postId)
                 .content(content)
-                .parentReply(parentReply)
                 .build();
     }
 
