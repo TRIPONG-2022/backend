@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.entity.reply.Reply;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -18,9 +19,9 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     Optional<Reply> findById(Long id);
 
-    @Query(value = "SELECT * FROM Reply r WHERE r.login_id = :userId AND r.created_date BETWEEN :fromDate AND :endDate", nativeQuery = true)
-    // @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.lastModifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.userId = :userId AND r.createdDate BETWEEN :fromDate AND :endDate")
-    Page<Reply> getReplyListByUserId(@Param("userId") Long userId, @Param("fromDate") LocalDate fromDate, @Param("endDate") LocalDate endDate, Pageable pageable);
+    // @Query(value = "SELECT * FROM Reply r JOIN Reply p WHERE r.login_id = :userId AND r.created_date BETWEEN :fromDate AND :endDate", nativeQuery = true)
+    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.lastModifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE u.loginId = :userId AND r.createdDate BETWEEN :fromDate AND :endDate")
+    Page<ReplyResponseDto> getReplyListByUserId(@Param("userId") String userId, @Param("fromDate") LocalDateTime fromDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
     @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.lastModifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id IS NULL")
     Page<ReplyResponseDto> findParentReplyByPostId(@Param("postId") Long postId, Pageable pageable);

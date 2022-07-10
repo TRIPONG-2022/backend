@@ -16,24 +16,19 @@ import java.time.LocalDateTime;
 public class EmailValidLink {
 
     // 이메일 토큰 만료 시간 상수 설정
-    private static final long EMAIL_VALID_LINK_EXPRIRATION_TIME_VALUE = 5L;
+    private static final long EMAIL_VALID_LINK_EXPRIRATION_TIME_VALUE = 3L;
 
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column
     private String id;
 
-    @Column
     private String userId;
 
-    @Column
     private LocalDateTime createdTime;
 
-    @Column
     private LocalDateTime expirationDate;
 
-    @Column
     private boolean expired;
 
     // 이메일 유효링크 생성

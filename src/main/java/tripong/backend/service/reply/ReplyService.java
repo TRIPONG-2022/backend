@@ -11,6 +11,7 @@ import tripong.backend.entity.user.User;
 import tripong.backend.repository.reply.ReplyRepository;
 import tripong.backend.repository.user.UserRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,9 +25,9 @@ public class ReplyService {
     private final UserRepository userRepository;
 
     // 내가쓴 댓글 및 대댓글 조회
-    public List<ReplyResponseDto> getReplyListByUserId(Long userId, LocalDate fromDate, LocalDate endDate, Pageable pageable){
+    public List<ReplyResponseDto> getReplyListByUserId(String userId, LocalDateTime fromDate, LocalDateTime endDate, Pageable pageable){
         List<ReplyResponseDto> ReplyList = replyRepository.getReplyListByUserId(userId, fromDate, endDate, pageable).stream()
-                .map(ReplyResponseDto::new)
+                // .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
         return ReplyList;
     }

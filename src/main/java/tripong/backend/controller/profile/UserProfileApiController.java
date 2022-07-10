@@ -15,6 +15,7 @@ import tripong.backend.service.profile.UserProfileService;
 import tripong.backend.service.reply.ReplyService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -43,7 +44,7 @@ public class UserProfileApiController {
     }
 
     @GetMapping("replies/{userId}")
-    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
+    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable String userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDateTime endDate, Pageable pageable){
         List<ReplyResponseDto> replyList = replyService.getReplyListByUserId(userId, fromDate, endDate, pageable);
         return new ResponseEntity<>(replyList, HttpStatus.OK);
     }

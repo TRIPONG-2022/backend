@@ -27,13 +27,30 @@ public class EmailAuthService {
 
     // 이메일 인증
     @Transactional
-    public void createEmailValidLik(EmailAuthRequestDto dto) throws MessagingException {
+    public void createEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
 
         EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
         emailAuthRepository.save(validLink);
 
         sendEmail(dto, validLink);
 
+    }
+
+    // 이메일 재인증
+    @Transactional
+    public String confirmResendEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
+
+        // 가장 최근 인증 토큰
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(dto.getUserId()).orElseThrow(() -> new  IllegalArgumentException("링크가 존재하지 않습니다."));
+
+        if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
+            EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
+            emailAuthRepository.save(validLink);
+            sendEmail(dto, validLink);
+        } else {
+            return "FAIL";
+        }
+        return "SUCCESS";
     }
 
     // 이메일 인증: 비동기식 JavaMailSender

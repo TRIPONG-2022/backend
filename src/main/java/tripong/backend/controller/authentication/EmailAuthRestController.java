@@ -23,7 +23,20 @@ public class EmailAuthRestController {
     @GetMapping("/users/auth/email/send")
     public void emailAuth(@RequestBody EmailAuthRequestDto dto) throws MessagingException {
 
-        emailAuthService.createEmailValidLik(dto);
+        emailAuthService.createEmailValidLink(dto);
+
+    }
+
+    // 이메일 재인증
+    @GetMapping("/users/auth/email/resend")
+    public ResponseEntity<Object> emailAuthResend(@RequestBody EmailAuthRequestDto dto) throws MessagingException{
+        String result = emailAuthService.confirmResendEmailValidLink(dto);
+        if(result == "SUCCESS"){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
 
     }
 

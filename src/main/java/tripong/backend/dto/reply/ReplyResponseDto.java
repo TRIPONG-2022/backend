@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReplyResponseDto {
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime lastModifiedDate;
 
     private Long id;
