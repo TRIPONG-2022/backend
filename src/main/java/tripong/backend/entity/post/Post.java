@@ -52,10 +52,8 @@ public class Post extends BaseTimeEntity {
     @Column(precision = 13, scale = 10)
     private BigDecimal longitude;
 
-    @Column(columnDefinition = "DATE")
     private LocalDate startDate;
 
-    @Column(columnDefinition = "DATE")
     private LocalDate endDate;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
