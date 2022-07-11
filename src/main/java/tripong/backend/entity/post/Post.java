@@ -42,7 +42,7 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Category category;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @Builder.Default
     private List<String> tags = new ArrayList<>();
 

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.Category;
@@ -13,6 +14,7 @@ import tripong.backend.entity.post.Post;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.redis.RedisService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -39,7 +41,7 @@ public class PostApiController {
     }
 
     @PostMapping("/{category}")
-    public ResponseEntity<Object> savePost(@ModelAttribute PostRequestDto postRequestDto) {
+    public ResponseEntity<Object> savePost(@ModelAttribute @Valid PostRequestDto postRequestDto) {
         Post post = postService.save(postRequestDto);
         log.info("saved postId = {}", post.getId());
         return new ResponseEntity(HttpStatus.CREATED);
@@ -48,12 +50,14 @@ public class PostApiController {
     @PatchMapping("/{category}/{postId}")
     public ResponseEntity<Object> updatePost(@PathVariable Long postId, @ModelAttribute PostRequestDto postRequestDto) {
         postService.update(postId, postRequestDto);
+        log.info("updated postId = {}", postId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/{category}/{postId}")
     public ResponseEntity<Object> deletePost(@PathVariable Long postId) {
         postService.delete(postId);
+        log.info("deleted postId = {}", postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -79,6 +83,12 @@ public class PostApiController {
     public ResponseEntity<Object> leaveGathering(@PathVariable Long postId, @PathVariable Long userId) {
         postService.deleteGatheringUser(postId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/files")
+    public ResponseEntity<String> putS3Image(@RequestParam MultipartFile file) {
+        String fileName = postService.putS3Image(file);
+        return new ResponseEntity<>(fileName, HttpStatus.CREATED);
     }
 
 }

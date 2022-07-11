@@ -1,6 +1,7 @@
 package tripong.backend.service.post;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
+
+    @Value("${cloud.aws.cloudFront.domain}")
+    private String domain;
 
     private final PostRepository postRepository;
 
@@ -93,7 +97,7 @@ public class PostService {
         post.setImages(imagefileNameList);
 
         MultipartFile thumbnail = requestDto.getThumbnail();
-        if (thumbnail.getSize() != 0){
+        if (thumbnail != null && thumbnail.getSize() != 0){
             String fileName = amazonS3Service.uploadFile(thumbnail);
             post.setThumbnail(fileName);
         }
@@ -105,13 +109,16 @@ public class PostService {
     @CacheEvict(value="post", key = "#postId")
     public void update(Long postId, PostRequestDto postRequestDto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+
         List<String> imagefileNameList = new ArrayList<>();
         postRequestDto.getImages().forEach(fileName -> imagefileNameList.add(amazonS3Service.uploadFile(fileName)));
+
         MultipartFile thumbnail = postRequestDto.getThumbnail();
         String thumbnailFileName = null;
-        if (thumbnail.getSize() != 0){
+        if (thumbnail != null && thumbnail.getSize() != 0){
             thumbnailFileName = amazonS3Service.uploadFile(postRequestDto.getThumbnail());
         }
+
         /* 장애 예방을 위해 delete를 나중에 수행 */
         post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
         String fileName = post.getThumbnail();
@@ -211,6 +218,12 @@ public class PostService {
             }
         });
         return postResponseDtoList;
+    }
+
+    public String putS3Image(MultipartFile file) {
+        String fileName = amazonS3Service.uploadFile(file);
+        String imageUrl = domain + "/" + fileName;
+        return imageUrl;
     }
 
 }
