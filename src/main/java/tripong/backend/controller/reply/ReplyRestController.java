@@ -21,37 +21,52 @@ public class ReplyRestController {
     // 댓글 조회
     @GetMapping("/replies/parent/{postId}")
     public ResponseEntity<Object> getListParentReply(@PathVariable Long postId, Pageable pageable){
+
         List<ReplyResponseDto> replyResponseDtoList = replyService.getListParentReply(postId, pageable);
+
         return new ResponseEntity<>(replyResponseDtoList, HttpStatus.OK);
+
     }
 
     // 대댓글 조회
     @GetMapping("/replies/children/{postId}/{parentReply}")
     public ResponseEntity<Object> getListChildrenReply(@PathVariable Long postId, @PathVariable Long parentReply, Pageable pageable){
+
         List<ReplyResponseDto> replyResponseDtoList = replyService.getListChildrenReply(postId, parentReply, pageable);
+
         return new ResponseEntity<>(replyResponseDtoList, HttpStatus.OK);
+
     }
 
     // 댓글 및 대댓글 작성
     @PostMapping("/replies/{postId}")
     public ResponseEntity<Object> saveReply(@RequestBody ReplyRequestDto dto){
+
         replyService.saveReply(dto);
+
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     // 댓글 및 대댓글 수정
     @PatchMapping("/replies/{id}")
     public ResponseEntity<Object> updateReply(@PathVariable Long id, @RequestBody ReplyRequestDto dto){
+
         dto.setId(id);
         replyService.updateReply(dto);
+
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     // 댓글 및 대댓글 삭제
     @DeleteMapping("/replies/{id}")
     public ResponseEntity<Object> deleteReply(@PathVariable Long id){
+
         replyService.deleteReply(id);
+
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
 }

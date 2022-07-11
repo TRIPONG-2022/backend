@@ -10,9 +10,13 @@ import tripong.backend.entity.reply.Reply;
 public class ReplyRequestDto {
 
     private Long id;
+
     private Long postId;
+
     private String userId;
+
     private String content;
+
     private Long parentReply;
 
     @Builder

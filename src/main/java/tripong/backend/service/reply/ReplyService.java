@@ -10,7 +10,6 @@ import tripong.backend.entity.reply.Reply;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.reply.ReplyRepository;
 import tripong.backend.repository.user.UserRepository;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -26,29 +25,39 @@ public class ReplyService {
 
     // 내가쓴 댓글 및 대댓글 조회
     public List<ReplyResponseDto> getReplyListByUserId(String userId, LocalDateTime fromDate, LocalDateTime endDate, Pageable pageable){
-        List<ReplyResponseDto> ReplyList = replyRepository.getReplyListByUserId(userId, fromDate, endDate, pageable).stream()
+
+        List<ReplyResponseDto> ReplyList = replyRepository.findReplyByUserId(userId, fromDate, endDate, pageable).stream()
                 // .map(ReplyResponseDto::new)
                 .collect(Collectors.toList());
+
         return ReplyList;
+
     }
 
     // 댓글 리스트
     public List<ReplyResponseDto> getListParentReply(Long postId, Pageable pageable){
+
         List<ReplyResponseDto> ReplyList = replyRepository.findParentReplyByPostId(postId, pageable).stream()
                 .collect(Collectors.toList());
+
         return ReplyList;
+
     }
 
     // 대댓글 리스트
     public List<ReplyResponseDto> getListChildrenReply(Long postId, Long parentReply, Pageable pageable){
+
         List<ReplyResponseDto> ReplyList = replyRepository.findChildrenReplyByPostId(postId, parentReply, pageable).stream()
                 .collect(Collectors.toList());
+
         return ReplyList;
+
     }
 
     // 댓글 및 대댓글 작성
     @Transactional
     public void saveReply(ReplyRequestDto dto){
+
         Reply reply = dto.toEntity();
 
         Optional<User> user = userRepository.findByLoginId(dto.getUserId());
@@ -59,21 +68,27 @@ public class ReplyService {
         }
 
         replyRepository.save(reply);
+
     }
 
     // 댓글 및 대댓글 수정
     @Transactional
     public void updateReply(ReplyRequestDto dto){
+
         Reply reply = replyRepository.findById(dto.getId()).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id=" + dto.getId()));
+
         reply.setContent(dto.getContent());
+
     }
 
     // 댓글 및 대댓글 삭제
     @Transactional
     public void deleteReply(Long id){
-        Reply reply = replyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id=" + id));
-        replyRepository.deleteById(reply);
-    }
 
+        Reply reply = replyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 없습니다. id=" + id));
+
+        replyRepository.deleteById(reply);
+
+    }
 
 }

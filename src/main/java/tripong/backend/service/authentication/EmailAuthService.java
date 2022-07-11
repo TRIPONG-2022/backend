@@ -32,13 +32,13 @@ public class EmailAuthService {
         EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
         emailAuthRepository.save(validLink);
 
-        sendEmail(dto, validLink);
+        sendEmailByGmail(dto, validLink);
 
     }
 
     // 이메일 재인증
     @Transactional
-    public String confirmResendEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
+    public String verifyResendEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
 
         // 가장 최근 인증 토큰
         EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(dto.getUserId()).orElseThrow(() -> new  IllegalArgumentException("링크가 존재하지 않습니다."));
@@ -46,16 +46,17 @@ public class EmailAuthService {
         if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
             EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
             emailAuthRepository.save(validLink);
-            sendEmail(dto, validLink);
+            sendEmailByGmail(dto, validLink);
         } else {
             return "FAIL";
         }
         return "SUCCESS";
+
     }
 
     // 이메일 인증: 비동기식 JavaMailSender
     @Async
-    public void sendEmail(EmailAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
+    public void sendEmailByGmail(EmailAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         String text = "";
@@ -86,6 +87,7 @@ public class EmailAuthService {
         message.setText(text, "utf-8", "html");
 
         mailSender.send(message);
+
     }
 
     // 이메일 인증: 유효 링크 확인
@@ -100,7 +102,7 @@ public class EmailAuthService {
 
     // 이메일 인증: 유효 링크 확인 및 변경
     @Transactional
-    public String verifyEmail(String emailValidLink){
+    public String verifyEmailLink(String emailValidLink){
 
         EmailValidLink findValidLink = findByIdAndExpirationDateAfterAndExpired(emailValidLink);
         String userId = findValidLink.getUserId();
@@ -110,12 +112,11 @@ public class EmailAuthService {
         findValidLink.makeInvalidLink();
 
         if (user.isPresent()){
-            userAuthRepository.updateauthenticationStatus(userId);
+            userAuthRepository.updateAuthenticationStatus(userId);
             return "SUCCESS";
         } else {
             return "FAIL";
         }
-
     }
 
 }

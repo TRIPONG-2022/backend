@@ -20,13 +20,13 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     Optional<Reply> findById(Long id);
 
     // @Query(value = "SELECT * FROM Reply r JOIN Reply p WHERE r.login_id = :userId AND r.created_date BETWEEN :fromDate AND :endDate", nativeQuery = true)
-    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.lastModifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE u.loginId = :userId AND r.createdDate BETWEEN :fromDate AND :endDate")
-    Page<ReplyResponseDto> getReplyListByUserId(@Param("userId") String userId, @Param("fromDate") LocalDateTime fromDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE u.loginId = :userId AND r.createdDate BETWEEN :fromDate AND :endDate")
+    Page<ReplyResponseDto> findReplyByUserId(@Param("userId") String userId, @Param("fromDate") LocalDateTime fromDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
-    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.lastModifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id IS NULL")
+    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id IS NULL")
     Page<ReplyResponseDto> findParentReplyByPostId(@Param("postId") Long postId, Pageable pageable);
 
-    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.lastModifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id = :parentReply")
+    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id = :parentReply")
     Page<ReplyResponseDto> findChildrenReplyByPostId(@Param("postId") Long postId, @Param("parentReply") Long parentReply, Pageable pageable);
 
     @Transactional

@@ -17,7 +17,7 @@ public class ReplyResponseDto {
     private LocalDateTime createdDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime ModifiedDate;
 
     private Long id;
 
@@ -32,7 +32,7 @@ public class ReplyResponseDto {
     @Builder
     public ReplyResponseDto(Reply reply){
         this.createdDate = reply.getCreatedDate();
-        this.lastModifiedDate = reply.getLastModifiedDate();
+        this.ModifiedDate = reply.getModifiedDate();
         this.id = reply.getId();
         this.postId = reply.getPostId();
         this.userId = reply.getUserId().getLoginId();

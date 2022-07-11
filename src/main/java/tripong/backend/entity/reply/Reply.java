@@ -1,7 +1,6 @@
 package tripong.backend.entity.reply;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import tripong.backend.entity.base.BaseEntity;
@@ -31,7 +30,6 @@ public class Reply extends BaseEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-//    @ColumnDefault("0")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -39,4 +37,5 @@ public class Reply extends BaseEntity {
 
     @OneToMany(mappedBy = "parentReply")
     private List<Reply> childrenReply = new ArrayList<>();
+
 }

@@ -15,6 +15,7 @@ import tripong.backend.repository.authentication.UserAuthRepository;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -36,7 +37,7 @@ public class UserAuthService {
 
     }
 
-    // 비밀번호 찾기: 이메일 유효링크 생성
+    // 비밀번호 찾기: 이메일 인증
     @Transactional
     public void findUserPassword(UserAuthRequestDto dto) throws MessagingException {
 
@@ -45,13 +46,32 @@ public class UserAuthService {
         EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
         emailAuthRepository.save(validLink);
 
-        sendFindUserPasswordEmail(dto, validLink);
+        sendFindUserPasswordByGmail(dto, validLink);
+
+    }
+
+    // 비밀번호 찾기: 이메일 재인증
+    @Transactional
+    public String verifyResendfindUserPassword(UserAuthRequestDto dto) throws MessagingException {
+
+        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
+
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalArgumentException("링크가 존재하지 않습니다."));
+
+        if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
+            EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
+            emailAuthRepository.save(validLink);
+            sendFindUserPasswordByGmail(dto, validLink);
+        } else {
+            return "FAIL";
+        }
+        return "SUCCESS";
 
     }
 
     // 비밀번호 찾기: 비동기식 JavaMailSender
     @Async
-    public void sendFindUserPasswordEmail(UserAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
+    public void sendFindUserPasswordByGmail(UserAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         String text = "";

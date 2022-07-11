@@ -15,7 +15,7 @@ public interface UserAuthRepository extends JpaRepository<User, String> {
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE User u set u.authentication = u.authentication + 1 WHERE u.loginId = :userId")
-    void updateauthenticationStatus(@Param("userId") String userId);
+    void updateAuthenticationStatus(@Param("userId") String userId);
 
     @Query("SELECT u.loginId FROM User u WHERE u.email = :email")
     Optional<User> findByEmail(@Param("email") String email);

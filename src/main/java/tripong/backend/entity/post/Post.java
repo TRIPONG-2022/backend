@@ -1,12 +1,11 @@
 package tripong.backend.entity.post;
 
-import com.querydsl.core.types.EntityPath;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import tripong.backend.dto.post.PostRequestDto;
-import tripong.backend.entity.BaseTimeEntity;
+import tripong.backend.entity.base.BaseTimeEntity;
 import tripong.backend.entity.user.User;
 
 import javax.persistence.*;
@@ -23,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Post extends BaseTimeEntity{
+public class Post extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

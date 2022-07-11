@@ -23,6 +23,7 @@ public class EmailValidLink {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private String id;
 
+    @Column(nullable = false)
     private String userId;
 
     private LocalDateTime createdTime;

@@ -3,7 +3,6 @@ package tripong.backend.controller.authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.authentication.PasswordRequestDto;
@@ -12,14 +11,13 @@ import tripong.backend.service.authentication.UserAuthService;
 import javax.mail.MessagingException;
 import java.util.Objects;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserAuthRestController {
 
     private final UserAuthService userAuthService;
 
     // 아이디 찾기
-    @ResponseBody
     @PostMapping("/users/auth/find/id")
     public ResponseEntity<Object> findUserId (@RequestBody UserAuthRequestDto dto){
 
@@ -29,15 +27,28 @@ public class UserAuthRestController {
 
     }
 
-    // 비밀번호 찾기: 유효 링크 생성\
+    // 비밀번호 찾기: 이메일 인증
     // /users/auth/find/password
-    @ResponseBody
     @GetMapping("/auth/verify-request")
     public ResponseEntity<Object> findUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException {
 
        userAuthService.findUserPassword(dto);
 
        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    // 비밀번호 찾기: 이메일 재인증
+    @GetMapping("/auth/verify-request/resend")
+    public ResponseEntity<Object> ResendfindUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException{
+
+        String result = userAuthService.verifyResendfindUserPassword(dto);
+
+        if(result == "SUCCESS"){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
     }
 
