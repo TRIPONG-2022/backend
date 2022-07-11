@@ -1,6 +1,5 @@
 package tripong.backend.controller.profile;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -12,10 +11,10 @@ import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.dto.profile.UserProfileResponseDto;
 import tripong.backend.entity.post.Category;
-import tripong.backend.entity.user.User;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.profile.UserProfileService;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class UserProfileApiController {
     private final UserProfileService userProfileService;
 
     @GetMapping("/posts/{userId}")
-    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate, Pageable pageable) {
+    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.getPersonalPostList(userId, category, fromDate, endDate, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }

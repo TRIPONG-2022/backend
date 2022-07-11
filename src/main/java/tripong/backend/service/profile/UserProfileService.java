@@ -39,7 +39,7 @@ public class UserProfileService {
 
         MultipartFile picture = userProfileRequestDto.getPicture();
         String pictureUrl = null;
-        if (picture.getSize() != 0){
+        if (picture != null && !picture.isEmpty()){
             pictureUrl = amazonS3Service.uploadFile(userProfileRequestDto.getPicture());
         }
 

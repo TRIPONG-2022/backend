@@ -221,8 +221,13 @@ public class PostService {
     }
 
     public String putS3Image(MultipartFile file) {
-        String fileName = amazonS3Service.uploadFile(file);
-        String imageUrl = domain + "/" + fileName;
+        String imageUrl = null;
+
+        if (!file.isEmpty()){
+            String fileName = amazonS3Service.uploadFile(file);
+            imageUrl = domain + "/" + fileName;
+        }
+
         return imageUrl;
     }
 
