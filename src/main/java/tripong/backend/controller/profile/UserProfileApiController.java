@@ -2,18 +2,22 @@ package tripong.backend.controller.profile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostResponseDto;
+import tripong.backend.dto.reply.ReplyProfileResponseDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.entity.post.Category;
+import tripong.backend.entity.reply.Reply;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.profile.UserProfileService;
 import tripong.backend.service.reply.ReplyService;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,8 +48,12 @@ public class UserProfileApiController {
     }
 
     @GetMapping("replies/{userId}")
-    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable String userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDateTime endDate, Pageable pageable){
-        List<ReplyResponseDto> replyList = replyService.getReplyListByUserId(userId, fromDate, endDate, pageable);
+    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable String userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
+
+        LocalDateTime startDate = fromDate.atStartOfDay();
+        LocalDateTime finishDate = endDate.atStartOfDay();
+
+        List<ReplyResponseDto> replyList = replyService.getReplyListByUserId(userId, startDate, finishDate, pageable);
         return new ResponseEntity<>(replyList, HttpStatus.OK);
     }
 

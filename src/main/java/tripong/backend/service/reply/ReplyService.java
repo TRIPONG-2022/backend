@@ -1,15 +1,18 @@
 package tripong.backend.service.reply;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.dto.reply.ReplyProfileResponseDto;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.entity.reply.Reply;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.reply.ReplyRepository;
 import tripong.backend.repository.user.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +27,10 @@ public class ReplyService {
     private final UserRepository userRepository;
 
     // 내가쓴 댓글 및 대댓글 조회
-    public List<ReplyResponseDto> getReplyListByUserId(String userId, LocalDateTime fromDate, LocalDateTime endDate, Pageable pageable){
+    public List<ReplyResponseDto> getReplyListByUserId(String userId, LocalDateTime startDate, LocalDateTime finishDate, Pageable pageable){
 
-        List<ReplyResponseDto> ReplyList = replyRepository.findReplyByUserId(userId, fromDate, endDate, pageable).stream()
-                // .map(ReplyResponseDto::new)
+        List<ReplyResponseDto> ReplyList = replyRepository.findReplyByUserId(userId, startDate, finishDate, pageable)
+                .stream()
                 .collect(Collectors.toList());
 
         return ReplyList;

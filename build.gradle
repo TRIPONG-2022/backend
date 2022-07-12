@@ -43,9 +43,6 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	implementation "com.querydsl:querydsl-apt:5.0.0"
 
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -29,7 +29,7 @@ public class EmailAuthRestController {
 
     // 이메일 재인증
     @GetMapping("/users/auth/email/resend")
-    public ResponseEntity<Object> resendEmailAuth(@RequestBody EmailAuthRequestDto dto) throws MessagingException{
+    public ResponseEntity<Object> resendEmailAuth(@RequestBody EmailAuthRequestDto dto) throws MessagingException {
 
         String result = emailAuthService.verifyResendEmailValidLink(dto);
 
