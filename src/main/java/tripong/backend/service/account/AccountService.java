@@ -3,12 +3,11 @@ package tripong.backend.service.account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.PrincipalDetail;
-import tripong.backend.config.auth.oauth.oauthDetail.OAuthInfo;
+import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.oauth.oauthDetail.OAuthInfo;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.dto.account.OauthJoinRequestDto;
@@ -22,7 +21,6 @@ import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -64,9 +62,8 @@ public class AccountService {
         }
 
         dto.setPassword(encoder.encode(dto.getPassword()));
-        User user = dto.toEntity();
+        User user = new User(dto.getLoginId(), dto.getPassword(), dto.getNickName(), dto.getEmail(), JoinType.Normal);
         authorize_UNAUTH(user);
-
         userRepository.save(user);
         log.info("종료: AccountService 일반회원가입");
     }
@@ -119,8 +116,8 @@ public class AccountService {
     @Transactional
     public void firstExtraInfoPatch(FirstExtraInfoPutRequestDto dto, PrincipalDetail principal) {
         log.info("시작: AccountService 추가정보입력");
-        User user = userRepository.findByLoginId(principal.getUser().getLoginId()).orElseThrow(()->{
-            return new UsernameNotFoundException("해당 유저의 loginId 없음");
+        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(()->{
+            return new IllegalStateException(AccountErrorName.PK_NOT_USER);
         });
         user.putExtraInfo(dto);
         authorize_USER(user);
@@ -131,31 +128,28 @@ public class AccountService {
 
     private void authorize_UNAUTH(User user){
         Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH");
-        UserRole userRole_unauth = UserRole.builder().role(role_unauth).build();
         List<UserRole> only_unauth_userRoles = new ArrayList<>();
-        only_unauth_userRoles.add(userRole_unauth);
+        only_unauth_userRoles.add(new UserRole(role_unauth));
         user.addUserRole(only_unauth_userRoles);
     }
     private void authorize_USER(User user){
         Role role_user = roleRepository.findByRoleName("ROLE_USER");
-        UserRole userRole_user = UserRole.builder().role(role_user).build();
         List<UserRole> only_user_userRoles = new ArrayList<>();
-        only_user_userRoles.add(userRole_user);
+        only_user_userRoles.add(new UserRole(role_user));
         user.addUserRole(only_user_userRoles);
     }
     private List<UserRole> authorize_oauthJoin_userRoles() {
         Role role_user = roleRepository.findByRoleName("ROLE_USER");
-        UserRole userRole_user = UserRole.builder().role(role_user).build();
         List<UserRole> only_user_userRoles = new ArrayList<>();
-        only_user_userRoles.add(userRole_user);
+        only_user_userRoles.add(new UserRole(role_user));
         return only_user_userRoles;
     }
 
 
     /**
      * 회원 탈퇴
-     * -이름, 이메일, 닉네임  = "탈퇴한 회원"으로 처리
-     * -아이디: 기존이메일 + 비밀키 (고유 이메일을 남겨 관리 위함)
+     * -이름, 아이디, 닉네임  = "탈퇴 회원"으로 변경
+     * -이메일: 기존이메일 + 비밀키 (고유 이메일을 남겨 관리 위함)
      */
     @Transactional
     public void withdrawal(PrincipalDetail principal) {

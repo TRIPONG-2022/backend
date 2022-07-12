@@ -8,7 +8,7 @@ import tripong.backend.controller.account.AccountController;
 import tripong.backend.exception.ErrorResult;
 
 
-@RestControllerAdvice(assignableTypes = {AccountController.class})
+@RestControllerAdvice("tripong.backend.controller.account")
 public class AccountErrorAdvice {
 
     @ExceptionHandler
@@ -22,11 +22,13 @@ public class AccountErrorAdvice {
     }
 
     public int code_value(String message){
-        if(message == AccountErrorName.LoginId_DUP){
-            return 101;
-        }
-        else{
-            return 999;
+        switch (message){
+            case AccountErrorName.Email_DUP: return 101;
+            case AccountErrorName.LoginId_DUP: return 102;
+            case AccountErrorName.NickName_DUP: return 103;
+            case AccountErrorName.LoginId_NickName_DUP: return 104;
+            case AccountErrorName.PK_NOT_USER: return 105;
+            default: return 999;
         }
     }
 }

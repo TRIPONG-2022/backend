@@ -7,6 +7,8 @@ import tripong.backend.entity.role.ResourceType;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -14,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateResourceRequestDto {
 
+    @NotBlank(message = "자원명이 입력되지 않았습니다.")
     private String resourceName;
 
     @Enumerated(EnumType.STRING)
@@ -21,8 +24,9 @@ public class CreateResourceRequestDto {
 
     private String description;
 
-    private int priorityNum;
+    @Min(value = 1, message = "양수만 입력 가능합니다.")
+    private Integer priorityNum;
 
+    @NotBlank(message = "권한이 선택되지 않았습니다.")
     private List<String> roleNames;
-
 }

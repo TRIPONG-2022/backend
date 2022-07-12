@@ -24,13 +24,8 @@ public class RoleDataController {
      */
     @GetMapping("/admin/roles")
     public ResponseEntity getRoleList(){
-        log.info("시작: RoleController 권한리스트");
-
         List<GetRoleListResponseDto> getRoleListResponseDtoList = roleService.getRoleList();
-
-        log.info("종료: RoleController 권한리스트");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(getRoleListResponseDtoList, status);
+        return new ResponseEntity<>(getRoleListResponseDtoList, HttpStatus.OK);
     }
 
     /**
@@ -38,13 +33,8 @@ public class RoleDataController {
      */
     @PostMapping("/admin/roles")
     public ResponseEntity createRole(@RequestBody CreateRoleRequestDto dto){
-        log.info("시작: RoleController 권한등록");
-
         roleService.createRole(dto);
-
-        log.info("종료: RoleController 권한등록");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /**
@@ -52,14 +42,7 @@ public class RoleDataController {
      */
     @DeleteMapping("/admin/roles/{roleId}")
     public ResponseEntity deleteRole(@PathVariable("roleId") Long roleId){
-        log.info("시작: RoleController 권한삭제");
-
         roleService.deleteRole(roleId);
-
-        log.info("종료: RoleController 권한삭제");
-        HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 }

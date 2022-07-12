@@ -1,13 +1,9 @@
 package tripong.backend.dto.account;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tripong.backend.entity.user.JoinType;
-import tripong.backend.entity.user.User;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 
@@ -26,24 +22,5 @@ public class NormalJoinRequestDto {
 
     @Email(message = "이메일 양식을 지켜주세요.")
     private String email;
-
-
-    @Builder
-    public NormalJoinRequestDto(String nickName, String loginId, String password, String email) {
-        this.nickName = nickName;
-        this.loginId = loginId;
-        this.password = password;
-        this.email = email;
-    }
-
-    public User toEntity(){
-        return User.builder()
-                .loginId(loginId)
-                .password(password)
-                .nickName(nickName)
-                .email(email)
-                .joinMethod(JoinType.Normal)
-                .build();
-    }
 }
 

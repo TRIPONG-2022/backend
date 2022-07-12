@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.admin.role.CreateRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
+import tripong.backend.exception.admin.AdminErrorName;
 import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.List;
@@ -34,15 +35,10 @@ public class RoleService {
     @Transactional
     public void createRole(CreateRoleRequestDto dto) {
         if(!dto.getRoleName().startsWith("ROLE_")){
-            throw new IllegalArgumentException("권한명 ROLE_~~ 으로 작성해 주세요.");
+            throw new IllegalArgumentException(AdminErrorName.Role_FORM_ERROR);
         }
 
-        Role role = Role.builder()
-                .roleName(dto.getRoleName())
-                .description(dto.getDescription())
-                .build();
-
-        roleRepository.save(role);
+        roleRepository.save(new Role(dto.getRoleName(), dto.getDescription()));
     }
 
     /**
@@ -55,9 +51,7 @@ public class RoleService {
             roleRepository.delete(role.get());
         }
         else{
-            throw new IllegalStateException("존재하지 않는 권한입니다.");
+            throw new IllegalStateException(AdminErrorName.PK_NOT_ROLE);
         }
     }
-
-
 }

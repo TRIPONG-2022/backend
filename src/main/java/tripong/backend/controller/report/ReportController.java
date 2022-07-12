@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.report.PostReportRequestDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.report.ReportType;
@@ -24,19 +25,19 @@ public class ReportController {
 
 
     /**
-    * 유저 신고 카테고리 API
+    * 신고 카테고리 폼 요소 반환 API
     */
     @GetMapping("/reports/type")
     public ResponseEntity userReportType(){
         List<ReportType> types = Arrays.asList(ReportType.values());
 
-        HttpStatus status = HttpStatus.CREATED;
+        HttpStatus status = HttpStatus.OK;
         return new ResponseEntity<>(types, status);
     }
 
     /**
      * 유저 신고 등록 API
-     * -{userId}: 신고받을 유저의 pk (없는 pk 에러처리 -> 추후 설계예정)
+     * -{userId}: 신고받을 유저의 pk
      */
     @PostMapping("/reports/users/{userId}")
     public ResponseEntity userReport(@RequestBody UserReportRequestDto dto, @PathVariable("userId") Long reportedUserId, @AuthenticationPrincipal PrincipalDetail principal){

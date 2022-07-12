@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
-import tripong.backend.config.auth.authorization.MethodResourceLiveUpdateService;
+import tripong.backend.config.security.authorization.CustomFilterInvocationSecurityMetadataSource;
+import tripong.backend.config.security.authorization.MethodResourceLiveUpdateService;
 import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
 import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
 import tripong.backend.dto.admin.resource.DeleteResourceReloadDto;
@@ -15,6 +15,7 @@ import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.RoleResource;
+import tripong.backend.exception.admin.AdminErrorName;
 import tripong.backend.repository.admin.resource.ResourceRepository;
 import tripong.backend.repository.admin.role.RoleRepository;
 
@@ -47,7 +48,7 @@ public class ResourceService {
     }
 
     /**
-     * 자원 등록 폼
+     * 자원 생성 폼 요소들
      * -권한의 종류와, 적용 가능한 자원 방식을 반환
      */
     public CreateResourceFormRequestDto createResourceForm() {
@@ -59,29 +60,19 @@ public class ResourceService {
      * -이미 존재하는 자원이면 에러 처리
      */
     @Transactional
-    public void createResource(CreateResourceRequestDto dto) throws Exception {
+    public void createResource(CreateResourceRequestDto dto) {
         log.info("시작: ResourceService 자원등록");
-
         Resource resource = resourceRepository.findByResourceName(dto.getResourceName());
         if(resource!=null){
-            throw new IllegalStateException("이미 존재하는 자원입니다. 삭제 후 등록해 주세요");
+            throw new IllegalStateException(AdminErrorName.ResourceName_DUP);
         }
 
         List<RoleResource> roleResources = new ArrayList<>();
         for(String role_name : dto.getRoleNames()){
-            Role r = roleRepository.findByRoleName(role_name);
-            RoleResource roleResource = RoleResource.builder().role(r).build();
-            roleResources.add(roleResource);
+            Role role = roleRepository.findByRoleName(role_name);
+            roleResources.add(new RoleResource(role));
         }
-        Resource resource_build = Resource.builder()
-                .resourceName(dto.getResourceName())
-                .resourceType(dto.getResourceType())
-                .description(dto.getDescription())
-                .roleResources(roleResources)
-                .priorityNum(dto.getPriorityNum())
-                .build();
-        resourceRepository.save(resource_build);
-
+        resourceRepository.save(new Resource(dto.getResourceName(), dto.getResourceType(), dto.getDescription(), dto.getPriorityNum(), roleResources));
         log.info("종료: ResourceService 자원등록");
     }
 
@@ -105,11 +96,6 @@ public class ResourceService {
             throw new IllegalStateException("존재하지 않는 자원입니다.");
         }
     }
-
-
-
-
-
 }
 
 

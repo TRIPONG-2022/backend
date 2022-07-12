@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,63 +29,41 @@ public class AdminUserController {
     private final AdminService adminService;
 
     /**
-     * 사용자 전체 목록 API
+     * 유저 전체 목록 API
      */
     @GetMapping("/admin/users")
-    public ResponseEntity getUserList(Pageable pageable){
-        log.info("시작: AdminUserController 사용자전체목록");
-
+    public ResponseEntity getUserList(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
         Page<GetUserAllListDto> userList = adminService.getUserList(pageable);
-
-        log.info("종료: AdminUserController 사용자전체목록");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(userList, status);
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
 
     /**
-     * 사용자 권한 변경 API
+     * 유저 권한 변경 API
      */
     @PatchMapping("/admin/users/{userId}")
     public ResponseEntity changedRoles(@PathVariable("userId") Long userId, @RequestBody UpdateRolesRequestDto dto){
-        log.info("시작: AdminUserController 권한변경");
-
         adminService.changedRoles(userId, dto);
-
-
-        log.info("종료: AdminUserController 권한변경");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * 신고 받은 사용자 전체 목록 API
+     * 신고 접수(유저) 전체 목록 API
      */
     @GetMapping("/admin/reports/users")
-    public ResponseEntity getUserReportedList(Pageable pageable){
-        log.info("시작: AdminUserController 신고유저전체목록");
-
+    public ResponseEntity getUserReportedList(@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable){
         Page<GetUserReportedListResponseDto> result = adminService.getUserReportedList(pageable);
-
-        log.info("종료: AdminUserController 신고유저전체목록");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(result, status);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
 
     /**
-     * 신고 유저 정지(BLACK) 처리 API
+     * 유저 BLACK 처리 API
      */
     @PatchMapping("/admin/reports/users/black/{userId}")
     public ResponseEntity changedBlack(@PathVariable("userId") Long userId){
-        log.info("시작: AdminUserController 블랙처리");
-
         adminService.changedBlack(userId);
-
-        log.info("종료: AdminUserController 블랙처리");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

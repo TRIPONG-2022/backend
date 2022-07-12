@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import tripong.backend.dto.admin.post.GetPostReportedListResponseDto;
 import tripong.backend.service.admin.AdminService;
+import tripong.backend.service.post.PostService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,36 +22,24 @@ import tripong.backend.service.admin.AdminService;
 public class AdminPostController {
 
     private final AdminService adminService;
+    private final PostService postService;
 
     /**
-     * 신고 받은 게시글 전체 목록 API
+     * 신고 접수(게시글) 전체 목록 API
      */
     @GetMapping("/admin/reports/posts")
-    public ResponseEntity getPostReportedList(Pageable pageable){
-        log.info("시작: AdminPostController 신고게시글전체목록");
-
+    public ResponseEntity getPostReportedList(@PageableDefault(sort = "reportCreatedDate", direction = Sort.Direction.DESC) Pageable pageable){
         Page<GetPostReportedListResponseDto> result = adminService.getPostReportedList(pageable);
-
-        log.info("종료: AdminPostController 신고게시글전체목록");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(result, status);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
-     * 신고 받은 게시글 삭제 API
+     * 신고 게시글 삭제 API
      */
     @DeleteMapping("/admin/reports/posts/{postId}")
     public ResponseEntity deletePost(@PathVariable("postId") Long postId){
-        log.info("시작: AdminPostController 신고게시글삭제");
-        adminService.deletePost(postId);
-        log.info("종료: AdminPostController 신고게시글삭제");
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(status);
+        postService.delete(postId); //최창화 API
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-
-
-
-
 
 }

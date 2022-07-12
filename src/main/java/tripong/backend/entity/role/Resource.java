@@ -23,15 +23,15 @@ public class Resource {
 
     private String description;
 
-    private int priorityNum;
+    private Integer priorityNum;
 
     @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
     private List<RoleResource> roleResources = new ArrayList<>();
 
-    //
-    @Builder
+    ////-----편의 메소드-----
+    //자원 생성
     public Resource(String resourceName, ResourceType resourceType,
-                    String description, int priorityNum, List<RoleResource> roleResources){
+                    String description, Integer priorityNum, List<RoleResource> roleResources){
         this.resourceName = resourceName;
         this.resourceType = resourceType;
         this.description = description;
@@ -41,6 +41,7 @@ public class Resource {
         }
     }
 
+    //의존주입
     public void addRoleResource(RoleResource roleResource){
         roleResources.add(roleResource);
         roleResource.injectResource(this);
