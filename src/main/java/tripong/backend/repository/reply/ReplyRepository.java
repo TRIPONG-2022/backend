@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.entity.reply.Reply;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
