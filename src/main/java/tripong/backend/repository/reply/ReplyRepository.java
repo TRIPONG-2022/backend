@@ -18,13 +18,13 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     Optional<Reply> findById(Long id);
 
-     @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE u.loginId = :userId AND r.createdDate BETWEEN :startDate AND :finishDate")
+     @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId.id, r.userId.loginId, r.content, r.parentReply.id) FROM Reply r WHERE r.userId.loginId = :userId AND r.createdDate BETWEEN :startDate AND :finishDate")
     Page<ReplyResponseDto> findReplyByUserId(@Param("userId") String userId, @Param("startDate") LocalDateTime startDate, @Param("finishDate") LocalDateTime finishDate, Pageable pageable);
 
-    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id IS NULL")
+    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId.id, r.userId.loginId, r.content, r.parentReply.id) FROM Reply r WHERE r.postId.id = :postId AND r.parentReply.id IS NULL")
     Page<ReplyResponseDto> findParentReplyByPostId(@Param("postId") Long postId, Pageable pageable);
 
-    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId, u.loginId, r.content, r.parentReply.id) FROM Reply r JOIN r.userId u WHERE r.postId = :postId AND r.parentReply.id = :parentReply")
+    @Query("SELECT new tripong.backend.dto.reply.ReplyResponseDto(r.createdDate, r.modifiedDate, r.id, r.postId.id, r.userId.loginId, r.content, r.parentReply.id) FROM Reply r WHERE r.postId.id= :postId AND r.parentReply.id = :parentReply")
     Page<ReplyResponseDto> findChildrenReplyByPostId(@Param("postId") Long postId, @Param("parentReply") Long parentReply, Pageable pageable);
 
     @Transactional

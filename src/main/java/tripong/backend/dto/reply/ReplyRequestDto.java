@@ -31,7 +31,6 @@ public class ReplyRequestDto {
     public Reply toEntity() {
         return Reply.builder()
                 .id(id)
-                .postId(postId)
                 .content(content)
                 .build();
     }

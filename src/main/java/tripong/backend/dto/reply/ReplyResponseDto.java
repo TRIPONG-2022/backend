@@ -34,7 +34,7 @@ public class ReplyResponseDto {
         this.createdDate = reply.getCreatedDate();
         this.ModifiedDate = reply.getModifiedDate();
         this.id = reply.getId();
-        this.postId = reply.getPostId();
+        this.postId = reply.getPostId().getId();
         this.userId = reply.getUserId().getLoginId();
         this.content = reply.getContent();
         this.parentReply = reply.getParentReply().getId();

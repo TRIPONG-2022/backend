@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import tripong.backend.entity.base.BaseEntity;
+import tripong.backend.entity.post.Post;
 import tripong.backend.entity.user.User;
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,13 +22,15 @@ public class Reply extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long postId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "login_id", nullable = false)
+    @JoinColumn(name = "login_id")
     private User userId;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

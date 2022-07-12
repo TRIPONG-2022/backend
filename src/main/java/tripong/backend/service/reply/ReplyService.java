@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
+import tripong.backend.entity.post.Post;
 import tripong.backend.entity.reply.Reply;
 import tripong.backend.entity.user.User;
+import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.reply.ReplyRepository;
 import tripong.backend.repository.user.UserRepository;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class ReplyService {
 
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
     // 내가쓴 댓글 및 대댓글 조회
     public List<ReplyResponseDto> getReplyListByUserId(String userId, LocalDateTime startDate, LocalDateTime finishDate, Pageable pageable){
@@ -59,6 +62,9 @@ public class ReplyService {
     public void saveReply(ReplyRequestDto dto){
 
         Reply reply = dto.toEntity();
+
+        Optional<Post> post = postRepository.findById(dto.getPostId());
+        reply.setPostId(post.orElseThrow(() -> new IllegalArgumentException("해당 포스트가 존재하지 않습니다. postId=" + dto.getPostId())));
 
         Optional<User> user = userRepository.findByLoginId(dto.getUserId());
         reply.setUserId(user.orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. userId=" + dto.getUserId())));
