@@ -21,6 +21,7 @@ import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -116,9 +117,8 @@ public class AccountService {
     @Transactional
     public void firstExtraInfoPatch(FirstExtraInfoPutRequestDto dto, PrincipalDetail principal) {
         log.info("시작: AccountService 추가정보입력");
-        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(()->{
-            return new IllegalStateException(AccountErrorName.PK_NOT_USER);
-        });
+        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(()->
+                new NoSuchElementException("해당 유저가 없습니다. userId=" + principal.getUser().getId()));
         user.putExtraInfo(dto);
         authorize_USER(user);
 
@@ -154,9 +154,7 @@ public class AccountService {
     @Transactional
     public void withdrawal(PrincipalDetail principal) {
         log.info("시작: AccountService 회원탈퇴");
-        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(()->{
-            return new IllegalStateException("해당 유저 정보 없음");
-        });
+        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + principal.getUser().getId()));
         user.account_withdrawal(sKey);
         log.info("종료: AccountService 회원탈퇴");
     }

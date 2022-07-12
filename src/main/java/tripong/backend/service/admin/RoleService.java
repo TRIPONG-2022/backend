@@ -11,6 +11,7 @@ import tripong.backend.exception.admin.AdminErrorName;
 import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -34,11 +35,12 @@ public class RoleService {
      * */
     @Transactional
     public void createRole(CreateRoleRequestDto dto) {
+        log.info("시작: RoleService 권한등록");
         if(!dto.getRoleName().startsWith("ROLE_")){
             throw new IllegalArgumentException(AdminErrorName.Role_FORM_ERROR);
         }
-
         roleRepository.save(new Role(dto.getRoleName(), dto.getDescription()));
+        log.info("종료: RoleService 권한등록");
     }
 
     /**
@@ -46,12 +48,9 @@ public class RoleService {
      * */
     @Transactional
     public void deleteRole(Long roleId) {
-        Optional<Role> role = roleRepository.findById(roleId);
-        if(role.isPresent()){
-            roleRepository.delete(role.get());
-        }
-        else{
-            throw new IllegalStateException(AdminErrorName.PK_NOT_ROLE);
-        }
+        log.info("시작: RoleService 권한삭제");
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new NoSuchElementException("해당 권한이 없습니다. roleId=" + roleId));
+        roleRepository.delete(role);
+        log.info("종료: RoleService 권한삭제");
     }
 }

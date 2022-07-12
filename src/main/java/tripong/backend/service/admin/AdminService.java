@@ -24,6 +24,7 @@ import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -70,20 +71,16 @@ public class AdminService {
     @Transactional
     public void changedBlack(Long userId) {
         log.info("시작: AdminService 신고유저블랙");
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isPresent()){
-            deleteRoles(user);
-            List<UserRole> newUserRoles = new ArrayList<>();
-            newUserRoles.add(new UserRole(roleRepository.findByRoleName("ROLE_BLACK")));
-            user.get().addUserRole(newUserRoles);
-        } else{
-            throw new IllegalStateException(AdminErrorName.PK_NOT_USER);
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
+        deleteRoles(user);
+        List<UserRole> newUserRoles = new ArrayList<>();
+        newUserRoles.add(new UserRole(roleRepository.findByRoleName("ROLE_BLACK")));
+        user.addUserRole(newUserRoles);
         log.info("종료: AdminService 신고유저블랙");
     }
 
-    private void deleteRoles(Optional<User> user) {
-        List<UserRole> userRoles = user.get().getUserRoles();
+    private void deleteRoles(User user) {
+        List<UserRole> userRoles = user.getUserRoles();
         userRoleRepository.deleteAllInBatch(userRoles);
     }
 
@@ -95,16 +92,11 @@ public class AdminService {
     @Transactional
     public void changedRoles(Long userId, UpdateRolesRequestDto dto) {
         log.info("시작: AdminService 사용자권한변경");
-
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isPresent()){
-            deleteRoles(user);
-            List<UserRole> newUserRoles = new ArrayList<>();
-            dto.getRoleNames().stream().forEach( r-> newUserRoles.add(new UserRole(roleRepository.findByRoleName(r))));
-            user.get().addUserRole(newUserRoles);
-        } else{
-            throw new IllegalStateException(AdminErrorName.PK_NOT_USER);
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
+        deleteRoles(user);
+        List<UserRole> newUserRoles = new ArrayList<>();
+        dto.getRoleNames().stream().forEach( r-> newUserRoles.add(new UserRole(roleRepository.findByRoleName(r))));
+        user.addUserRole(newUserRoles);
         log.info("종료: AdminService 사용자권한변경");
     }
 

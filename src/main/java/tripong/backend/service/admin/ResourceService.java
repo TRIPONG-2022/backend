@@ -21,6 +21,7 @@ import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -40,9 +41,7 @@ public class ResourceService {
      */
     public Page<GetResourceListResponseDto> getResourceList(Pageable pageable) {
         log.info("시작: ResourceService 자원리스트");
-
         Page<Resource> page = resourceRepository.findPagingAll(pageable);
-
         log.info("종료: ResourceService 자원리스트");
         return page.map(p -> new GetResourceListResponseDto(p));
     }
@@ -62,8 +61,7 @@ public class ResourceService {
     @Transactional
     public void createResource(CreateResourceRequestDto dto) {
         log.info("시작: ResourceService 자원등록");
-        Resource resource = resourceRepository.findByResourceName(dto.getResourceName());
-        if(resource!=null){
+        if(resourceRepository.findByResourceName(dto.getResourceName()).isPresent()){
             throw new IllegalStateException(AdminErrorName.ResourceName_DUP);
         }
 
@@ -84,17 +82,10 @@ public class ResourceService {
     @Transactional
     public DeleteResourceReloadDto deleteResource(Long resourceId) throws Exception {
         log.info("시작: ResourceService 자원삭제");
-
-        Optional<Resource> resource = resourceRepository.findById(resourceId);
-        if(resource.isPresent()){
-            resourceRepository.delete(resource.get());
-            log.info("종료: ResourceService 자원삭제");
-
-            return new DeleteResourceReloadDto(resource.get().getResourceType(), resource.get().getResourceName());
-        }
-        else{
-            throw new IllegalStateException("존재하지 않는 자원입니다.");
-        }
+        Resource resource = resourceRepository.findById(resourceId).orElseThrow(() -> new NoSuchElementException("해당 자원이 없습니다. resourceId=" + resourceId));
+        resourceRepository.delete(resource);
+        log.info("종료: ResourceService 자원삭제");
+        return new DeleteResourceReloadDto(resource.getResourceType(), resource.getResourceName());
     }
 }
 

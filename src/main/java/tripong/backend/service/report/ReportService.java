@@ -17,6 +17,7 @@ import tripong.backend.repository.report.PostReportRepository;
 import tripong.backend.repository.report.UserReportRepository;
 import tripong.backend.repository.user.UserRepository;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -39,17 +40,11 @@ public class ReportService {
     @Transactional
     public void userReport(UserReportRequestDto dto, Long reportedId, PrincipalDetail principal) {
         log.info("시작: ReportService 유저 리포트");
-
-        Optional<User> reported_user = userRepository.findById(reportedId);
-
-        if(!reported_user.isPresent()){
-            throw new IllegalStateException(ReportErrorName.PK_NOT_REPORTED);
-        }
-        if(reported_user.get().getId() == principal.getUser().getId()){
+        User reported_user = userRepository.findById(reportedId).orElseThrow(()->new NoSuchElementException("해당 사용자가 없습니다. reportedId=" + reportedId));
+        if(reported_user.getId() == principal.getUser().getId()){
             throw new IllegalStateException(ReportErrorName.MySelf_USER_IMPOSSIBLE);
         }
-
-        userReportRepository.save(new UserReport(reported_user.get(), principal.getUser(), dto.getKind()));
+        userReportRepository.save(new UserReport(reported_user, principal.getUser(), dto.getKind()));
         log.info("종료: ReportService 유저 리포트");
     }
 
@@ -61,16 +56,11 @@ public class ReportService {
     @Transactional
     public void postReport(PostReportRequestDto dto, Long reportedPostId, PrincipalDetail principal) {
         log.info("시작: ReportService 게시물 리포트");
-
-        Optional<Post> reported_post = postRepository.findById(reportedPostId);
-        if(!reported_post.isPresent()){
-            throw new IllegalStateException(ReportErrorName.PK_NOT_REPORTED);
-        }
-        if(reported_post.get().getAuthor().getId() == principal.getUser().getId()){
+        Post reported_post = postRepository.findById(reportedPostId).orElseThrow(() -> new NoSuchElementException("해당 게시글이 없습니다. reportedPostId=" + reportedPostId));
+        if(reported_post.getAuthor().getId() == principal.getUser().getId()){
             throw new IllegalStateException(ReportErrorName.MySelf_POST_IMPOSSIBLE);
         }
-
-        postReportRepository.save(new PostReport(reported_post.get(), principal.getUser(), dto.getKind()));
+        postReportRepository.save(new PostReport(reported_post, principal.getUser(), dto.getKind()));
         log.info("종료: ReportService 게시물 리포트");
     }
 }

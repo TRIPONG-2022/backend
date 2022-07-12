@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tripong.backend.exception.ErrorResult;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice("tripong.backend.controller.admin")
 public class AdminErrorAdvice {
 
@@ -18,13 +20,15 @@ public class AdminErrorAdvice {
     public ResponseEntity adminExceptionHandler(IllegalStateException e) {
         return new ResponseEntity<>(new ErrorResult(code_value(e.getMessage()), e.getMessage()), HttpStatus.OK);
     }
+    @ExceptionHandler
+    public ResponseEntity adminPKExceptionHandler(NoSuchElementException e) {
+        return new ResponseEntity<>(new ErrorResult(502, e.getMessage()), HttpStatus.OK);
+    }
 
     public int code_value(String message){
         switch (message){
             case AdminErrorName.Role_FORM_ERROR: return 501;
-            case AdminErrorName.PK_NOT_ROLE: return 502;
             case AdminErrorName.ResourceName_DUP: return 510;
-            case AdminErrorName.PK_NOT_USER: return 511;
             default: return 999;
         }
     }

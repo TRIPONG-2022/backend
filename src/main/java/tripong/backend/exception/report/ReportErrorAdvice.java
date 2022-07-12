@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tripong.backend.exception.ErrorResult;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice("tripong.backend.controller.report")
 public class ReportErrorAdvice {
 
@@ -20,9 +22,13 @@ public class ReportErrorAdvice {
         return new ResponseEntity<>(new ErrorResult(code_value(e.getMessage()), e.getMessage()), HttpStatus.OK);
     }
 
+    @ExceptionHandler
+    public ResponseEntity reportPKExceptionHandler(NoSuchElementException e) {
+        return new ResponseEntity<>(new ErrorResult(601, e.getMessage()), HttpStatus.OK);
+    }
+
     public int code_value(String message){
         switch (message){
-            case ReportErrorName.PK_NOT_REPORTED: return 601;
             case ReportErrorName.MySelf_USER_IMPOSSIBLE: return 602;
             case ReportErrorName.MySelf_POST_IMPOSSIBLE: return 603;
             default: return 999;

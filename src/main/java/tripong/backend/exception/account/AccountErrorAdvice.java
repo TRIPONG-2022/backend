@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tripong.backend.controller.account.AccountController;
 import tripong.backend.exception.ErrorResult;
 
+import java.util.NoSuchElementException;
+
 
 @RestControllerAdvice("tripong.backend.controller.account")
 public class AccountErrorAdvice {
@@ -20,6 +22,10 @@ public class AccountErrorAdvice {
     public ResponseEntity accountExceptionHandler(IllegalStateException e) {
         return new ResponseEntity<>(new ErrorResult(code_value(e.getMessage()), e.getMessage()), HttpStatus.OK);
     }
+    @ExceptionHandler
+    public ResponseEntity accountPKExceptionHandler(NoSuchElementException e) {
+        return new ResponseEntity<>(new ErrorResult(105, e.getMessage()), HttpStatus.OK);
+    }
 
     public int code_value(String message){
         switch (message){
@@ -27,7 +33,6 @@ public class AccountErrorAdvice {
             case AccountErrorName.LoginId_DUP: return 102;
             case AccountErrorName.NickName_DUP: return 103;
             case AccountErrorName.LoginId_NickName_DUP: return 104;
-            case AccountErrorName.PK_NOT_USER: return 105;
             default: return 999;
         }
     }

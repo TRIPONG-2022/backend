@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import tripong.backend.entity.role.Resource;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
@@ -20,5 +21,5 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     @Query(value = "select r from Resource r")
     Page<Resource> findPagingAll(Pageable pageable);
 
-    Resource findByResourceName(String resourceName);
+    Optional<Resource> findByResourceName(String resourceName);
 }

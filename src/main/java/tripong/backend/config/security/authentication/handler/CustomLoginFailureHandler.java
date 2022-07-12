@@ -38,7 +38,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
             code = 107;
         }
         else{
-            message=AccountErrorName.Undefined_ERROR;
+            message = "onAuthenticationFailure 미정의 에러";
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
