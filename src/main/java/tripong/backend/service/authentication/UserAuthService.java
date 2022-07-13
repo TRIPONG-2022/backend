@@ -3,6 +3,7 @@ package tripong.backend.service.authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,7 +141,7 @@ public class UserAuthService {
         int result = userAuthRepository.changePassword(dto.getUserId(), newPassword);
 
         // 오류: 비밀번호 변경 실패
-        if (result == 0){
+        if (result == 1){
             return "SUCCESS TO CHANGE PASSWORD";
         } else {
             return "FAIL TO CHANGE PASSWORD";
