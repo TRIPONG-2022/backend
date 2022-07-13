@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import tripong.backend.controller.post.PostApiController;
 import tripong.backend.controller.profile.UserProfileApiController;
 import tripong.backend.exception.ErrorResult;
 
