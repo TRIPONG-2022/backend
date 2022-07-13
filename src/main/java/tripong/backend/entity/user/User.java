@@ -52,6 +52,7 @@ public class User extends BaseTimeEntity {
     private List<UserRole> userRoles = new ArrayList<>();
 
     private String city;
+
     private String district;
 
     private BigDecimal latitude;
