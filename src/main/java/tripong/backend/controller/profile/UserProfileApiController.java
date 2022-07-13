@@ -8,13 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostResponseDto;
+import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.dto.profile.UserProfileResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.profile.UserProfileService;
-
+import tripong.backend.service.reply.ReplyService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +27,10 @@ public class UserProfileApiController {
 
     private final PostService postService;
 
+    private final ReplyService replyService;
+
     private final UserProfileService userProfileService;
+
 
     @GetMapping("/posts/{userId}")
     public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable) {
@@ -37,6 +42,16 @@ public class UserProfileApiController {
     public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(userId, category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("replies/{userId}")
+    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable String userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
+
+        LocalDateTime startDate = fromDate.atStartOfDay();
+        LocalDateTime finishDate = endDate.atStartOfDay();
+
+        List<ReplyResponseDto> replyList = replyService.getReplyListByUserId(userId, startDate, finishDate, pageable);
+        return new ResponseEntity<>(replyList, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")

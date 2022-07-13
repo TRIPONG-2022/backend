@@ -5,15 +5,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.reply.Reply;
 
-
 @Data
 @NoArgsConstructor
 public class ReplyRequestDto {
 
     private Long id;
+
     private Long postId;
+
     private String userId;
+
     private String content;
+
     private Long parentReply;
 
     @Builder
@@ -28,9 +31,7 @@ public class ReplyRequestDto {
     public Reply toEntity() {
         return Reply.builder()
                 .id(id)
-                .postId(postId)
                 .content(content)
-                .parentReply(parentReply)
                 .build();
     }
 

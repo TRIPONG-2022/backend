@@ -3,6 +3,7 @@ package tripong.backend.service.authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,54 +13,74 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
+import tripong.backend.repository.user.UserRepository;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserAuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final UserRepository userRepository;
     private final UserAuthRepository userAuthRepository;
     private final EmailAuthRepository emailAuthRepository;
     private final EmailAuthService emailAuthService;
 
     // 아이디 찾기
+    @Transactional
     public Optional<User> findUserId (UserAuthRequestDto dto) {
+
         return userAuthRepository.findByEmail(dto.getEmail());
+
     }
 
-    // 비밀번호 찾기: 이메일 유효링크 생성
-    public String findUserPassword(UserAuthRequestDto dto) throws MessagingException {
+    // 비밀번호 찾기: 이메일 인증
+    @Transactional
+    public void findUserPassword(UserAuthRequestDto dto) throws MessagingException {
 
-        Optional<User> userOptional = userAuthRepository.findByEmail(dto.getEmail());
-        User user;
+        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
 
-        // 오류: 유저 정보 유무
-        if (userOptional.isPresent()){
-            user = userOptional.get();
-            EmailValidLink validLink = EmailValidLink.createEmailValidLink(user.getLoginId());
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
+        emailAuthRepository.save(validLink);
+
+        sendFindUserPasswordByGmail(dto, validLink);
+
+    }
+
+    // 비밀번호 찾기: 이메일 재인증
+    @Transactional
+    public String verifyResendfindUserPassword(UserAuthRequestDto dto) throws MessagingException {
+
+        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
+
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalArgumentException("링크가 존재하지 않습니다."));
+
+        if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
+            EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
             emailAuthRepository.save(validLink);
-            sendFindUserPasswordEmail(dto, validLink);
-            return "FIND USER";
+            sendFindUserPasswordByGmail(dto, validLink);
         } else {
-            return "FAIL TO FIND USER";
+            return "FAIL";
         }
+        return "SUCCESS";
 
     }
 
     // 비밀번호 찾기: 비동기식 JavaMailSender
     @Async
-    public void sendFindUserPasswordEmail(UserAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
+    public void sendFindUserPasswordByGmail(UserAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         String text = "";
         String link = "http://localhost:8089/users/auth/find/password/view?emailValidLink=" + validLink.getId();
-
+        // https://tripong-development.herokuapp.com
 
         message.setRecipients(Message.RecipientType.TO, dto.getEmail());
         message.setSubject("비밀번호 재설정 이메일");
@@ -111,23 +132,20 @@ public class UserAuthService {
     public void resetUserPassword(String userId, PasswordRequestDto dto){
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
-        userAuthRepository.changePassword(userId, newPassword);
+
+        User user = userRepository.findByLoginId(userId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        user.setPassword(newPassword);
 
     }
 
     // 비밀번호 바꾸기
     @Transactional
-    public String changeUserPassword(PasswordRequestDto dto){
+    public void changeUserPassword(PasswordRequestDto dto){
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
-        int result = userAuthRepository.changePassword(dto.getUserId(), newPassword);
 
-        // 오류: 비밀번호 변경 실패
-        if (result == 0){
-            return "SUCCESS TO CHANGE PASSWORD";
-        } else {
-            return "FAIL TO CHANGE PASSWORD";
-        }
+        User user = userRepository.findByLoginId(dto.getUserId()).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        user.setPassword(newPassword);
 
     }
 

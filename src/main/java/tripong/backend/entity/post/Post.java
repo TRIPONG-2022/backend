@@ -5,7 +5,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import tripong.backend.dto.post.PostRequestDto;
-import tripong.backend.entity.BaseTimeEntity;
+import tripong.backend.entity.base.BaseTimeEntity;
 import tripong.backend.entity.user.User;
 
 import javax.persistence.*;

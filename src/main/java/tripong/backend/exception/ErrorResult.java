@@ -17,6 +17,7 @@ public class ErrorResult {
         errors.add(baseErrorDto);
     }
 
+
     public ErrorResult(BindingResult bindingResult) {
         this.errors = bindingResult.getFieldErrors().stream()
                 .map(e -> new ErrorResultDto(e)).collect(Collectors.toList());

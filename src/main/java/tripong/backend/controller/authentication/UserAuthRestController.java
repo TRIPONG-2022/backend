@@ -3,64 +3,58 @@ package tripong.backend.controller.authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.authentication.PasswordRequestDto;
 import tripong.backend.dto.authentication.UserAuthRequestDto;
-import tripong.backend.entity.user.User;
 import tripong.backend.service.authentication.UserAuthService;
-
 import javax.mail.MessagingException;
 import java.util.Objects;
-import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserAuthRestController {
 
     private final UserAuthService userAuthService;
 
     // 아이디 찾기
-    @ResponseBody
     @PostMapping("/users/auth/find/id")
     public ResponseEntity<Object> findUserId (@RequestBody UserAuthRequestDto dto){
 
-        Optional<User> userOptional = userAuthService.findUserId(dto);
-        User user;
+        String userId = String.valueOf(userAuthService.findUserId(dto).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
 
-        if (userOptional.isPresent()){
-            user = userOptional.get();
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } else{
+        return new ResponseEntity<>(userId, HttpStatus.OK);
+
+    }
+
+    // 비밀번호 찾기: 이메일 인증
+    // /users/auth/find/password
+    @GetMapping("/auth/verify-request")
+    public ResponseEntity<Object> findUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException {
+
+       userAuthService.findUserPassword(dto);
+
+       return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    // 비밀번호 찾기: 이메일 재인증
+    @GetMapping("/auth/verify-request/resend")
+    public ResponseEntity<Object> ResendfindUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException{
+
+        String result = userAuthService.verifyResendfindUserPassword(dto);
+
+        if(result == "SUCCESS"){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
 
-    // 비밀번호 찾기: 유효 링크 생성
-    @ResponseBody
-    @GetMapping("/users/auth/find/password")
-    public ResponseEntity<Object> findUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException {
-
-        String result = userAuthService.findUserPassword(dto);
-
-        if (Objects.equals(result, "FIND USER")){
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else{
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
-
-    }
-
-    // 비밀번호 찾기: View
-    @GetMapping("/users/auth/find/password/view")
-    public String findUserPasswordView(){
-        return "test/password";
-    }
-
     // 비밀번호 찾기: URL 매핑
-    @PatchMapping("/users/auth/find/password/confirm")
+    // /users/auth/find/password/confirm
+    @PatchMapping("/auth/reset-password")
     public ResponseEntity<Object> findUserPasswordEmailConfirm(@Validated @RequestBody PasswordRequestDto dto){
 
         String result = userAuthService.verifyfindUserPasswordEmail(dto);
@@ -74,20 +68,13 @@ public class UserAuthRestController {
     }
 
     // 비밀번호 바꾸기
-    @PatchMapping("/users/password/change")
+    @PatchMapping("/users/auth/change/password")
     public ResponseEntity<Object> changeUserPassword(@RequestBody PasswordRequestDto dto){
 
-        String result = userAuthService.changeUserPassword(dto);
+        userAuthService.changeUserPassword(dto);
 
-        if (Objects.equals(result, "SUCCESS TO CHANGE PASSWORD")){
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
-
+       return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 
 
 }

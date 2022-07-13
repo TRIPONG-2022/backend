@@ -2,10 +2,10 @@ package tripong.backend.dto.authentication;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotEmpty;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Data
+@DynamicUpdate
 @NoArgsConstructor
 public class PasswordRequestDto {
 
@@ -13,6 +13,6 @@ public class PasswordRequestDto {
 
     private String validLink;
 
-    @NotEmpty
     private String newPassword;
+
 }
