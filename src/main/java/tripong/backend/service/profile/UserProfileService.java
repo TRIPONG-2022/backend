@@ -12,6 +12,8 @@ import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.user.UserRepository;
 import tripong.backend.service.aws.AmazonS3Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,7 +26,7 @@ public class UserProfileService {
     private final AmazonS3Service amazonS3Service;
 
     public UserProfileResponseDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
         UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(user);
         String fileName = user.getPicture();
         if (fileName != null){
@@ -36,7 +38,7 @@ public class UserProfileService {
 
     @Transactional
     public User updateUserProfile(Long userId, UserProfileRequestDto userProfileRequestDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
 
         MultipartFile picture = userProfileRequestDto.getPicture();
         String pictureUrl = null;
