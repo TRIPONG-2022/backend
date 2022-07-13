@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.dto.profile.UserProfileResponseDto;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.post.PostErrorMessage;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.user.UserRepository;
 import tripong.backend.service.aws.AmazonS3Service;
@@ -23,7 +24,7 @@ public class UserProfileService {
     private final AmazonS3Service amazonS3Service;
 
     public UserProfileResponseDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. userId=" + userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
         UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto(user);
         String fileName = user.getPicture();
         if (fileName != null){
@@ -35,7 +36,7 @@ public class UserProfileService {
 
     @Transactional
     public User updateUserProfile(Long userId, UserProfileRequestDto userProfileRequestDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. userId=" + userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
 
         MultipartFile picture = userProfileRequestDto.getPicture();
         String pictureUrl = null;

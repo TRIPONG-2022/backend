@@ -14,7 +14,6 @@ import tripong.backend.entity.post.Category;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.profile.UserProfileService;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 

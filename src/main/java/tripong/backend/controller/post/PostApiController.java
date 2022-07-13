@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
+import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.redis.RedisService;
 
@@ -41,7 +44,10 @@ public class PostApiController {
     }
 
     @PostMapping("/{category}")
-    public ResponseEntity<Object> savePost(@ModelAttribute @Valid PostRequestDto postRequestDto) {
+    public ResponseEntity<Object> savePost(@ModelAttribute @Valid PostRequestDto postRequestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()){
+            return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
+        }
         Post post = postService.save(postRequestDto);
         log.info("saved postId = {}", post.getId());
         return new ResponseEntity(HttpStatus.CREATED);
