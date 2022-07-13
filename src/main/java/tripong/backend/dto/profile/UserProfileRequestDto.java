@@ -1,13 +1,9 @@
 package tripong.backend.dto.profile;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.spring.web.json.Json;
 import tripong.backend.entity.user.GenderType;
-import tripong.backend.entity.user.JoinType;
-import tripong.backend.entity.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
