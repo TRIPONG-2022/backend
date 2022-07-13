@@ -1,6 +1,6 @@
 package tripong.backend.exception.account;
 
-public interface AccountErrorName {
+public interface AccountErrorMessage {
     //105 = pk 매칭 실패
     String Email_DUP = "이미 사용중인 이메일 입니다."; //101
     String LoginId_NickName_DUP = "이미 사용중인 아이디와 닉네임 입니다."; //102

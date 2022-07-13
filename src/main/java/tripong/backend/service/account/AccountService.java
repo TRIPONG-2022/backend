@@ -15,7 +15,7 @@ import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
-import tripong.backend.exception.account.AccountErrorName;
+import tripong.backend.exception.account.AccountErrorMessage;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
@@ -47,19 +47,19 @@ public class AccountService {
 
         boolean email_dub = userRepository.existsByEmail(dto.getEmail());
         if(email_dub){
-            throw new IllegalStateException(AccountErrorName.Email_DUP);
+            throw new IllegalStateException(AccountErrorMessage.Email_DUP);
         }
 
         boolean loginId_dup = userRepository.existsByLoginId(dto.getLoginId());
         boolean nickName_dub = userRepository.existsByNickName(dto.getNickName());
         if(loginId_dup && nickName_dub){
-            throw new IllegalStateException(AccountErrorName.LoginId_NickName_DUP);
+            throw new IllegalStateException(AccountErrorMessage.LoginId_NickName_DUP);
         }
         if(loginId_dup){
-            throw new IllegalStateException(AccountErrorName.LoginId_DUP);
+            throw new IllegalStateException(AccountErrorMessage.LoginId_DUP);
         }
         if(nickName_dub){
-            throw new IllegalStateException(AccountErrorName.NickName_DUP);
+            throw new IllegalStateException(AccountErrorMessage.NickName_DUP);
         }
 
         dto.setPassword(encoder.encode(dto.getPassword()));

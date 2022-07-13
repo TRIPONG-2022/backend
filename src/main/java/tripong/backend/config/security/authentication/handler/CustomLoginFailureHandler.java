@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import tripong.backend.exception.ErrorResult;
-import tripong.backend.exception.account.AccountErrorName;
+import tripong.backend.exception.account.AccountErrorMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,11 +30,11 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 
         int code = 999;
         if(exception instanceof UsernameNotFoundException || exception instanceof InternalAuthenticationServiceException){
-            message=AccountErrorName.LoginId_NOT_MATCH;
+            message= AccountErrorMessage.LoginId_NOT_MATCH;
             code = 106;
         }
         else if(exception instanceof BadCredentialsException){
-            message=AccountErrorName.Password_NOT_MATCH;
+            message= AccountErrorMessage.Password_NOT_MATCH;
             code = 107;
         }
         else{

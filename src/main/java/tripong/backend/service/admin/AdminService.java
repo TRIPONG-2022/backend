@@ -14,10 +14,8 @@ import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.UserReport;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
-import tripong.backend.exception.admin.AdminErrorName;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.admin.role.UserRoleRepository;
-import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.report.PostReportRepository;
 import tripong.backend.repository.report.UserReportRepository;
 import tripong.backend.repository.user.UserRepository;
@@ -25,7 +23,6 @@ import tripong.backend.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service

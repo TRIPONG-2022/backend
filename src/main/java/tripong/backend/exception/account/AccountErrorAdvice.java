@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import tripong.backend.controller.account.AccountController;
 import tripong.backend.exception.ErrorResult;
 
 import java.util.NoSuchElementException;
@@ -29,10 +28,10 @@ public class AccountErrorAdvice {
 
     public int code_value(String message){
         switch (message){
-            case AccountErrorName.Email_DUP: return 101;
-            case AccountErrorName.LoginId_DUP: return 102;
-            case AccountErrorName.NickName_DUP: return 103;
-            case AccountErrorName.LoginId_NickName_DUP: return 104;
+            case AccountErrorMessage.Email_DUP: return 101;
+            case AccountErrorMessage.LoginId_DUP: return 102;
+            case AccountErrorMessage.NickName_DUP: return 103;
+            case AccountErrorMessage.LoginId_NickName_DUP: return 104;
             default: return 999;
         }
     }

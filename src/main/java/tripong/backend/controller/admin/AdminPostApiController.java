@@ -19,7 +19,7 @@ import tripong.backend.service.post.PostService;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class AdminPostController {
+public class AdminPostApiController {
 
     private final AdminService adminService;
     private final PostService postService;

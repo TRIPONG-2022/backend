@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
+import tripong.backend.entity.reply.Reply;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -19,5 +21,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "select * from post p right outer join post_like l on p.id = l.post_id where l.user_id = :userId and p.category = :postType", nativeQuery = true)
     Page<Post> findLikePostByIdAndCategory (@Param(value = "userId") Long userId, @Param(value = "postType") String postType, Pageable pageable);
+
+    Optional<Post> findById(Long id);
 
 }

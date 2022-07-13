@@ -27,8 +27,8 @@ public class AdminErrorAdvice {
 
     public int code_value(String message){
         switch (message){
-            case AdminErrorName.Role_FORM_ERROR: return 501;
-            case AdminErrorName.ResourceName_DUP: return 510;
+            case AdminErrorMessage.Role_FORM_ERROR: return 501;
+            case AdminErrorMessage.ResourceName_DUP: return 510;
             default: return 999;
         }
     }

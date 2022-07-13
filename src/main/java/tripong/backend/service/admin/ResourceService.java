@@ -15,14 +15,13 @@ import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.RoleResource;
-import tripong.backend.exception.admin.AdminErrorName;
+import tripong.backend.exception.admin.AdminErrorMessage;
 import tripong.backend.repository.admin.resource.ResourceRepository;
 import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -62,7 +61,7 @@ public class ResourceService {
     public void createResource(CreateResourceRequestDto dto) {
         log.info("시작: ResourceService 자원등록");
         if(resourceRepository.findByResourceName(dto.getResourceName()).isPresent()){
-            throw new IllegalStateException(AdminErrorName.ResourceName_DUP);
+            throw new IllegalStateException(AdminErrorMessage.ResourceName_DUP);
         }
 
         List<RoleResource> roleResources = new ArrayList<>();

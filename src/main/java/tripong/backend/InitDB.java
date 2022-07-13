@@ -85,7 +85,7 @@ public class InitDB {
                     .loginId("user1")
                     .password(pw)
                     .nickName("홍길동")
-                    .email("abc11@naver.com")
+                    .email("alicesykim95@gmail.com")
                     .joinMethod(JoinType.Normal)
                     .authentication(0)
                     .userRoles(user1_userRoleList)

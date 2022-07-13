@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class RoleDataController {
+public class AdminRoleApiController {
 
     private final RoleService roleService;
 

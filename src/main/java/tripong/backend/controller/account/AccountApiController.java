@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class AccountController {
+public class AccountApiController {
 
     private final AccountService accountService;
     private final JwtCookieService cookieService;
@@ -33,14 +33,14 @@ public class AccountController {
      */
     @PostMapping("/users/signup/normal")
     public ResponseEntity normalJoin(@Validated @RequestBody NormalJoinRequestDto dto, BindingResult bindingResult){
-        log.info("시작: AccountController 회원가입");
+        log.info("시작: AccountApiController 회원가입");
         if(bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
         accountService.normalJoin(dto);
 
         HttpStatus status = HttpStatus.CREATED;
-        log.info("종료: AccountController 회원가입");
+        log.info("종료: AccountApiController 회원가입");
         return new ResponseEntity<>(status);
     }
 
@@ -49,13 +49,13 @@ public class AccountController {
      */
     @PatchMapping("/users/extra-info")
     public ResponseEntity firstExtraInfoPatch(@Validated @RequestBody FirstExtraInfoPutRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal){
-        log.info("시작: AccountController 추가정보입력");
+        log.info("시작: AccountApiController 추가정보입력");
         if(bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
         accountService.firstExtraInfoPatch(dto, principal);
 
-        log.info("종료: AccountController 추가정보입력");
+        log.info("종료: AccountApiController 추가정보입력");
         HttpStatus status = HttpStatus.CREATED;
         return new ResponseEntity<>(status);
     }

@@ -16,15 +16,15 @@ import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
 import tripong.backend.service.admin.AdminService;
 
 /**
- * AdminUserController: 유저 & 게시글 관리
- * RoleDataController: 권한 데이터 관리
- * ResourceDataController: 자원 데이터 관리
+ * AdminUserApiController: 유저 & 게시글 관리
+ * AdminRoleApiController: 권한 데이터 관리
+ * AdminResourceApiController: 자원 데이터 관리
  */
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class AdminUserController {
+public class AdminUserApiController {
 
     private final AdminService adminService;
 

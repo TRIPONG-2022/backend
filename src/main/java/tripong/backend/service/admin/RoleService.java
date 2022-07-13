@@ -7,12 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.admin.role.CreateRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
-import tripong.backend.exception.admin.AdminErrorName;
+import tripong.backend.exception.admin.AdminErrorMessage;
 import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,7 +36,7 @@ public class RoleService {
     public void createRole(CreateRoleRequestDto dto) {
         log.info("시작: RoleService 권한등록");
         if(!dto.getRoleName().startsWith("ROLE_")){
-            throw new IllegalArgumentException(AdminErrorName.Role_FORM_ERROR);
+            throw new IllegalArgumentException(AdminErrorMessage.Role_FORM_ERROR);
         }
         roleRepository.save(new Role(dto.getRoleName(), dto.getDescription()));
         log.info("종료: RoleService 권한등록");

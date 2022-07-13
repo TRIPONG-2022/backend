@@ -22,7 +22,7 @@ import tripong.backend.service.admin.ResourceService;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-public class ResourceDataController {
+public class AdminResourceApiController {
 
     private final ResourceService resourceService;
     private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;

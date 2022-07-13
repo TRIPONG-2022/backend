@@ -2,11 +2,7 @@ package tripong.backend.config.security.authentication.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,8 +12,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.entity.user.User;
-import tripong.backend.exception.ErrorResult;
-import tripong.backend.exception.account.AccountErrorName;
 import tripong.backend.repository.user.UserRepository;
 
 import javax.servlet.FilterChain;

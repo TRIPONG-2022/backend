@@ -29,8 +29,8 @@ public class ReportErrorAdvice {
 
     public int code_value(String message){
         switch (message){
-            case ReportErrorName.MySelf_USER_IMPOSSIBLE: return 602;
-            case ReportErrorName.MySelf_POST_IMPOSSIBLE: return 603;
+            case ReportErrorMessage.MySelf_USER_IMPOSSIBLE: return 602;
+            case ReportErrorMessage.MySelf_POST_IMPOSSIBLE: return 603;
             default: return 999;
         }
     }
