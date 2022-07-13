@@ -42,7 +42,8 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Category category;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
+    @Builder.Default
     private List<String> tags = new ArrayList<>();
 
     @Column(precision = 13, scale = 10)
@@ -51,19 +52,19 @@ public class Post extends BaseTimeEntity {
     @Column(precision = 13, scale = 10)
     private BigDecimal longitude;
 
-    @Column(columnDefinition = "DATE")
     private LocalDate startDate;
 
-    @Column(columnDefinition = "DATE")
     private LocalDate endDate;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @Builder.Default
     private List<GatheringUser> gatheringUsers = new ArrayList<>();
 
     @ColumnDefault("0")
     private Integer totalHeadCount;
 
     @ElementCollection
+    @Builder.Default
     private List<String> images = new ArrayList<>();
 
     private String thumbnail;
@@ -72,6 +73,7 @@ public class Post extends BaseTimeEntity {
     private Integer budget;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @Builder.Default
     private List<PostLike> like = new ArrayList<>();
 
     @ColumnDefault("0")

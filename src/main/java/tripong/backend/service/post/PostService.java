@@ -1,6 +1,7 @@
 package tripong.backend.service.post;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import tripong.backend.entity.post.GatheringUser;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.post.PostLike;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.post.PostErrorMessage;
 import tripong.backend.repository.post.GatheringUserRepository;
 import tripong.backend.repository.post.PostLikeRepository;
 import tripong.backend.repository.post.PostRepository;
@@ -23,6 +25,7 @@ import tripong.backend.service.aws.AmazonS3Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +33,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
+
+    @Value("${cloud.aws.cloudFront.domain}")
+    private String domain;
 
     private final PostRepository postRepository;
 
@@ -59,7 +65,7 @@ public class PostService {
 
     @Cacheable(value="post", key = "#postId")
     public PostResponseDto findById(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.POST_ID_NOT_MATCH.name()));
         PostResponseDto postResponseDto = new PostResponseDto(post);
 
         List<String> images = new ArrayList<>();
@@ -86,7 +92,7 @@ public class PostService {
 
         /* author, images, thumbnail 별도 처리 */
         Optional<User> author = userRepository.findById(requestDto.getAuthor());
-        post.setAuthor(author.orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다.")));
+        post.setAuthor(author.orElseThrow(() -> new NoSuchElementException(PostErrorMessage.USER_ID_NOT_MATCH.name())));
 
         requestDto.getImages().forEach(file -> {
             if (file.getSize() != 0) {
@@ -96,7 +102,7 @@ public class PostService {
         post.setImages(imagefileNameList);
 
         MultipartFile thumbnail = requestDto.getThumbnail();
-        if (thumbnail.getSize() != 0){
+        if (thumbnail != null && thumbnail.getSize() != 0){
             String fileName = amazonS3Service.uploadFile(thumbnail);
             post.setThumbnail(fileName);
         }
@@ -107,14 +113,17 @@ public class PostService {
     @Transactional
     @CacheEvict(value="post", key = "#postId")
     public void update(Long postId, PostRequestDto postRequestDto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.POST_ID_NOT_MATCH.name()));
+
         List<String> imagefileNameList = new ArrayList<>();
         postRequestDto.getImages().forEach(fileName -> imagefileNameList.add(amazonS3Service.uploadFile(fileName)));
+
         MultipartFile thumbnail = postRequestDto.getThumbnail();
         String thumbnailFileName = null;
-        if (thumbnail.getSize() != 0){
+        if (thumbnail != null && thumbnail.getSize() != 0){
             thumbnailFileName = amazonS3Service.uploadFile(postRequestDto.getThumbnail());
         }
+
         /* 장애 예방을 위해 delete를 나중에 수행 */
         post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
         String fileName = post.getThumbnail();
@@ -127,7 +136,7 @@ public class PostService {
     @Transactional
     @CacheEvict(value = "post", key = "#postId")
     public void delete(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.POST_ID_NOT_MATCH.name()));
         post.getImages().forEach(fileName -> amazonS3Service.deleteFile(fileName));
         String fileName = post.getThumbnail();
         if (fileName != null){
@@ -138,14 +147,14 @@ public class PostService {
 
     @Transactional
     public void updateViewCount(Long postId, Long newViewCount) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.POST_ID_NOT_MATCH.name()));
         post.setViewCount(newViewCount + post.getViewCount());
     }
 
     @Transactional
     public void saveLike(Long postId, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. userId=" + userId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.POST_ID_NOT_MATCH.name()));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
         Optional<PostLike> postLike = Optional.ofNullable(postLikeRepository.findByPostIdAndUserId(postId, userId));
         if (postLike.isEmpty()) {
             postLikeRepository.save(PostLike.builder()
@@ -165,8 +174,8 @@ public class PostService {
 
     @Transactional
     public void saveGatheringUser(Long postId, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. postId=" + postId));
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 없습니다. userId=" + userId));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.POST_ID_NOT_MATCH.name()));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(PostErrorMessage.USER_ID_NOT_MATCH.name()));
         Optional<GatheringUser> gatheringUser = Optional.ofNullable(gatheringUserRepository.findByPostIdAndUserId(postId, userId));
         if (gatheringUser.isEmpty()) {
             gatheringUserRepository.save(GatheringUser.builder()
@@ -214,6 +223,17 @@ public class PostService {
             }
         });
         return postResponseDtoList;
+    }
+
+    public String putS3Image(MultipartFile file) {
+        String imageUrl = null;
+
+        if (!file.isEmpty()){
+            String fileName = amazonS3Service.uploadFile(file);
+            imageUrl = domain + "/" + fileName;
+        }
+
+        return imageUrl;
     }
 
 }
