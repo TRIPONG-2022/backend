@@ -9,11 +9,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class CreateRoleRequestDto {
 
-    @NotBlank
-    private String roleName;
-
+    private String roleName; //서버단에서 ROLE_로 시작하는지 판단
     private String description;
-
-
-
 }

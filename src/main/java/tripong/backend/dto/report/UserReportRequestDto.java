@@ -3,24 +3,12 @@ package tripong.backend.dto.report;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.report.ReportType;
-import tripong.backend.entity.report.UserReport;
-import tripong.backend.entity.user.User;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 public class UserReportRequestDto {
 
+    @NotNull(message = "신고 범주를 선택해 주세요.")
     private ReportType kind;
-    private User reportUserId;
-
-    private User reportedUserId;
-
-
-    public UserReport toEntity(){
-        return UserReport.builder()
-                .reportedUserId(reportedUserId)
-                .reportUserId(reportUserId)
-                .kind(kind)
-                .build();
-    }
 }

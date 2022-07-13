@@ -24,13 +24,15 @@ public class UserRole {
 
 
 
-    //
-    public void injectUser(User user) {this.user=user;}
-
-
-    @Builder
+    ////-----편의 메소드-----
+    public UserRole(Role role){
+        this.role=role;
+    }
     public UserRole(User user, Role role){
         this.user=user;
         this.role= role;
     }
+    public void injectUser(User user) {this.user=user;}
+
+
 }

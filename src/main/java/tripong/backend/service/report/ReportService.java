@@ -1,20 +1,23 @@
 package tripong.backend.service.report;
 
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.PrincipalDetail;
+import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.report.PostReportRequestDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.post.Post;
+import tripong.backend.entity.report.PostReport;
+import tripong.backend.entity.report.UserReport;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.report.ReportErrorMessage;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.report.PostReportRepository;
 import tripong.backend.repository.report.UserReportRepository;
 import tripong.backend.repository.user.UserRepository;
 
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -36,19 +39,11 @@ public class ReportService {
     @Transactional
     public void userReport(UserReportRequestDto dto, Long reportedId, PrincipalDetail principal) {
         log.info("시작: ReportService 유저 리포트");
-
-        Optional<User> reported_user = userRepository.findById(reportedId);
-
-        if(!reported_user.isPresent()){
-            throw new NullPointerException("존재하지 않는 reportedId 사용자");
+        User reported_user = userRepository.findById(reportedId).orElseThrow(()->new NoSuchElementException("해당 사용자가 없습니다. reportedId=" + reportedId));
+        if(reported_user.getId() == principal.getUser().getId()){
+            throw new IllegalStateException(ReportErrorMessage.MySelf_USER_IMPOSSIBLE);
         }
-        if(reported_user.get().getId() == principal.getUser().getId()){
-            throw new IllegalStateException("자기 자신은 신고 불가");
-        }
-
-        dto.setReportUserId(principal.getUser());
-        dto.setReportedUserId(reported_user.get());
-        userReportRepository.save(dto.toEntity());
+        userReportRepository.save(new UserReport(reported_user, principal.getUser(), dto.getKind()));
         log.info("종료: ReportService 유저 리포트");
     }
 
@@ -60,20 +55,11 @@ public class ReportService {
     @Transactional
     public void postReport(PostReportRequestDto dto, Long reportedPostId, PrincipalDetail principal) {
         log.info("시작: ReportService 게시물 리포트");
-
-        Optional<Post> reported_post = postRepository.findById(reportedPostId);
-        if(!reported_post.isPresent()){
-            throw new NullPointerException("존재하지 않는 postId를 신고");
+        Post reported_post = postRepository.findById(reportedPostId).orElseThrow(() -> new NoSuchElementException("해당 게시글이 없습니다. reportedPostId=" + reportedPostId));
+        if(reported_post.getAuthor().getId() == principal.getUser().getId()){
+            throw new IllegalStateException(ReportErrorMessage.MySelf_POST_IMPOSSIBLE);
         }
-        if(reported_post.get().getAuthor().getId() == principal.getUser().getId()){
-            throw new IllegalStateException("자기 자신의 게시글 신고 불가");
-        }
-
-        dto.setReportedPostId(reported_post.get());
-        dto.setReportUserId(principal.getUser());
-        postReportRepository.save(dto.toEntity());
-
+        postReportRepository.save(new PostReport(reported_post, principal.getUser(), dto.getKind()));
         log.info("종료: ReportService 게시물 리포트");
     }
-
 }

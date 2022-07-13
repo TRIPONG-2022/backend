@@ -3,6 +3,7 @@ package tripong.backend.entity.report;
 
 import lombok.*;
 import tripong.backend.entity.base.BaseTimeEntity;
+import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 
 import javax.persistence.*;
@@ -31,13 +32,12 @@ public class UserReport extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ReportType kind;
 
-    //
-    @Builder
+
+    ////-----편의 메소드-----
+    //엔티티 생성
     public UserReport(User reportedUserId, User reportUserId, ReportType kind){
         this.reportedUserId = reportedUserId;
         this.reportUserId = reportUserId;
         this.kind=kind;
     }
-
-
 }

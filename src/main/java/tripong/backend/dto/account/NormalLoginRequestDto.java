@@ -14,5 +14,4 @@ public class NormalLoginRequestDto {
 
     @NotBlank
     private String password;
-
 }
