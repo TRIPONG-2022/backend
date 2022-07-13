@@ -132,4 +132,8 @@ public class User extends BaseTimeEntity {
         this.longitude = userProfileRequestDto.getLongitude();
     }
 
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
+
 }
