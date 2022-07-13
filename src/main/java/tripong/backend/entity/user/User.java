@@ -55,6 +55,7 @@ public class User extends BaseTimeEntity {
     private List<UserRole> userRoles = new ArrayList<>();
 
     private String city;
+
     private String district;
 
     private BigDecimal latitude;
@@ -129,6 +130,10 @@ public class User extends BaseTimeEntity {
         this.district = userProfileRequestDto.getDistrict();
         this.latitude = userProfileRequestDto.getLatitude();
         this.longitude = userProfileRequestDto.getLongitude();
+    }
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
     }
 
 }
