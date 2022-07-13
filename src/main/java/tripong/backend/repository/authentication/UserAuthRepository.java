@@ -9,7 +9,7 @@ import tripong.backend.entity.user.User;
 import java.util.Optional;
 
 @Repository
-public interface UserAuthRepository extends JpaRepository<User, String> {
+public interface UserAuthRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByLoginId(String loginId);
 
@@ -19,9 +19,5 @@ public interface UserAuthRepository extends JpaRepository<User, String> {
 
     @Query("SELECT u.loginId FROM User u WHERE u.email = :email")
     Optional<User> findByEmail(@Param("email") String email);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE User u set u.password = :newPassword WHERE u.loginId = :userId")
-    int changePassword(@Param("newPassword") String newPassword, @Param("userId") String userId);
 
 }

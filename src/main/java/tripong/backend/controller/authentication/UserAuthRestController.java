@@ -71,14 +71,9 @@ public class UserAuthRestController {
     @PatchMapping("/users/auth/change/password")
     public ResponseEntity<Object> changeUserPassword(@RequestBody PasswordRequestDto dto){
 
-        String result = userAuthService.changeUserPassword(dto);
+        userAuthService.changeUserPassword(dto);
 
-        if (Objects.equals(result, "SUCCESS TO CHANGE PASSWORD")){
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-        }
-
+       return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

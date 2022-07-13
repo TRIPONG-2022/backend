@@ -13,6 +13,8 @@ import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
+import tripong.backend.repository.user.UserRepository;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -26,6 +28,7 @@ public class UserAuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
+    private final UserRepository userRepository;
     private final UserAuthRepository userAuthRepository;
     private final EmailAuthRepository emailAuthRepository;
     private final EmailAuthService emailAuthService;
@@ -129,23 +132,20 @@ public class UserAuthService {
     public void resetUserPassword(String userId, PasswordRequestDto dto){
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
-        userAuthRepository.changePassword(userId, newPassword);
+
+        User user = userRepository.findByLoginId(userId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        user.setPassword(newPassword);
 
     }
 
     // 비밀번호 바꾸기
     @Transactional
-    public String changeUserPassword(PasswordRequestDto dto){
+    public void changeUserPassword(PasswordRequestDto dto){
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
-        int result = userAuthRepository.changePassword(dto.getUserId(), newPassword);
 
-        // 오류: 비밀번호 변경 실패
-        if (result == 1){
-            return "SUCCESS TO CHANGE PASSWORD";
-        } else {
-            return "FAIL TO CHANGE PASSWORD";
-        }
+        User user = userRepository.findByLoginId(dto.getUserId()).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        user.setPassword(newPassword);
 
     }
 
