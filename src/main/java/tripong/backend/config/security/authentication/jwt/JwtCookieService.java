@@ -16,8 +16,8 @@ public class JwtCookieService {
     public String jwtCookieIn(String jwtToken){
         log.info("시작: JwtCookieService - 쿠키생성");
         ResponseCookie jwtCookie = ResponseCookie.from(JwtProperties.HEADER_STRING, jwtToken)
-//                .domain("tripong-development.herokuapp.com")
                 .domain("localhost")
+                .domain("tripong-development.herokuapp.com")
                 .maxAge(JwtProperties.EXPIRATION_TIME)
                 .sameSite("None")
                 .secure(true)
