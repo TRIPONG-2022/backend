@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
+import tripong.backend.dto.profile.UserProfileRequestDto;
+import tripong.backend.dto.profile.UserProfileResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.service.post.PostService;
 import tripong.backend.service.profile.UserProfileService;
@@ -31,7 +33,7 @@ public class UserProfileApiController {
 
 
     @GetMapping("/posts/{userId}")
-    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDate endDate, Pageable pageable) {
+    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.getPersonalPostList(userId, category, fromDate, endDate, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
@@ -52,10 +54,15 @@ public class UserProfileApiController {
         return new ResponseEntity<>(replyList, HttpStatus.OK);
     }
 
-//
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<List<PostResponseDto>> getUserProfile(@PathVariable Long userId) {
-//        List<PostResponseDto> postResponseDtoList = userProfileService.
-//        return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
-//    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserProfileResponseDto> getUserProfile(@PathVariable Long userId) {
+        UserProfileResponseDto userProfileResponseDto = userProfileService.getUserProfile(userId);
+        return new ResponseEntity<>(userProfileResponseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Object> updateUserProfile(@PathVariable Long userId, @ModelAttribute UserProfileRequestDto userProfileRequestDto) {
+        userProfileService.updateUserProfile(userId, userProfileRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
