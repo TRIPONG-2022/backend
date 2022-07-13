@@ -3,12 +3,11 @@ package tripong.backend.service.account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.PrincipalDetail;
-import tripong.backend.config.auth.oauth.oauthDetail.OAuthInfo;
+import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.oauth.oauthDetail.OAuthInfo;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.dto.account.OauthJoinRequestDto;
@@ -16,11 +15,13 @@ import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.account.AccountErrorMessage;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -44,27 +45,26 @@ public class AccountService {
     public void normalJoin(NormalJoinRequestDto dto){
         log.info("시작: AccountService 일반회원가입");
 
+        boolean email_dub = userRepository.existsByEmail(dto.getEmail());
+        if(email_dub){
+            throw new IllegalStateException(AccountErrorMessage.Email_DUP);
+        }
+
         boolean loginId_dup = userRepository.existsByLoginId(dto.getLoginId());
         boolean nickName_dub = userRepository.existsByNickName(dto.getNickName());
-        boolean email_dub = userRepository.existsByEmail(dto.getEmail());
-
-        if(email_dub){
-            throw new IllegalStateException("이미 해당 이메일로 계정이 존재");
-        }
         if(loginId_dup && nickName_dub){
-            throw new IllegalStateException("아이디&닉네임 중복");
+            throw new IllegalStateException(AccountErrorMessage.LoginId_NickName_DUP);
         }
         if(loginId_dup){
-            throw new IllegalStateException("아이디 중복");
+            throw new IllegalStateException(AccountErrorMessage.LoginId_DUP);
         }
         if(nickName_dub){
-            throw new IllegalStateException("닉네임 중복");
+            throw new IllegalStateException(AccountErrorMessage.NickName_DUP);
         }
 
         dto.setPassword(encoder.encode(dto.getPassword()));
-        User user = dto.toEntity();
+        User user = new User(dto.getLoginId(), dto.getPassword(), dto.getNickName(), dto.getEmail(), JoinType.Normal);
         authorize_UNAUTH(user);
-
         userRepository.save(user);
         log.info("종료: AccountService 일반회원가입");
     }
@@ -117,9 +117,8 @@ public class AccountService {
     @Transactional
     public void firstExtraInfoPatch(FirstExtraInfoPutRequestDto dto, PrincipalDetail principal) {
         log.info("시작: AccountService 추가정보입력");
-        User user = userRepository.findByLoginId(principal.getUser().getLoginId()).orElseThrow(()->{
-            return new UsernameNotFoundException("해당 유저의 loginId 없음");
-        });
+        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(()->
+                new NoSuchElementException("해당 유저가 없습니다. userId=" + principal.getUser().getId()));
         user.putExtraInfo(dto);
         authorize_USER(user);
 
@@ -129,25 +128,34 @@ public class AccountService {
 
     private void authorize_UNAUTH(User user){
         Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH");
-        UserRole userRole_unauth = UserRole.builder().role(role_unauth).build();
         List<UserRole> only_unauth_userRoles = new ArrayList<>();
-        only_unauth_userRoles.add(userRole_unauth);
+        only_unauth_userRoles.add(new UserRole(role_unauth));
         user.addUserRole(only_unauth_userRoles);
     }
     private void authorize_USER(User user){
         Role role_user = roleRepository.findByRoleName("ROLE_USER");
-        UserRole userRole_user = UserRole.builder().role(role_user).build();
         List<UserRole> only_user_userRoles = new ArrayList<>();
-        only_user_userRoles.add(userRole_user);
+        only_user_userRoles.add(new UserRole(role_user));
         user.addUserRole(only_user_userRoles);
     }
     private List<UserRole> authorize_oauthJoin_userRoles() {
         Role role_user = roleRepository.findByRoleName("ROLE_USER");
-        UserRole userRole_user = UserRole.builder().role(role_user).build();
         List<UserRole> only_user_userRoles = new ArrayList<>();
-        only_user_userRoles.add(userRole_user);
+        only_user_userRoles.add(new UserRole(role_user));
         return only_user_userRoles;
     }
 
 
+    /**
+     * 회원 탈퇴
+     * -이름, 아이디, 닉네임  = "탈퇴 회원"으로 변경
+     * -이메일: 기존이메일 + 비밀키 (고유 이메일을 남겨 관리 위함)
+     */
+    @Transactional
+    public void withdrawal(PrincipalDetail principal) {
+        log.info("시작: AccountService 회원탈퇴");
+        User user = userRepository.findById(principal.getUser().getId()).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + principal.getUser().getId()));
+        user.account_withdrawal(sKey);
+        log.info("종료: AccountService 회원탈퇴");
+    }
 }

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.auth.authorization.CustomFilterInvocationSecurityMetadataSource;
+import tripong.backend.config.security.authorization.CustomFilterInvocationSecurityMetadataSource;
 import tripong.backend.entity.role.*;
 import tripong.backend.entity.user.GenderType;
 import tripong.backend.entity.user.JoinType;
@@ -44,58 +44,25 @@ public class InitDB {
 
 
         public void init0(){ //초기 ROLE
-            Role admin = Role.builder()
-                    .roleName("ROLE_ADMIN")
-                    .description("관리자")
-                    .build();
+            Role admin = new Role("ROLE_ADMIN", "관리자");
+            Role unauth = new Role("ROLE_UNAUTH", "이메일 미인증자");
+            Role user = new Role("ROLE_USER", "이메일 인증자");
+            Role black = new Role("ROLE_BLACK", "블랙리스트");
             roleRepository.save(admin);
-            Role unauth = Role.builder()
-                    .roleName("ROLE_UNAUTH")
-                    .description("이메일_미인증_유저")
-                    .build();
             roleRepository.save(unauth);
-            Role user = Role.builder()
-                    .roleName("ROLE_USER")
-                    .description("이메일_인증_유저")
-                    .build();
             roleRepository.save(user);
-            Role black = Role.builder()
-                    .roleName("ROLE_BlACK")
-                    .description("블랙리스트_유저")
-                    .build();
             roleRepository.save(black);
 
 
-            List<RoleResource> roleResources = new ArrayList<>(); //관리자 전용 리소스
-            RoleResource roleResource1 = RoleResource.builder()
-                    .role(admin)
-                    .build();
-            roleResources.add(roleResource1);
+            List<RoleResource> roleResources1 = new ArrayList<>(); //관리자 전용 페이지 리소스
+            roleResources1.add(new RoleResource(admin));
+            resourceRepository.save(new Resource("/admin/**", ResourceType.Url, "관리자페이지", 1, roleResources1));
 
-            Resource admin_url = Resource.builder()
-                    .resourceName("/admin/**")
-                    .resourceType(ResourceType.Url)
-                    .roleResources(roleResources)
-                    .priorityNum(1)
-                    .build();
-            resourceRepository.save(admin_url);
 
-            List<RoleResource> roleResources1 = new ArrayList<>();
-            RoleResource roleResource2 = RoleResource.builder()
-                    .role(user)
-                    .build();
-            RoleResource roleResource3 = RoleResource.builder()
-                            .role(unauth).build();
-            roleResources1.add(roleResource2);
-            roleResources1.add(roleResource3);
-
-            Resource user_rul = Resource.builder()
-                    .resourceName("/user&unauth/**")
-                    .resourceType(ResourceType.Url)
-                    .roleResources(roleResources1)
-                    .priorityNum(1)
-                    .build();
-            resourceRepository.save(user_rul);
+//            List<RoleResource> roleResources2 = new ArrayList<>(); //유저 신고 기능 리소스
+//            roleResources2.add(new RoleResource(user));
+//            roleResources2.add(new RoleResource(admin));
+//            resourceRepository.save(new Resource("tripong.backend.service.report.ReportService.userReport", ResourceType.Method, "유저신고기능", 1, roleResources2));
         }
 
         public void init1() throws Exception {
@@ -105,24 +72,27 @@ public class InitDB {
             Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH");
             Role role_admin = roleRepository.findByRoleName("ROLE_ADMIN");
 
-            UserRole userRole1 = UserRole.builder().role(role_unauth).build(); //user1 추가정보 미입력자 용
-            UserRole userRole2 = UserRole.builder().role(role_user).build(); //user2 추가정보 입력자 용
-            UserRole userRole3 = UserRole.builder().role(role_admin).build(); //admin 용
+            UserRole user1_userRole = new UserRole(role_unauth); //user1 추가정보 미입력자 용
+            UserRole user2_userRole = new UserRole(role_user); //user2 추가정보 입력자 용
+            UserRole user3_userRole = new UserRole(role_unauth); //user3 소셜 회원가입자 + 추가정보 미입력
+            UserRole user4_userRole = new UserRole(role_user); //탈퇴회원 용
+            UserRole admin1_userRole = new UserRole(role_admin); //admin 용
 
-            List<UserRole> only_unauth_userRoles = new ArrayList<>();
-            only_unauth_userRoles.add(userRole1);
+
+            List<UserRole> user1_userRoleList = new ArrayList<>();
+            user1_userRoleList.add(user1_userRole);
             User user1 = User.builder() //일반 회원가입자 + 추가정보 미입력 + 이메일 미인증
                     .loginId("user1")
                     .password(pw)
                     .nickName("홍길동")
-                    .email("abc11@naver.com")
+                    .email("alicesykim95@gmail.com")
                     .joinMethod(JoinType.Normal)
                     .authentication(0)
-                    .userRoles(only_unauth_userRoles)
+                    .userRoles(user1_userRoleList)
                     .build();
 
-            List<UserRole> only_user_userRoles = new ArrayList<>();
-            only_user_userRoles.add(userRole2);
+            List<UserRole> user2_userRoleList = new ArrayList<>();
+            user2_userRoleList.add(user2_userRole);
             User user2 = User.builder() //일반 회원가입 + 추가정보 입력 + 이메일 인증
                     .loginId("user2")
                     .password(pw)
@@ -132,14 +102,13 @@ public class InitDB {
                     .gender(GenderType.F)
                     .joinMethod(JoinType.Normal)
                     .authentication(1)
-                    .userRoles(only_user_userRoles)
+                    .userRoles(user2_userRoleList)
                     .city("서울특별시")
                     .district("서대문구")
                     .build();
 
-            UserRole userRole4 = UserRole.builder().role(role_unauth).build();
-            List<UserRole> only_unauth_userRoles2 = new ArrayList<>();
-            only_unauth_userRoles2.add(userRole4);
+            List<UserRole> user3_userRoleList = new ArrayList<>();
+            user3_userRoleList.add(user3_userRole);
             User user3 = User.builder() //소셜 회원가입자 + 추가정보 미입력
                     .loginId("user3")
                     .password(pw)
@@ -148,14 +117,14 @@ public class InitDB {
                     .email("abc13@naver.com")
                     .joinMethod(JoinType.Google)
                     .authentication(1)
-                    .userRoles(only_unauth_userRoles2)
+                    .userRoles(user3_userRoleList)
                     .build();
 
 
-            List<UserRole> admin_userRoles = new ArrayList<>();
-            admin_userRoles.add(userRole3);
-            UserRole userRole5 = UserRole.builder().role(role_user).build();
-            admin_userRoles.add(userRole5);
+            List<UserRole> admin1_userRoleList = new ArrayList<>();
+            UserRole add_userRole = new UserRole((role_user));
+            admin1_userRoleList.add(admin1_userRole);
+            admin1_userRoleList.add(add_userRole);
             User admin = User.builder() //관리자용
                     .loginId("admin")
                     .password(pw)
@@ -166,17 +135,28 @@ public class InitDB {
                     .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)
                     .authentication(1)
-                    .userRoles(admin_userRoles)
+                    .userRoles(admin1_userRoleList)
                     .city("서울특별시")
                     .district("서대문구")
                     .build();
+
+            List<UserRole> withdrawal_userRoleList = new ArrayList<>();
+            withdrawal_userRoleList.add(user4_userRole);
+            User user4 = User.builder()
+                    .loginId("탈퇴 회원")
+                    .nickName("탈퇴 회원")
+                    .password(pw)
+                    .email("탈퇴 회원")
+                    .userRoles(withdrawal_userRoleList)
+                    .joinMethod(JoinType.Normal).build();
 
 
             em.persist(user1);
             em.persist(user2);
             em.persist(user3);
             em.persist(admin);
-            customFilterInvocationSecurityMetadataSource.reload();
+            em.persist(user4);
+            customFilterInvocationSecurityMetadataSource.reload_url();
         }
     }
 

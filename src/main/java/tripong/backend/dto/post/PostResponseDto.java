@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import tripong.backend.entity.post.Category;
 import tripong.backend.entity.post.Post;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;

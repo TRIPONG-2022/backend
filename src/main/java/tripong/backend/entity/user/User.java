@@ -2,10 +2,12 @@ package tripong.backend.entity.user;
 
 import lombok.*;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
+import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
 import tripong.backend.entity.role.UserRole;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,14 +22,15 @@ public class User extends BaseTimeEntity {
     @Id @GeneratedValue
     private Long id;
 
+    @NotNull
     private String loginId; //로그인ID
-
+    @NotNull
     private String password;
 
     private String name;
-
+    @NotNull
     private String nickName;
-
+    @NotNull
     private String email;
 
     private String picture;
@@ -41,15 +44,18 @@ public class User extends BaseTimeEntity {
 
     private String phoneNumber;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private JoinType joinMethod;
 
+    @NotNull
     private Integer authentication;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserRole> userRoles = new ArrayList<>();
 
     private String city;
+
     private String district;
 
     private BigDecimal latitude;
@@ -57,6 +63,15 @@ public class User extends BaseTimeEntity {
     private BigDecimal longitude;
 
     ////-----편의 메소드-----
+    //회원가입
+    public User(String loginId, String password, String email, String nickName, JoinType joinMethod){
+        this.loginId=loginId;
+        this.password=password;
+        this.nickName=nickName;
+        this.email=email;
+        this.joinMethod=joinMethod;
+    }
+
     //추가정보입력
     public void putExtraInfo(FirstExtraInfoPutRequestDto dto){
         this.name = dto.getName();
@@ -65,6 +80,15 @@ public class User extends BaseTimeEntity {
         this.city = dto.getCity();
         this.district = dto.getDistrict();
     }
+
+    //회원탈퇴시
+    public void account_withdrawal(String skey){
+        this.name = "탈퇴 회원";
+        this.loginId = "탈퇴 회원";
+        this.email = this.email+skey;
+        this.nickName = "탈퇴 회원";
+    }
+
 
     //연관관계
     public void addUserRole(List<UserRole> userRoles){
@@ -95,5 +119,21 @@ public class User extends BaseTimeEntity {
         this.addUserRole(userRoles);
     }
 
+    public void update(UserProfileRequestDto userProfileRequestDto, String pictureUrl) {
+        this.nickName = userProfileRequestDto.getNickName();
+        this.picture = pictureUrl;
+        this.birthDate = userProfileRequestDto.getBirthDate();
+        this.gender = userProfileRequestDto.getGender();
+        this.introduction = userProfileRequestDto.getIntroduction();
+        this.phoneNumber = userProfileRequestDto.getPhoneNumber();
+        this.city = userProfileRequestDto.getCity();
+        this.district = userProfileRequestDto.getDistrict();
+        this.latitude = userProfileRequestDto.getLatitude();
+        this.longitude = userProfileRequestDto.getLongitude();
+    }
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
 
 }

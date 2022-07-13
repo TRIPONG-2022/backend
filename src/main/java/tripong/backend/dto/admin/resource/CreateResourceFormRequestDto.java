@@ -18,7 +18,7 @@ public class CreateResourceFormRequestDto {
 
     public CreateResourceFormRequestDto(List<String> roles){
         this.roles=roles;
-        resourceTypes = Arrays.asList(ResourceType.values());
+        this.resourceTypes = Arrays.asList(ResourceType.values());
     }
 
 

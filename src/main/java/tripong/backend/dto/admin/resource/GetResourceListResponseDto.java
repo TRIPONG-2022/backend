@@ -24,7 +24,7 @@ public class GetResourceListResponseDto {
     @Enumerated(EnumType.STRING)
     private ResourceType resourceType;
 
-    private String methodName;
+    private String description;
 
     private int priorityNum;
 
@@ -35,7 +35,7 @@ public class GetResourceListResponseDto {
         this.resourceId = resource.getId();
         this.resourceName = resource.getResourceName();
         this.resourceType = resource.getResourceType();
-        this.methodName = resource.getMethodName();
+        this.description = resource.getDescription();
         this.priorityNum = resource.getPriorityNum();
         this.roleResources = resource.getRoleResources().stream()
                 .map(r -> new ResourceRolesDto(r)).collect(Collectors.toList());

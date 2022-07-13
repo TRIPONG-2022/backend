@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetUserAllListDto {
-
     private Long id;
     private String name;
     private String loginId;
