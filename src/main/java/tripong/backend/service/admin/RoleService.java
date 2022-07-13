@@ -7,10 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.dto.admin.role.CreateRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
+import tripong.backend.exception.admin.AdminErrorMessage;
 import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -33,16 +34,12 @@ public class RoleService {
      * */
     @Transactional
     public void createRole(CreateRoleRequestDto dto) {
+        log.info("시작: RoleService 권한등록");
         if(!dto.getRoleName().startsWith("ROLE_")){
-            throw new IllegalArgumentException("권한명 ROLE_~~ 으로 작성해 주세요.");
+            throw new IllegalArgumentException(AdminErrorMessage.Role_FORM_ERROR);
         }
-
-        Role role = Role.builder()
-                .roleName(dto.getRoleName())
-                .description(dto.getDescription())
-                .build();
-
-        roleRepository.save(role);
+        roleRepository.save(new Role(dto.getRoleName(), dto.getDescription()));
+        log.info("종료: RoleService 권한등록");
     }
 
     /**
@@ -50,14 +47,9 @@ public class RoleService {
      * */
     @Transactional
     public void deleteRole(Long roleId) {
-        Optional<Role> role = roleRepository.findById(roleId);
-        if(role.isPresent()){
-            roleRepository.delete(role.get());
-        }
-        else{
-            throw new IllegalStateException("존재하지 않는 권한입니다.");
-        }
+        log.info("시작: RoleService 권한삭제");
+        Role role = roleRepository.findById(roleId).orElseThrow(() -> new NoSuchElementException("해당 권한이 없습니다. roleId=" + roleId));
+        roleRepository.delete(role);
+        log.info("종료: RoleService 권한삭제");
     }
-
-
 }

@@ -12,7 +12,6 @@ import tripong.backend.dto.admin.user.GetUserReportedListResponseDto;
 import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
 import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.UserReport;
-import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.admin.role.RoleRepository;
@@ -23,7 +22,7 @@ import tripong.backend.repository.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -39,89 +38,68 @@ public class AdminService {
 
 
     /**
-     * 사용자 전체 목록
+     * 유저 전체 목록
      */
     public Page<GetUserAllListDto> getUserList(Pageable pageable) {
         log.info("시작: AdminService 전체사용자리스트");
-
         Page<User> page = userRepository.findPagingAll(pageable);
-
         log.info("종료: AdminService 전체사용자리스트");
         return page.map(p -> new GetUserAllListDto(p));
     }
 
 
     /**
-     * 신고 받은 사용자 전체 목록
+     * 신고 접수(유저) 전체 목록
      * 반환: 신고받은 유저 pk, 신고 이유, 신고받은 유저이름, 신고받은 유저닉네임, 신고받은 유저아이디, 신고받은 유저권한들, + 신고자(아이디)
      *  -유저 pk: 추후 권한 수정을 pk로 처리하기 위해 반환
      */
     public Page<GetUserReportedListResponseDto> getUserReportedList(Pageable pageable) {
+        log.info("시작: AdminService 신고받은 사용자 리스트");
         Page<UserReport> page = userReportRepository.findReportUserANDReportedUserPagingAll(pageable);
+        log.info("시작: AdminService 신고받은 사용자 리스트");
         return page.map(ur -> new GetUserReportedListResponseDto(ur));
     }
 
     /**
-     * 신고받은 유저 BLACK 처리
+     * 유저 BLACK 처리
      * - 가지고 있던 모든 권한 삭제 후, BLACK 부여
      * - 존재하지 않는 유저 에러 처리
      */
     @Transactional
     public void changedBlack(Long userId) {
         log.info("시작: AdminService 신고유저블랙");
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isPresent()){
-            deleteRoles(user);
-            List<UserRole> newUserRoles = new ArrayList<>();
-            
-            Role role_black = roleRepository.findByRoleName("ROLE_BLACK");
-            UserRole userRole_black = UserRole.builder().role(role_black).build();
-            
-            newUserRoles.add(userRole_black);
-            user.get().addUserRole(newUserRoles);
-        }
-        else{
-            throw new IllegalStateException("존재하지 않는 유저입니다.");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
+        deleteRoles(user);
+        List<UserRole> newUserRoles = new ArrayList<>();
+        newUserRoles.add(new UserRole(roleRepository.findByRoleName("ROLE_BLACK")));
+        user.addUserRole(newUserRoles);
         log.info("종료: AdminService 신고유저블랙");
     }
 
-    private void deleteRoles(Optional<User> user) {
-        List<UserRole> userRoles = user.get().getUserRoles();
+    private void deleteRoles(User user) {
+        List<UserRole> userRoles = user.getUserRoles();
         userRoleRepository.deleteAllInBatch(userRoles);
     }
 
 
 
     /**
-     * 사용자 권한 변경
+     * 유저 권한 변경
      */
     @Transactional
     public void changedRoles(Long userId, UpdateRolesRequestDto dto) {
         log.info("시작: AdminService 사용자권한변경");
-
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isPresent()){
-            deleteRoles(user);
-            List<UserRole> newUserRoles = new ArrayList<>();
-            dto.getRoleNames().stream().forEach( r->
-                    {
-                        Role roleName = roleRepository.findByRoleName(r);
-                        UserRole userRole = UserRole.builder().role(roleName).build();
-                        newUserRoles.add(userRole);
-                    }
-            );
-            user.get().addUserRole(newUserRoles);
-        }
-        else{
-            throw new IllegalStateException("존재하지 않는 유저입니다.");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
+        deleteRoles(user);
+        List<UserRole> newUserRoles = new ArrayList<>();
+        dto.getRoleNames().stream().forEach( r-> newUserRoles.add(new UserRole(roleRepository.findByRoleName(r))));
+        user.addUserRole(newUserRoles);
         log.info("종료: AdminService 사용자권한변경");
     }
 
 
     /**
-     * 신고 받은 게시글 전체 목록
+     * delete 신고 게시글 삭제
      * 반환: 게시글 pk, 신고 이유, 게시글 제목, 게시글 작성 시간, 작성자 pk, 작성자 아이디, 작성자 닉네임, 신고자 아이디, 신고 시간
      *  -게시글 pk: 삭제 위해 반환
      *  -작성자 pk: 추후 권한 수정을 pk로 처리하기 위해 반환
@@ -129,14 +107,6 @@ public class AdminService {
     public Page<GetPostReportedListResponseDto> getPostReportedList(Pageable pageable) {
         Page<PostReport> page = postReportRepository.findReportPostANDReportedPostANDReportUserPagingAll(pageable);
         return page.map(pr -> new GetPostReportedListResponseDto(pr));
-    }
-
-    /**
-     * 신고 받은 게시글 삭제
-     */
-    @Transactional
-    public void deletePost(Long postId) {
-        //포스트 리파지토리  머지 후 삭제.
     }
 }
 

@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class GetUserReportedListResponseDto {
 
-    //유저 pk, 유저이름, 유저 닉네임, 유저 아이디, 권한들 반환필요
+    //신고받은 유저 pk, 신고범주, 신고받은 유저 이름, 신고받은 유저 아이디, 신고받은 유저 닉네임,
+    //신고받은 유저 권한들, 신고한 유저 아이디, 신고 시간
     private Long id;
     private ReportType reportType;
     private String name;

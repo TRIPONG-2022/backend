@@ -134,7 +134,6 @@ public class UserAuthService {
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
 
         User user = userRepository.findByLoginId(userId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
-        user.setPassword(newPassword);
 
     }
 
@@ -145,7 +144,6 @@ public class UserAuthService {
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
 
         User user = userRepository.findByLoginId(dto.getUserId()).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
-        user.setPassword(newPassword);
 
     }
 

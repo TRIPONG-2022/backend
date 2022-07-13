@@ -23,11 +23,9 @@ public class RoleResource {
     private Resource resource;
 
 
-    ///
-    @Builder
-    public RoleResource(Role role, Resource resource){
-        this.role= role;
-        this.resource = resource;
+    ////-----편의 메소드-----
+    public RoleResource(Role role){
+        this.role=role;
     }
 
     public void injectResource(Resource resource){

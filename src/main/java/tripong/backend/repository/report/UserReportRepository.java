@@ -14,5 +14,4 @@ public interface UserReportRepository extends JpaRepository<UserReport, Long> {
     @Query(value = "select ur from UserReport ur")
     Page<UserReport> findReportUserANDReportedUserPagingAll(Pageable pageable);
 
-
 }
