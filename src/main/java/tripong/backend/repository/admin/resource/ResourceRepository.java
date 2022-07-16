@@ -22,4 +22,8 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     Page<Resource> findPagingAll(Pageable pageable);
 
     Optional<Resource> findByResourceName(String resourceName);
+
+
+    @Query(value = "select r from Resource r order by r.priorityNum desc")
+    List<Resource> findReason();
 }

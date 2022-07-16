@@ -11,5 +11,5 @@ public interface PostReportRepository extends JpaRepository<PostReport, Long> {
 
     @EntityGraph(attributePaths = {"reportedPostId", "reportUserId"})
     @Query(value = "select pr from PostReport pr")
-    Page<PostReport> findReportPostANDReportedPostANDReportUserPagingAll(Pageable pageable);
+    Page<PostReport> findPostReportWithReportedPostANDReportUserPagingAll(Pageable pageable);
 }
