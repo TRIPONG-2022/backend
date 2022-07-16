@@ -22,7 +22,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import tripong.backend.config.security.principal.PrincipalService;
 import tripong.backend.config.security.authentication.handler.CustomLoginFailureHandler;
 import tripong.backend.config.security.authentication.handler.CustomLogoutHandler;
@@ -51,11 +54,10 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     private final JwtCookieService jwtCookieService;
     private final PrincipalService principalService;
     private final AuthResourceService authResourceService;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final MethodResourceMap methodResourceMap;
 
     private static final String[] permitAllResource = {
-            "/**", "/", "/about", "/oauth2/**", "/posts", "/auth/**", "/error/**"
+            "/", "/about", "/oauth2/**", "/auth/**", "/error/**"
     };
     private static final String[] SWAGGER_WHITELIST = {"/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**"};
 
@@ -68,11 +70,12 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests().anyRequest().authenticated();
+                .authorizeRequests()
+//                .antMatchers(permitAllResource).permitAll()
+                .anyRequest().authenticated();
 
         http
                 .apply(new MyCustomDsl())
-
                 .and()
                 .logout()
                 .logoutUrl("/users/logout")
@@ -100,7 +103,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
             http
                     .exceptionHandling()
-                    .accessDeniedHandler(customAccessDeniedHandler);
+                    .accessDeniedHandler(customAccessDeniedHandler(http));
         }
 
         @Override
@@ -114,18 +117,25 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
             jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
 
+            JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, userRepository);
+
             CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor(permitAllResource);
             customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
             customFilterSecurityInterceptor.setAuthenticationManager(authenticationManager);
             customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource(urlResourceMap()));
 
-
             http
                     .addFilter(corsConfig.corsFilter())
-                    .addFilter(jwtAuthenticationFilter)
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository))
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                    .addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class)
                     .addFilterBefore(customFilterSecurityInterceptor, FilterSecurityInterceptor.class);
         }
+    }
+
+    @Bean
+    public AccessDeniedHandler customAccessDeniedHandler(HttpSecurity http)  {
+        CustomAccessDeniedHandler customAccessDeniedHandler = new CustomAccessDeniedHandler(http);
+        return customAccessDeniedHandler;
     }
 
     @Bean

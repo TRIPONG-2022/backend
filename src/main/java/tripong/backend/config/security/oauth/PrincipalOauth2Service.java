@@ -2,6 +2,7 @@ package tripong.backend.config.security.oauth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -53,7 +54,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
             oAuthInfo = new FacebookUser(oAuth2User.getAttributes());
         }
         else{
-            log.info("지원하지 않는 Oauth2.0");
+             throw new OAuth2AuthenticationException("dd");
         }
 
         Optional<User> user = userRepository.findPrincipleServiceByLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());

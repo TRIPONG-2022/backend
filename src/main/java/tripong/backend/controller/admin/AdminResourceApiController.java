@@ -57,7 +57,7 @@ public class AdminResourceApiController {
         } else{
             methodResourceLiveUpdateService.reload_add_method(dto.getResourceName(), dto.getRoleNames());
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

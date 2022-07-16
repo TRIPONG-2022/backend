@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.report.PostReportRequestDto;
@@ -29,9 +31,7 @@ public class ReportApiController {
     @GetMapping("/reports/type")
     public ResponseEntity userReportType(){
         List<ReportType> types = Arrays.asList(ReportType.values());
-
-        HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(types, status);
+        return new ResponseEntity<>(types, HttpStatus.OK);
     }
 
     /**
@@ -41,9 +41,7 @@ public class ReportApiController {
     @PostMapping("/reports/users/{userId}")
     public ResponseEntity userReport(@RequestBody UserReportRequestDto dto, @PathVariable("userId") Long reportedUserId, @AuthenticationPrincipal PrincipalDetail principal){
         reportService.userReport(dto, reportedUserId, principal);
-
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -54,9 +52,7 @@ public class ReportApiController {
     @PostMapping("/reports/posts/{postId}")
     public ResponseEntity postReport(@RequestBody PostReportRequestDto dto, @PathVariable("postId") Long reportedPostId, @AuthenticationPrincipal PrincipalDetail principal){
         reportService.postReport(dto, reportedPostId, principal);
-
-        HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(status);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

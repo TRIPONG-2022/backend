@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import tripong.backend.dto.admin.post.GetPostAllListDto;
 import tripong.backend.dto.admin.post.GetPostReportedListResponseDto;
+import tripong.backend.dto.admin.user.GetUserAllListDto;
 import tripong.backend.service.admin.AdminService;
 import tripong.backend.service.post.PostService;
 
@@ -23,6 +25,16 @@ public class AdminPostApiController {
 
     private final AdminService adminService;
     private final PostService postService;
+
+    /**
+     * 게시글 전체 목록 API
+     */
+    @GetMapping("/admin/posts")
+    public ResponseEntity getPostList(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<GetPostAllListDto> result = adminService.getPostList(pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 
     /**
      * 신고 접수(게시글) 전체 목록 API
@@ -38,8 +50,7 @@ public class AdminPostApiController {
      */
     @DeleteMapping("/admin/reports/posts/{postId}")
     public ResponseEntity deletePost(@PathVariable("postId") Long postId){
-        postService.delete(postId); //최창화 API
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        postService.delete(postId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

@@ -1,11 +1,15 @@
 package tripong.backend.service.account;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.security.authentication.jwt.JwtCookieService;
+import tripong.backend.config.security.authentication.jwt.JwtProperties;
 import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.config.security.oauth.oauthDetail.OAuthInfo;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
@@ -19,7 +23,9 @@ import tripong.backend.exception.account.AccountErrorMessage;
 import tripong.backend.repository.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,6 +38,7 @@ public class AccountService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
     private final RoleRepository roleRepository;
+    private final JwtCookieService cookieService;
 
     @Value("${tripong.skey}")
     private String sKey;
@@ -42,7 +49,7 @@ public class AccountService {
      * -아이디와 닉네임 중복 체크
      */
     @Transactional
-    public void normalJoin(NormalJoinRequestDto dto){
+    public void normalJoin(NormalJoinRequestDto dto, HttpServletResponse response){
         log.info("시작: AccountService 일반회원가입");
 
         boolean email_dub = userRepository.existsByEmail(dto.getEmail());
@@ -63,9 +70,17 @@ public class AccountService {
         }
 
         dto.setPassword(encoder.encode(dto.getPassword()));
-        User user = new User(dto.getLoginId(), dto.getPassword(), dto.getNickName(), dto.getEmail(), JoinType.Normal);
+        User user = new User(dto.getLoginId(), dto.getPassword(), dto.getNickName(), dto.getEmail(), JoinType.Normal, 0);
         authorize_UNAUTH(user);
         userRepository.save(user);
+
+        String jwtToken = JWT.create()
+                .withSubject(dto.getLoginId())
+                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME)))
+                .withClaim("pk", user.getId().toString())
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        response.addHeader("Set-Cookie", cookieService.jwtCookieIn(jwtToken));
+
         log.info("종료: AccountService 일반회원가입");
     }
 

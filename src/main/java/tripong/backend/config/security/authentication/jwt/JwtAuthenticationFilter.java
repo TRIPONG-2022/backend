@@ -74,14 +74,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String jwtToken = JWT.create()
                 .withSubject(principal.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME)))
-                .withClaim("loginId", principal.getUser().getLoginId())
+                .withClaim("pk", principal.getUser().getId().toString())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
         response.addHeader("Set-Cookie", cookieService.jwtCookieIn(jwtToken));
         response.setStatus(HttpServletResponse.SC_OK);
         log.info("종료: successfulAuthentication");
     }
-
 }
 
 
