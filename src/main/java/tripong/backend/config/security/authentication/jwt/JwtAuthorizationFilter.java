@@ -3,15 +3,20 @@ package tripong.backend.config.security.authentication.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.ErrorResult;
 import tripong.backend.repository.user.UserRepository;
 
 import javax.servlet.FilterChain;
@@ -20,6 +25,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -31,6 +38,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         super(authenticationManager);
         this.userRepository=userRepository;
     }
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -51,20 +60,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
         String token = auth_cookie.getValue();
-        String loginId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)
-                .getClaim("loginId").asString(); //만료에러 고려
+        String pk = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)
+                .getClaim("pk").asString(); //만료에러 고려
 
-
-        if(loginId != null){
-            User user = userRepository.findPrincipleServiceByLoginId(loginId)
-                    .orElseThrow(()->{
-                        return new UsernameNotFoundException("잘못된 토큰 정보 입니다.");
-                    });
-            PrincipalDetail principal = new PrincipalDetail(user);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+        User user = userRepository.findPrincipleServiceByPK(Long.valueOf(pk)).orElseThrow(() -> new NoSuchElementException("잘못된 토큰 정보, userId=" + pk));
+        PrincipalDetail principal = new PrincipalDetail(user);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("종료: JwtAuthorizationFilter - 인가 ok");
         chain.doFilter(request, response);
     }
+
+
+
 }

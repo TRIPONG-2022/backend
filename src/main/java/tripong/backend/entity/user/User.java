@@ -17,9 +17,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity{
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
@@ -64,12 +64,13 @@ public class User extends BaseTimeEntity {
 
     ////-----편의 메소드-----
     //회원가입
-    public User(String loginId, String password, String email, String nickName, JoinType joinMethod){
+    public User(String loginId, String password, String email, String nickName, JoinType joinMethod, Integer authentication){
         this.loginId=loginId;
         this.password=password;
         this.nickName=nickName;
         this.email=email;
         this.joinMethod=joinMethod;
+        this.authentication=authentication;
     }
 
     //추가정보입력

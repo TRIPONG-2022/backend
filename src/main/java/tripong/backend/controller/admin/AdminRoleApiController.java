@@ -34,7 +34,7 @@ public class AdminRoleApiController {
     @PostMapping("/admin/roles")
     public ResponseEntity createRole(@RequestBody CreateRoleRequestDto dto){
         roleService.createRole(dto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

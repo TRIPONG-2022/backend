@@ -58,6 +58,21 @@ public class InitDB {
             roleResources1.add(new RoleResource(admin));
             resourceRepository.save(new Resource("/admin/**", ResourceType.Url, "관리자페이지", 1, roleResources1));
 
+            List<RoleResource> roleResources2 = new ArrayList<>(); //게시글 열람
+            roleResources2.add(new RoleResource(user));
+            resourceRepository.save(new Resource("/posts/**", ResourceType.Url, "이메일인증자만 게시물 이용 가능", 1, roleResources2));
+
+            List<RoleResource> roleResources3 = new ArrayList<>(); //댓글 사용
+            roleResources3.add(new RoleResource(user));
+            resourceRepository.save(new Resource("/replies/**", ResourceType.Url, "이메일인증자만 댓글 이용 가능", 1, roleResources3));
+
+            List<RoleResource> roleResources4 = new ArrayList<>(); //채팅 사용
+            roleResources4.add(new RoleResource(user));
+            resourceRepository.save(new Resource("/chat/**", ResourceType.Url, "이메일인증자만 채팅 이용 가능", 1, roleResources4));
+
+            List<RoleResource> roleResources5 = new ArrayList<>(); //채팅 사용
+            roleResources5.add(new RoleResource(user));
+            resourceRepository.save(new Resource("/reports/**", ResourceType.Url, "이메일인증자만 신고 이용 가능", 1, roleResources5));
 
 //            List<RoleResource> roleResources2 = new ArrayList<>(); //유저 신고 기능 리소스
 //            roleResources2.add(new RoleResource(user));
@@ -97,7 +112,7 @@ public class InitDB {
                     .loginId("user2")
                     .password(pw)
                     .nickName("심사임당")
-                    .email("abc12@naver.com")
+                    .email("abc12@gmail.com")
                     .birthDate(LocalDate.of(1995,1,1))
                     .gender(GenderType.F)
                     .joinMethod(JoinType.Normal)
@@ -114,7 +129,7 @@ public class InitDB {
                     .password(pw)
                     .name("이순신")
                     .nickName("이순신")
-                    .email("abc13@naver.com")
+                    .email("abc13@gmail.com")
                     .joinMethod(JoinType.Google)
                     .authentication(1)
                     .userRoles(user3_userRoleList)
@@ -130,7 +145,7 @@ public class InitDB {
                     .password(pw)
                     .name("관리자")
                     .nickName("관리자")
-                    .email("admin@naver.com")
+                    .email("admin@gmail.com")
                     .birthDate(LocalDate.of(1995,1,1))
                     .gender(GenderType.M)
                     .joinMethod(JoinType.Normal)

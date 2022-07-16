@@ -25,6 +25,4 @@ public class CustomLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         response.addCookie(cookieService.jwtCookieExpired());
     }
-
-
 }
