@@ -5,15 +5,18 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.authentication.AuthenticationErrorMessage;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -27,9 +30,9 @@ public class EmailAuthService {
 
     // 이메일 인증
     @Transactional
-    public void createEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
+    public void createEmailValidLink(EmailAuthRequestDto dto, PrincipalDetail principal) throws MessagingException {
 
-        EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getUser().getLoginId());
         emailAuthRepository.save(validLink);
 
         sendEmailByGmail(dto, validLink);
@@ -38,19 +41,18 @@ public class EmailAuthService {
 
     // 이메일 재인증
     @Transactional
-    public String verifyResendEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
+    public void verifyResendEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
 
         // 가장 최근 인증 토큰
-        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(dto.getUserId()).orElseThrow(() -> new  IllegalArgumentException("링크가 존재하지 않습니다."));
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(dto.getUserId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
         if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
             EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
             emailAuthRepository.save(validLink);
             sendEmailByGmail(dto, validLink);
         } else {
-            return "FAIL";
+            throw new IllegalStateException(AuthenticationErrorMessage.Resend_Email_Auth_FAIL);
         }
-        return "SUCCESS";
 
     }
 
@@ -96,27 +98,23 @@ public class EmailAuthService {
 
         Optional<EmailValidLink> validLink  = emailAuthRepository.findByIdAndExpirationDateAfterAndExpired(emailValidLink, LocalDateTime.now(), false);
 
-        return validLink.orElseThrow(()  -> new IllegalArgumentException("링크가 유효하지 않습니다."));
+        return validLink.orElseThrow(()  -> new IllegalArgumentException(AuthenticationErrorMessage.Email_Valid_Link_EXPIRED));
 
     }
 
     // 이메일 인증: 유효 링크 확인 및 변경
     @Transactional
-    public String verifyEmailLink(String emailValidLink){
+    public void verifyEmailLink(String emailValidLink){
 
         EmailValidLink findValidLink = findByIdAndExpirationDateAfterAndExpired(emailValidLink);
         String userId = findValidLink.getUserId();
 
-        Optional<User> user = userAuthRepository.findByLoginId(userId);
+        User user = userAuthRepository.findByLoginId(userId).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
 
         findValidLink.makeInvalidLink();
 
-        if (user.isPresent()){
-            userAuthRepository.updateAuthenticationStatus(userId);
-            return "SUCCESS";
-        } else {
-            return "FAIL";
-        }
+        userAuthRepository.updateAuthenticationStatus(user.getLoginId());
+
     }
 
 }

@@ -7,8 +7,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.dto.authentication.PasswordRequestDto;
 import tripong.backend.dto.authentication.UserAuthRequestDto;
+import tripong.backend.exception.authentication.AuthenticationErrorMessage;
 import tripong.backend.service.authentication.UserAuthService;
 import javax.mail.MessagingException;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @RestController
@@ -21,7 +23,7 @@ public class UserAuthApiController {
     @PostMapping("/users/auth/find/id")
     public ResponseEntity<Object> findUserId (@RequestBody UserAuthRequestDto dto){
 
-        String userId = String.valueOf(userAuthService.findUserId(dto).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
+        String userId = String.valueOf(userAuthService.findUserId(dto).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
         return new ResponseEntity<>(userId, HttpStatus.OK);
 
@@ -30,11 +32,9 @@ public class UserAuthApiController {
     // 비밀번호 찾기: 이메일 인증
     // /users/auth/find/password
     @GetMapping("/auth/verify-request")
-    public ResponseEntity<Object> findUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException {
+    public void findUserPassword(@RequestBody UserAuthRequestDto dto) throws MessagingException {
 
        userAuthService.findUserPassword(dto);
-
-       return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
@@ -44,7 +44,7 @@ public class UserAuthApiController {
 
         String result = userAuthService.verifyResendfindUserPassword(dto);
 
-        if(result == "SUCCESS"){
+        if(Objects.equals(result, "SUCCESS")){
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
