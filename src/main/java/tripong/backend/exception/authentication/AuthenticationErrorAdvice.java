@@ -29,7 +29,6 @@ public class AuthenticationErrorAdvice {
         switch (message){
             case AuthenticationErrorMessage.Email_Valid_Link_EXPIRED: return 703;
             case AuthenticationErrorMessage.Resend_Email_Auth_FAIL: return 704;
-            case AuthenticationErrorMessage.Change_Password_FAIL:return 705;
             default: return 999;
         }
     }

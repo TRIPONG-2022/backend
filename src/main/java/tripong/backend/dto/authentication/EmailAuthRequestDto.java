@@ -10,8 +10,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class EmailAuthRequestDto {
 
-    private String userId;
-
     @NotBlank
     @Email(message = "이메일 양식을 지켜주세요.")
     private String email;

@@ -15,9 +15,7 @@ import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.authentication.EmailAuthService;
 import javax.mail.MessagingException;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class EmailAuthApiController {
 
     // 이메일 인증
     @GetMapping("/users/auth/email/send")
-    public ResponseEntity<Object> sendEmailAuth(@Valid @RequestBody EmailAuthRequestDto dto, @AuthenticationPrincipal PrincipalDetail principal, BindingResult bindingResult) throws MessagingException {
+    public ResponseEntity<Object> sendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult,  @AuthenticationPrincipal PrincipalDetail principal) throws MessagingException {
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
@@ -40,21 +38,20 @@ public class EmailAuthApiController {
 
     // 이메일 재인증
     @GetMapping("/users/auth/email/resend")
-    public ResponseEntity<Object> resendEmailAuth(@Valid @RequestBody EmailAuthRequestDto dto, @AuthenticationPrincipal PrincipalDetail principal, BindingResult bindingResult) throws MessagingException {
+    public ResponseEntity<Object> resendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal) throws MessagingException {
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
 
-        dto.setUserId(principal.getUser().getLoginId());
-        emailAuthService.verifyResendEmailValidLink(dto);
+        emailAuthService.verifyResendEmailValidLink(dto, principal);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 이메일 인증: URL 매핑
     @GetMapping("/users/auth/email/confirm")
-    public ResponseEntity<Object> emailConfirm(@Valid @NotBlank @RequestParam String emailValidLink, BindingResult bindingResult) {
+    public ResponseEntity<Object> emailConfirm(@Validated @NotBlank @RequestParam String emailValidLink, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);

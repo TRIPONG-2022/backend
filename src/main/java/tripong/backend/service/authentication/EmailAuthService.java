@@ -41,13 +41,13 @@ public class EmailAuthService {
 
     // 이메일 재인증
     @Transactional
-    public void verifyResendEmailValidLink(EmailAuthRequestDto dto) throws MessagingException {
+    public void verifyResendEmailValidLink(EmailAuthRequestDto dto, PrincipalDetail principal) throws MessagingException {
 
         // 가장 최근 인증 토큰
-        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(dto.getUserId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(principal.getUser().getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
         if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
-            EmailValidLink validLink = EmailValidLink.createEmailValidLink(dto.getUserId());
+            EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getUser().getLoginId());
             emailAuthRepository.save(validLink);
             sendEmailByGmail(dto, validLink);
         } else {
