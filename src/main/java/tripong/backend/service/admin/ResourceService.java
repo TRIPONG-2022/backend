@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.security.authorization.CustomFilterInvocationSecurityMetadataSource;
 import tripong.backend.config.security.authorization.MethodResourceLiveUpdateService;
-import tripong.backend.dto.admin.resource.CreateResourceFormRequestDto;
-import tripong.backend.dto.admin.resource.CreateResourceRequestDto;
-import tripong.backend.dto.admin.resource.DeleteResourceReloadDto;
-import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
+import tripong.backend.dto.admin.resource.*;
 import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.RoleResource;
@@ -85,6 +82,16 @@ public class ResourceService {
         resourceRepository.delete(resource);
         log.info("종료: ResourceService 자원삭제");
         return new DeleteResourceReloadDto(resource.getResourceType(), resource.getResourceName());
+    }
+
+
+    /**
+     * 접근 제한: 권한명 필터용
+     */
+    public List<AccessDeniedReasonDto> findAccessReason(){
+        List<AccessDeniedReasonDto> result = new ArrayList<>();
+        resourceRepository.findReason().stream().forEach(r -> result.add(new AccessDeniedReasonDto(r)));
+        return result;
     }
 }
 

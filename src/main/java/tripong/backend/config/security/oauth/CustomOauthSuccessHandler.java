@@ -34,7 +34,7 @@ public class CustomOauthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String jwtToken = JWT.create()
                 .withSubject(principal.getUsername()) //토큰명
                 .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME))) //만료시간 10분
-                .withClaim("loginId", principal.getUser().getLoginId())
+                .withClaim("pk", principal.getUser().getId())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET)); //HMAC HS256에 쓰일 개인키
 
         Cookie[] cookies = request.getCookies();
