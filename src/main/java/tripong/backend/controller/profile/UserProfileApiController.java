@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
@@ -31,6 +33,17 @@ public class UserProfileApiController {
 
     private final UserProfileService userProfileService;
 
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostResponseDto>> getListPosts(@RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable, @AuthenticationPrincipal PrincipalDetail principal) {
+        List<PostResponseDto> postResponseDtoList = postService.getPersonalPostList(principal.getUser().getId(), category, fromDate, endDate, pageable);
+        return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/likes")
+    public ResponseEntity<List<PostResponseDto>> getListPosts(@RequestParam Category category, Pageable pageable, @AuthenticationPrincipal PrincipalDetail principal) {
+        List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(principal.getUser().getId(), category, pageable);
+        return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
+    }
 
     @GetMapping("/posts/{userId}")
     public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable) {
@@ -45,7 +58,7 @@ public class UserProfileApiController {
     }
 
     @GetMapping("replies/{userId}")
-    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable String userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable){
+    public ResponseEntity<List<ReplyResponseDto>> getReplyListByUserId(@PathVariable String userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable) {
 
         LocalDateTime startDate = fromDate.atStartOfDay();
         LocalDateTime finishDate = endDate.atStartOfDay();
@@ -60,9 +73,15 @@ public class UserProfileApiController {
         return new ResponseEntity<>(userProfileResponseDto, HttpStatus.OK);
     }
 
-    @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUserProfile(@PathVariable Long userId, @ModelAttribute UserProfileRequestDto userProfileRequestDto) {
-        userProfileService.updateUserProfile(userId, userProfileRequestDto);
+    @GetMapping
+    public ResponseEntity<UserProfileResponseDto> getUserProfile(@AuthenticationPrincipal PrincipalDetail principal) {
+        UserProfileResponseDto userProfileResponseDto = userProfileService.getUserProfile(principal.getUser().getId());
+        return new ResponseEntity<>(userProfileResponseDto, HttpStatus.OK);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Object> updateUserProfile(@PathVariable Long userId, @ModelAttribute UserProfileRequestDto userProfileRequestDto, @AuthenticationPrincipal PrincipalDetail principal) {
+        userProfileService.updateUserProfile(principal.getUser().getId(), userProfileRequestDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
