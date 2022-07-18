@@ -80,7 +80,7 @@ public class UserProfileApiController {
     }
 
     @PatchMapping
-    public ResponseEntity<Object> updateUserProfile(@PathVariable Long userId, @ModelAttribute UserProfileRequestDto userProfileRequestDto, @AuthenticationPrincipal PrincipalDetail principal) {
+    public ResponseEntity<Object> updateUserProfile(@ModelAttribute UserProfileRequestDto userProfileRequestDto, @AuthenticationPrincipal PrincipalDetail principal) {
         userProfileService.updateUserProfile(principal.getUser().getId(), userProfileRequestDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
