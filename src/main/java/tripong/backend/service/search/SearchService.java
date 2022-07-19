@@ -19,6 +19,7 @@ public class SearchService {
     private final SearchRepository searchRepository;
     private final AmazonS3Service amazonS3Service;
 
+    // Post 기능 담당 좌창화님 코드 바탕으로 작성
     @Transactional
     public List<PostResponseDto> search(SearchType searchType, String keyword, Pageable pageable){
         List<PostResponseDto> postList = searchRepository.search(searchType, keyword, pageable)

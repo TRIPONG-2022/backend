@@ -24,7 +24,7 @@ public class EmailAuthApiController {
     private final EmailAuthService emailAuthService;
 
     // 이메일 인증
-    @GetMapping("/users/auth/email/send")
+    @GetMapping("/users/auth/send/email")
     public ResponseEntity<Object> sendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult,  @AuthenticationPrincipal PrincipalDetail principal) throws MessagingException {
 
         if (bindingResult.hasErrors()){
@@ -37,7 +37,7 @@ public class EmailAuthApiController {
     }
 
     // 이메일 재인증
-    @GetMapping("/users/auth/email/resend")
+    @GetMapping("/users/auth/resend/email")
     public ResponseEntity<Object> resendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal) throws MessagingException {
 
         if (bindingResult.hasErrors()){
@@ -50,7 +50,7 @@ public class EmailAuthApiController {
     }
 
     // 이메일 인증: URL 매핑
-    @GetMapping("/users/auth/email/confirm")
+    @GetMapping("/users/auth/confirm/email")
     public ResponseEntity<Object> emailConfirm(@Validated @NotBlank @RequestParam String emailValidLink, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()){
