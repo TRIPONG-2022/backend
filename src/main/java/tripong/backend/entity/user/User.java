@@ -5,6 +5,7 @@ import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
 import tripong.backend.entity.role.UserRole;
+import tripong.backend.entity.tag.Tag;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -61,6 +62,9 @@ public class User extends BaseTimeEntity{
     private BigDecimal latitude;
 
     private BigDecimal longitude;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Tag> tags = new ArrayList<>();
 
     ////-----편의 메소드-----
     //회원가입
