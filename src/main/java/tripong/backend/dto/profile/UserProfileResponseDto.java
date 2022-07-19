@@ -1,12 +1,17 @@
 package tripong.backend.dto.profile;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import tripong.backend.entity.tag.Tag;
 import tripong.backend.entity.user.GenderType;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -24,6 +29,7 @@ public class UserProfileResponseDto {
 
     private String picture;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
     private GenderType gender;
@@ -43,6 +49,8 @@ public class UserProfileResponseDto {
     private BigDecimal latitude;
 
     private BigDecimal longitude;
+
+    private List<String> tags = new ArrayList<>();
 
     @Builder
     public UserProfileResponseDto(User user) {
@@ -64,5 +72,6 @@ public class UserProfileResponseDto {
         this.district = user.getDistrict();
         this.latitude = user.getLatitude();
         this.longitude = user.getLongitude();
+        this.tags.addAll(user.getTags().stream().map(Tag::getTagName).collect(Collectors.toList()));
     }
 }
