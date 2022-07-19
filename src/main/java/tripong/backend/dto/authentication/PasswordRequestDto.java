@@ -15,7 +15,7 @@ public class PasswordRequestDto {
     @NotEmpty
     private String validLink;
 
-    @NotBlank(groups = ValidationGroup.groupA.class)
+    @NotBlank(groups = AuthValidationGroup.groupA.class)
     @Length(min=4, max=15, message = "4자 이상, 15자 이하로 설정해 주세요.")
     private String newPassword;
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.dto.authentication.PasswordRequestDto;
-import tripong.backend.dto.authentication.ValidationGroup;
+import tripong.backend.dto.authentication.AuthValidationGroup;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.exception.authentication.AuthenticationErrorMessage;
 import tripong.backend.service.authentication.UserAuthService;
@@ -82,7 +82,7 @@ public class UserAuthApiController {
 
     // 비밀번호 바꾸기
     @PatchMapping("/users/auth/change/password")
-    public ResponseEntity<Object> changeUserPassword(@Validated(ValidationGroup.groupA.class) @RequestBody PasswordRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal){
+    public ResponseEntity<Object> changeUserPassword(@Validated(AuthValidationGroup.groupA.class) @RequestBody PasswordRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal){
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);

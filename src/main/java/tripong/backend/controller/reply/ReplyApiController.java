@@ -4,9 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
+import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.reply.ReplyService;
 import java.util.List;
 
@@ -38,27 +43,34 @@ public class ReplyApiController {
 
     // 댓글 및 대댓글 작성
     @PostMapping("/replies/{postId}")
-    public ResponseEntity<Object> saveReply(@RequestBody ReplyRequestDto dto){
+    public ResponseEntity<Object> saveReply(@PathVariable Long postId, @Validated @RequestBody ReplyRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal){
 
-        replyService.saveReply(dto);
+        if (bindingResult.hasErrors()){
+            return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
+        }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        replyService.saveReply(postId, dto, principal);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
 
     // 댓글 및 대댓글 수정
-    @PatchMapping("/replies/{id}")
-    public ResponseEntity<Object> updateReply(@PathVariable Long id, @RequestBody ReplyRequestDto dto){
+    @PatchMapping("/replies/{postId}/{id}")
+    public ResponseEntity<Object> updateReply(@PathVariable Long id, @Validated @RequestBody ReplyRequestDto dto, BindingResult bindingResult){
 
-        dto.setId(id);
-        replyService.updateReply(dto);
+        if (bindingResult.hasErrors()){
+            return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
+        }
+
+        replyService.updateReply(id, dto);
 
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
 
     // 댓글 및 대댓글 삭제
-    @DeleteMapping("/replies/{id}")
+    @DeleteMapping("/replies/{postId}/{id}")
     public ResponseEntity<Object> deleteReply(@PathVariable Long id){
 
         replyService.deleteReply(id);
