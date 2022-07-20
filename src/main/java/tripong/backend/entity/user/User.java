@@ -67,7 +67,6 @@ public class User extends BaseTimeEntity{
     private List<Tag> tags = new ArrayList<>();
 
     ////-----편의 메소드-----
-    //회원가입
     public User(String loginId, String password, String email, String nickName, JoinType joinMethod, Integer authentication){
         this.loginId=loginId;
         this.password=password;

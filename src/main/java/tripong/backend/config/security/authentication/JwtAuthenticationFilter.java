@@ -1,16 +1,22 @@
-package tripong.backend.config.security.authentication.jwt;
+package tripong.backend.config.security.authentication;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.PrincipalDetail;
 import tripong.backend.dto.account.NormalLoginRequestDto;
 
@@ -18,9 +24,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +35,7 @@ import java.util.Date;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtCookieService cookieService;
+    private final TokenService tokenService;
 
     @Override
     public void setUsernameParameter(String usernameParameter) {
@@ -45,19 +52,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             normalLoginDto = om.readValue(request.getInputStream(), NormalLoginRequestDto.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info(e.toString());
         }
 
-
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(
-                        normalLoginDto.getLoginId(),
-                        normalLoginDto.getPassword());
-
-
-        Authentication authentication =
-                authenticationManager.authenticate(authenticationToken);
-
+                new UsernamePasswordAuthenticationToken(normalLoginDto.getLoginId(), normalLoginDto.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
         log.info("종료: attemptAuthentication");
         return authentication;
     }
@@ -68,17 +68,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
         log.info("시작: successfulAuthentication");
-
         PrincipalDetail principal = (PrincipalDetail)authResult.getPrincipal();
-
-        String jwtToken = JWT.create()
-                .withSubject(principal.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME)))
-                .withClaim("pk", principal.getUser().getId().toString())
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-
-        response.addHeader("Set-Cookie", cookieService.jwtCookieIn(jwtToken));
+        String roles = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        tokenService.createTokens(principal.getUser().getId().toString(), principal.getUsername(), roles, request.getHeader("user-agent"), response);
         response.setStatus(HttpServletResponse.SC_OK);
+
         log.info("종료: successfulAuthentication");
     }
 }
