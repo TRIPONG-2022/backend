@@ -23,10 +23,10 @@ public class ReplyErrorAdvice {
 
     public int code_value(String message){
         switch(message){
-            case ReplyErrorMessage.PostId_NOT_MATCH: return 401;
-            case ReplyErrorMessage.LoginId_NOT_MATCH: return 402;
-            case ReplyErrorMessage.ReplyId_NOT_MATCH: return 403;
-            case ReplyErrorMessage.ParentReply_NOT_MATCH:return 404;
+            case ReplyErrorMessage.PostId_NO_SUCH_ELEMENT: return 401;
+            case ReplyErrorMessage.LoginId_NO_SUCH_ELEMENT: return 402;
+            case ReplyErrorMessage.ReplyId_NO_SUCH_ELEMENT: return 403;
+            case ReplyErrorMessage.ParentReply_NO_SUCH_ELEMENT:return 404;
             default: return 999;
         }
     }

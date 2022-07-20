@@ -16,21 +16,27 @@ public class AuthenticationErrorAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity accountExceptionHandler(IllegalStateException e) {
-        return new ResponseEntity<>(new ErrorResult(code_value(e.getMessage()), e.getMessage()), HttpStatus.OK);
+    public ResponseEntity authenticationExceptionHandler(IllegalStateException e) {
+        return new ResponseEntity<>(new ErrorResult(code_value_illegal(e.getMessage()), e.getMessage()), HttpStatus.OK);
     }
 
     @ExceptionHandler
-    public ResponseEntity accountPKExceptionHandler(NoSuchElementException e) {
-        return new ResponseEntity<>(new ErrorResult(701, e.getMessage()), HttpStatus.OK);
+    public ResponseEntity authenticationPKExceptionHandler(NoSuchElementException e) {
+        return new ResponseEntity<>(new ErrorResult(code_value_noSuchElement(e.getMessage()), e.getMessage()), HttpStatus.OK);
     }
 
-    public int code_value(String message){
+    public int code_value_illegal(String message){
         switch (message){
-            case AuthenticationErrorMessage.Email_Valid_Link_EXPIRED: return 702;
-            case AuthenticationErrorMessage.Resend_Email_Auth_FAIL: return 703;
-            case AuthenticationErrorMessage.Gmail_SMTP_ERROR: return 704;
-            case AuthenticationErrorMessage.Change_Password_FAIL:return 705;
+            case AuthenticationErrorMessage.Email_Valid_Link_EXPIRED: return 703;
+            case AuthenticationErrorMessage.Resend_Email_Auth_FAIL: return 704;
+            default: return 999;
+        }
+    }
+
+    public int code_value_noSuchElement(String message) {
+        switch (message){
+            case AuthenticationErrorMessage.User_NO_SUCH_ELEMENT: return 701;
+            case AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT: return 702;
             default: return 999;
         }
     }
