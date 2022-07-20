@@ -27,7 +27,6 @@ public class Role {
 
 
     ////-----편의 메소드-----
-    //권한 생성
     public Role(String roleName, String description){
         this.roleName = roleName;
         this.description = description;

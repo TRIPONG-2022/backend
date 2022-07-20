@@ -23,7 +23,7 @@ public class AccountErrorAdvice {
     }
     @ExceptionHandler
     public ResponseEntity accountPKExceptionHandler(NoSuchElementException e) {
-        return new ResponseEntity<>(new ErrorResult(105, e.getMessage()), HttpStatus.OK);
+        return new ResponseEntity<>(new ErrorResult(100, e.getMessage()), HttpStatus.OK);
     }
 
     public int code_value(String message){
@@ -32,6 +32,9 @@ public class AccountErrorAdvice {
             case AccountErrorMessage.LoginId_DUP: return 102;
             case AccountErrorMessage.NickName_DUP: return 103;
             case AccountErrorMessage.LoginId_NickName_DUP: return 104;
+            case AccountErrorMessage.LoginId_Email_DUP: return 105;
+            case AccountErrorMessage.NickName_Email_DUP: return 106;
+            case AccountErrorMessage.LoginId_NockName_Email_DUP: return 107;
             default: return 999;
         }
     }
