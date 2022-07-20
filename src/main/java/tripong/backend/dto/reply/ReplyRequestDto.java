@@ -1,36 +1,22 @@
 package tripong.backend.dto.reply;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.reply.Reply;
+import javax.validation.constraints.NotEmpty;
+
 
 @Data
 @NoArgsConstructor
 public class ReplyRequestDto {
 
-    private Long id;
-
-    private Long postId;
-
-    private String userId;
-
+    @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
 
     private Long parentReply;
 
-    @Builder
-    public ReplyRequestDto(Long id, Long postId, String userId, String content, Long parentReply){
-        this.id = id;
-        this.postId = postId;
-        this.userId = userId;
-        this.content = content;
-        this.parentReply = parentReply;
-    }
-
     public Reply toEntity() {
         return Reply.builder()
-                .id(id)
                 .content(content)
                 .build();
     }

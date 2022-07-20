@@ -3,14 +3,15 @@ package tripong.backend.service.authentication;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.security.principal.AuthDetail;
+import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.dto.authentication.PasswordRequestDto;
-import tripong.backend.dto.authentication.UserAuthRequestDto;
 import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
+import tripong.backend.exception.authentication.AuthenticationErrorMessage;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
 import tripong.backend.repository.user.UserRepository;
@@ -19,6 +20,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -35,7 +37,7 @@ public class UserAuthService {
 
     // 아이디 찾기
     @Transactional
-    public Optional<User> findUserId (UserAuthRequestDto dto) {
+    public Optional<User> findUserId (EmailAuthRequestDto dto) {
 
         return userAuthRepository.findByEmail(dto.getEmail());
 
@@ -43,9 +45,9 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 이메일 인증
     @Transactional
-    public void findUserPassword(UserAuthRequestDto dto) throws MessagingException {
+    public void findUserPassword(EmailAuthRequestDto dto) throws MessagingException {
 
-        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
+        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
         EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
         emailAuthRepository.save(validLink);
@@ -56,26 +58,26 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 이메일 재인증
     @Transactional
-    public String verifyResendfindUserPassword(UserAuthRequestDto dto) throws MessagingException {
+    public void verifyResendfindUserPassword(EmailAuthRequestDto dto) throws MessagingException {
 
-        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다. 이메일을 확인해주세요. emial=" + dto.getEmail())));
+        String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
-        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalArgumentException("링크가 존재하지 않습니다."));
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalArgumentException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
         if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
             EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
             emailAuthRepository.save(validLink);
             sendFindUserPasswordByGmail(dto, validLink);
         } else {
-            return "FAIL";
+            throw new IllegalStateException(AuthenticationErrorMessage.Resend_Email_Auth_FAIL);
         }
-        return "SUCCESS";
+
 
     }
 
     // 비밀번호 찾기: 비동기식 JavaMailSender
     @Async
-    public void sendFindUserPasswordByGmail(UserAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
+    public void sendFindUserPasswordByGmail(EmailAuthRequestDto dto, EmailValidLink validLink) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         String text = "";
@@ -111,19 +113,14 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 유효 링크 확인인
    @Transactional
-    public String verifyfindUserPasswordEmail(PasswordRequestDto dto){
+    public void verifyfindUserPasswordEmail(PasswordRequestDto dto){
 
         EmailValidLink findValidLink = emailAuthService.findByIdAndExpirationDateAfterAndExpired(dto.getValidLink());
         String userId = findValidLink.getUserId();
 
-        // 오류: 타임 아웃 OR 링크 유효 확인 실패
-        if (userId != null){
-            findValidLink.makeInvalidLink();
-            resetUserPassword(userId, dto);
-            return "VERIFY VALID LINK";
-        } else {
-            return "FAIL TO VERIFY VALID LINK";
-        }
+        findValidLink.makeInvalidLink();
+
+        resetUserPassword(userId, dto);
 
     }
 
@@ -133,19 +130,20 @@ public class UserAuthService {
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
 
-        User user = userRepository.findByLoginId(userId).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        User user = userRepository.findByLoginId(userId).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
 
     }
 
     // 비밀번호 바꾸기
     @Transactional
-    public void changeUserPassword(PasswordRequestDto dto){
+    public void changeUserPassword(PasswordRequestDto dto, AuthDetail principal){
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
 
-        User user = userRepository.findByLoginId(dto.getUserId()).orElseThrow(() -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        User user = userRepository.findByLoginId(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
+
     }
 
 }
