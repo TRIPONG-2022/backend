@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.report.PostReportRequestDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.report.ReportType;
@@ -39,7 +37,7 @@ public class ReportApiController {
      * -{userId}: 신고받을 유저의 pk
      */
     @PostMapping("/reports/users/{userId}")
-    public ResponseEntity userReport(@RequestBody UserReportRequestDto dto, @PathVariable("userId") Long reportedUserId, @AuthenticationPrincipal PrincipalDetail principal){
+    public ResponseEntity userReport(@RequestBody UserReportRequestDto dto, @PathVariable("userId") Long reportedUserId, @AuthenticationPrincipal AuthDetail principal){
         reportService.userReport(dto, reportedUserId, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -50,7 +48,7 @@ public class ReportApiController {
      * -{postId}: 신고받을 게시글의 pk
      */
     @PostMapping("/reports/posts/{postId}")
-    public ResponseEntity postReport(@RequestBody PostReportRequestDto dto, @PathVariable("postId") Long reportedPostId, @AuthenticationPrincipal PrincipalDetail principal){
+    public ResponseEntity postReport(@RequestBody PostReportRequestDto dto, @PathVariable("postId") Long reportedPostId, @AuthenticationPrincipal AuthDetail principal){
         reportService.postReport(dto, reportedPostId, principal);
         return new ResponseEntity<>(HttpStatus.OK);
     }

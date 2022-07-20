@@ -29,7 +29,6 @@ public class Resource {
     private List<RoleResource> roleResources = new ArrayList<>();
 
     ////-----편의 메소드-----
-    //자원 생성
     public Resource(String resourceName, ResourceType resourceType,
                     String description, Integer priorityNum, List<RoleResource> roleResources){
         this.resourceName = resourceName;
@@ -46,5 +45,4 @@ public class Resource {
         roleResources.add(roleResource);
         roleResource.injectResource(this);
     }
-
 }

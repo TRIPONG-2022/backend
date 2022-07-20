@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.intercept.RunAsManager;
 import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
@@ -26,16 +27,16 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.PrincipalService;
 import tripong.backend.config.security.authentication.handler.CustomLoginFailureHandler;
 import tripong.backend.config.security.authentication.handler.CustomLogoutHandler;
-import tripong.backend.config.security.authentication.jwt.JwtAuthenticationFilter;
-import tripong.backend.config.security.authentication.jwt.JwtAuthorizationFilter;
-import tripong.backend.config.security.authentication.jwt.JwtCookieService;
+import tripong.backend.config.security.authentication.JwtAuthenticationFilter;
+import tripong.backend.config.security.authentication.JwtAuthorizationFilter;
+import tripong.backend.config.security.authentication.token.CookieService;
 import tripong.backend.config.security.authorization.*;
 import tripong.backend.config.security.oauth.CustomOauthSuccessHandler;
 import tripong.backend.config.security.oauth.PrincipalOauth2Service;
-import tripong.backend.repository.user.UserRepository;
 
 import java.util.Arrays;
 
@@ -48,13 +49,13 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
     private final CorsConfig corsConfig;
     private final BCryptPasswordEncoder encoder;
-    private final UserRepository userRepository;
     private final PrincipalOauth2Service oauth2Service;
-    private final CustomOauthSuccessHandler customOauthSuccessHandler;
-    private final JwtCookieService jwtCookieService;
+    private final CookieService cookieService;
     private final PrincipalService principalService;
     private final AuthResourceService authResourceService;
     private final MethodResourceMap methodResourceMap;
+    private final TokenService tokenService;
+    private final RedisTemplate redisTemplate;
 
     private static final String[] permitAllResource = {
             "/", "/about", "/oauth2/**", "/auth/**", "/error/**"
@@ -71,7 +72,6 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-//                .antMatchers(permitAllResource).permitAll()
                 .anyRequest().authenticated();
 
         http
@@ -79,12 +79,12 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                 .and()
                 .logout()
                 .logoutUrl("/users/logout")
-                .addLogoutHandler(new CustomLogoutHandler(jwtCookieService))
+                .addLogoutHandler(new CustomLogoutHandler(cookieService, redisTemplate))
 
                 .and()
                 .oauth2Login()
                 .loginPage("/auth/login")
-                .successHandler(customOauthSuccessHandler)
+                .successHandler(customOauthSuccessHandler(cookieService, redisTemplate))
                 .userInfoEndpoint().userService(oauth2Service);
 
         return http.build();
@@ -113,11 +113,11 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
 
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, jwtCookieService);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, tokenService);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
             jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
 
-            JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, userRepository);
+            JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, redisTemplate, tokenService);
 
             CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor(permitAllResource);
             customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
@@ -130,6 +130,11 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class)
                     .addFilterBefore(customFilterSecurityInterceptor, FilterSecurityInterceptor.class);
         }
+    }
+
+    @Bean
+    public CustomOauthSuccessHandler customOauthSuccessHandler(CookieService cookieService, RedisTemplate redisTemplate){
+        return new CustomOauthSuccessHandler(cookieService, redisTemplate);
     }
 
     @Bean
@@ -187,6 +192,17 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
         return customMethodSecurityInterceptor;
     }
+//
+//    private final RedisConnectionFactory redisConnectionFactory;
+//
+//    @Bean(name="rtRedisTemplate")
+//    public RedisTemplate<String, String> redisTemplate() {
+//        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+//        redisTemplate.setConnectionFactory(redisConnectionFactory);
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(new StringRedisSerializer());
+//        return redisTemplate;
+//    }
 
 }
 

@@ -29,13 +29,13 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
         HttpStatus status = HttpStatus.OK;
 
         int code = 999;
-        if(exception instanceof UsernameNotFoundException || exception instanceof InternalAuthenticationServiceException){
+        if(exception instanceof UsernameNotFoundException){
             message= AccountErrorMessage.LoginId_NOT_MATCH;
-            code = 106;
+            code = 110;
         }
         else if(exception instanceof BadCredentialsException){
             message= AccountErrorMessage.Password_NOT_MATCH;
-            code = 107;
+            code = 111;
         }
         else{
             message = "onAuthenticationFailure 미정의 에러";
