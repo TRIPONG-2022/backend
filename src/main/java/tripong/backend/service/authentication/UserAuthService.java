@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.dto.authentication.PasswordRequestDto;
 import tripong.backend.entity.authentication.EmailValidLink;
@@ -137,11 +137,11 @@ public class UserAuthService {
 
     // 비밀번호 바꾸기
     @Transactional
-    public void changeUserPassword(PasswordRequestDto dto, PrincipalDetail principal){
+    public void changeUserPassword(PasswordRequestDto dto, AuthDetail principal){
 
         String newPassword = passwordEncoder.encode(dto.getNewPassword());
 
-        User user = userRepository.findByLoginId(principal.getUser().getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
+        User user = userRepository.findByLoginId(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
 
     }

@@ -8,7 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.exception.ErrorResult;
@@ -43,7 +43,7 @@ public class ReplyApiController {
 
     // 댓글 및 대댓글 작성
     @PostMapping("/replies/{postId}")
-    public ResponseEntity<Object> saveReply(@PathVariable Long postId, @Validated @RequestBody ReplyRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal){
+    public ResponseEntity<Object> saveReply(@PathVariable Long postId, @Validated @RequestBody ReplyRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal){
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);

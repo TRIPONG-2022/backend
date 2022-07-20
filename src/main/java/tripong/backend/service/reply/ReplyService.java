@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.entity.post.Post;
@@ -62,14 +62,14 @@ public class ReplyService {
 
     // 댓글 및 대댓글 작성
     @Transactional
-    public void saveReply(Long postId, ReplyRequestDto dto, PrincipalDetail principal){
+    public void saveReply(Long postId, ReplyRequestDto dto, AuthDetail principal){
 
         Reply reply = dto.toEntity();
 
         Optional<Post> post = postRepository.findById(postId);
         reply.setPostId(post.orElseThrow(() -> new NoSuchElementException(ReplyErrorMessage.PostId_NO_SUCH_ELEMENT)));
 
-        Optional<User> user = userRepository.findByLoginId(principal.getUser().getLoginId());
+        Optional<User> user = userRepository.findByLoginId(principal.getLoginId());
         reply.setUserId(user.orElseThrow(() -> new NoSuchElementException(ReplyErrorMessage.LoginId_NO_SUCH_ELEMENT)));
 
         if (dto.getParentReply() != null){

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.authentication.EmailAuthService;
@@ -25,7 +25,7 @@ public class EmailAuthApiController {
 
     // 이메일 인증
     @GetMapping("/users/auth/send/email")
-    public ResponseEntity<Object> sendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult,  @AuthenticationPrincipal PrincipalDetail principal) throws MessagingException {
+    public ResponseEntity<Object> sendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult,  @AuthenticationPrincipal AuthDetail principal) throws MessagingException {
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
@@ -38,7 +38,7 @@ public class EmailAuthApiController {
 
     // 이메일 재인증
     @GetMapping("/users/auth/resend/email")
-    public ResponseEntity<Object> resendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal) throws MessagingException {
+    public ResponseEntity<Object> resendEmailAuth(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal) throws MessagingException {
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);

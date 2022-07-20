@@ -5,7 +5,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.entity.authentication.EmailValidLink;
 import tripong.backend.entity.user.User;
@@ -30,9 +30,9 @@ public class EmailAuthService {
 
     // 이메일 인증
     @Transactional
-    public void createEmailValidLink(EmailAuthRequestDto dto, PrincipalDetail principal) throws MessagingException {
+    public void createEmailValidLink(EmailAuthRequestDto dto, AuthDetail principal) throws MessagingException {
 
-        EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getUser().getLoginId());
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getLoginId());
         emailAuthRepository.save(validLink);
 
         sendEmailByGmail(dto, validLink);
@@ -41,13 +41,13 @@ public class EmailAuthService {
 
     // 이메일 재인증
     @Transactional
-    public void verifyResendEmailValidLink(EmailAuthRequestDto dto, PrincipalDetail principal) throws MessagingException {
+    public void verifyResendEmailValidLink(EmailAuthRequestDto dto, AuthDetail principal) throws MessagingException {
 
         // 가장 최근 인증 토큰
-        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(principal.getUser().getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
         if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
-            EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getUser().getLoginId());
+            EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getLoginId());
             emailAuthRepository.save(validLink);
             sendEmailByGmail(dto, validLink);
         } else {
