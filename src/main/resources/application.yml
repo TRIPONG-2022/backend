@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: oauth, aws, redis, db, mail
+    include: oauth, aws, redis, db, mail, ssl
 
   jpa:
     hibernate:

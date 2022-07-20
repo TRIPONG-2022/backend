@@ -19,7 +19,6 @@ import java.util.List;
 @Builder
 @ToString
 public class PostRequestDto {
-    @NotNull(message = "작성자는 필수 항목입니다.")
     private Long author;
 
     @NotBlank(message = "제목은 필수 항목입니다.")
