@@ -34,7 +34,6 @@ public class UserReport extends BaseTimeEntity {
 
 
     ////-----편의 메소드-----
-    //엔티티 생성
     public UserReport(User reportedUserId, User reportUserId, ReportType kind){
         this.reportedUserId = reportedUserId;
         this.reportUserId = reportUserId;

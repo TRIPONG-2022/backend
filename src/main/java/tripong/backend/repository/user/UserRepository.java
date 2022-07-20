@@ -26,4 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u")
     Page<User> findPagingAll(Pageable pageable);
+
+
+    @Query("select distinct u from User u join fetch u.userRoles ur join fetch ur.role where u.id = :id")
+    Optional<User> findRolesUpdateById(@Param("id") Long id);
 }

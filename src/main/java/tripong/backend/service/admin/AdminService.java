@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tripong.backend.config.security.authentication.token.RefreshTokenProperties;
+import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.dto.admin.post.GetPostAllListDto;
 import tripong.backend.dto.admin.post.GetPostReportedListResponseDto;
 import tripong.backend.dto.admin.user.GetUserAllListDto;
@@ -27,6 +30,8 @@ import tripong.backend.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,6 +45,8 @@ public class AdminService {
     private final UserRoleRepository userRoleRepository;
     private final PostReportRepository postReportRepository;
     private final PostRepository postRepository;
+    private final RedisTemplate redisTemplate;
+    private final TokenService tokenService;
 
 
     /**
@@ -73,11 +80,13 @@ public class AdminService {
     @Transactional
     public void changedBlack(Long userId) {
         log.info("시작: AdminService 신고유저블랙");
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
+        User user = userRepository.findRolesUpdateById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
         deleteRoles(user);
         List<UserRole> newUserRoles = new ArrayList<>();
         newUserRoles.add(new UserRole(roleRepository.findByRoleName("ROLE_BLACK")));
         user.addUserRole(newUserRoles);
+        String roles = user.getUserRoles().stream().map(r-> r.getRole().getRoleName()).collect(Collectors.joining(","));
+        redisTemplate.opsForValue().set("RoleUpdate:"+ user.getLoginId(), roles, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         log.info("종료: AdminService 신고유저블랙");
     }
 
@@ -99,6 +108,8 @@ public class AdminService {
         List<UserRole> newUserRoles = new ArrayList<>();
         dto.getRoleNames().stream().forEach( r-> newUserRoles.add(new UserRole(roleRepository.findByRoleName(r))));
         user.addUserRole(newUserRoles);
+        String roles = user.getUserRoles().stream().map(r-> r.getRole().getRoleName()).collect(Collectors.joining(","));
+        redisTemplate.opsForValue().set("RoleUpdate:"+ user.getLoginId(), roles, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         log.info("종료: AdminService 사용자권한변경");
     }
 

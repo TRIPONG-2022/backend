@@ -63,7 +63,6 @@ public class User extends BaseTimeEntity{
     private BigDecimal longitude;
 
     ////-----편의 메소드-----
-    //회원가입
     public User(String loginId, String password, String email, String nickName, JoinType joinMethod, Integer authentication){
         this.loginId=loginId;
         this.password=password;

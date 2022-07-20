@@ -29,14 +29,9 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("시작: 소셜 loadUser");
 
         OAuthInfo oAuthInfo = null;
         String providerName = userRequest.getClientRegistration().getRegistrationId();
-
-        System.out.println("providerName = " + providerName);
-        System.out.println("oAuth2User.getAttributes() = " + oAuth2User.getAttributes());
-        System.out.println("userRequest.getClientRegistration() = " + userRequest.getClientRegistration());
 
         if(providerName.equals("google")){
             oAuthInfo = new GoogleUser(oAuth2User.getAttributes());
@@ -54,7 +49,7 @@ public class PrincipalOauth2Service extends DefaultOAuth2UserService {
             oAuthInfo = new FacebookUser(oAuth2User.getAttributes());
         }
         else{
-             throw new OAuth2AuthenticationException("dd");
+             throw new OAuth2AuthenticationException("지원하지 않는 provider");
         }
 
         Optional<User> user = userRepository.findPrincipleServiceByLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
