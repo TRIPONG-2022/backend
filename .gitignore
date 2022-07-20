@@ -43,4 +43,6 @@ application-db.yml
 application-oauth.yml
 application-mail.yml
 application-mysql.yml
+application-ssl.yml
 data.sql
+keystore.p12

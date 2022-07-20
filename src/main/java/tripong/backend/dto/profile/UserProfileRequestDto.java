@@ -7,6 +7,8 @@ import tripong.backend.entity.user.GenderType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +37,6 @@ public class UserProfileRequestDto {
     private BigDecimal latitude;
 
     private BigDecimal longitude;
+
+    private List<String> tags = new ArrayList<>();
 }
