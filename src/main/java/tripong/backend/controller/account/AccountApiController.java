@@ -35,6 +35,7 @@ public class AccountApiController {
     @PostMapping("/users/signup/normal")
     public ResponseEntity normalJoin(@Validated @RequestBody NormalJoinRequestDto dto, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
         if(bindingResult.hasErrors()){
+            System.out.println("bindingResult = " + bindingResult);
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
         accountService.normalJoin(dto, request, response);

@@ -33,11 +33,9 @@ public class CookieService {
      */
     public Cookie refreshCookieExpired(){
         log.info("시작: CookieService - 쿠키만료");
-
-        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, null);
+        Cookie cookie = new Cookie(RefreshTokenProperties.HEADER_STRING, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
-
         log.info("종료: CookieService - 쿠키만료");
         return cookie;
     }
