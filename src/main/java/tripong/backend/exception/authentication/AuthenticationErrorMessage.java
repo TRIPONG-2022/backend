@@ -8,8 +8,7 @@ public interface AuthenticationErrorMessage {
     String Email_Valid_Link_NO_SUCH_ELEMENT = "이메일 유효 링크가 존재하지 않습니다.";
     // 703
     String Email_Valid_Link_EXPIRED = "이메일 유효 링크 시간이 경과되었거나 유효하지 않습니다.";
-    // 704
-    String Resend_Email_Auth_FAIL = "이메일 재인증에 실패하였습니다.";
+
 
 
 }
