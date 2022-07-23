@@ -18,6 +18,7 @@ import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
 import tripong.backend.entity.post.Post;
 import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.UserReport;
+import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.admin.role.RoleRepository;
@@ -30,6 +31,7 @@ import tripong.backend.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -83,7 +85,7 @@ public class AdminService {
         User user = userRepository.findRolesUpdateById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
         deleteRoles(user);
         List<UserRole> newUserRoles = new ArrayList<>();
-        newUserRoles.add(new UserRole(roleRepository.findByRoleName("ROLE_BLACK")));
+        newUserRoles.add(new UserRole(roleRepository.findByRoleName("ROLE_BLACK").get()));
         user.addUserRole(newUserRoles);
         String roles = user.getUserRoles().stream().map(r-> r.getRole().getRoleName()).collect(Collectors.joining(","));
         redisTemplate.opsForValue().set("RoleUpdate:"+ user.getLoginId(), roles, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
@@ -106,7 +108,7 @@ public class AdminService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + userId));
         deleteRoles(user);
         List<UserRole> newUserRoles = new ArrayList<>();
-        dto.getRoleNames().stream().forEach( r-> newUserRoles.add(new UserRole(roleRepository.findByRoleName(r))));
+        dto.getRoleNames().stream().forEach( r-> newUserRoles.add(new UserRole(roleRepository.findByRoleName(r).get())));
         user.addUserRole(newUserRoles);
         String roles = user.getUserRoles().stream().map(r-> r.getRole().getRoleName()).collect(Collectors.joining(","));
         redisTemplate.opsForValue().set("RoleUpdate:"+ user.getLoginId(), roles, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);

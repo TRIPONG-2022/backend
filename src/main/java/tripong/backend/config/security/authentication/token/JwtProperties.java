@@ -4,7 +4,7 @@ public interface JwtProperties {
     String SECRET = "tripong_secret_key";
     int EXPIRATION_TIME = (1000*60*5); //5분
 //    int EXPIRATION_TIME = 5; // test
-//    String TOKEN_PREFIX = "Bearer ";
+    String TOKEN_PREFIX = "Bearer ";
     String HEADER_STRING = "Authorization";
     String SUBJECT = "Access_JWT";
 }

@@ -7,19 +7,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tripong.backend.config.security.authentication.token.CookieService;
 import tripong.backend.config.security.principal.AuthDetail;
+import tripong.backend.dto.account.AddressResponseDto;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.account.NormalJoinRequestDto;
+import tripong.backend.entity.user.AddressCategory;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.account.AccountService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +42,15 @@ public class AccountApiController {
         }
         accountService.normalJoin(dto, request, response);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 추가정보 입력 폼 요소들 반환 API
+     */
+    @GetMapping("/users/extra-info/form")
+    public ResponseEntity firstExtraInfoPatchForm(){
+        List<AddressResponseDto> result = Arrays.stream(AddressCategory.values()).map(a -> new AddressResponseDto(a.getCity(), a.getDistrict())).collect(Collectors.toList());
+        return new ResponseEntity(result, HttpStatus.OK);
     }
 
     /**

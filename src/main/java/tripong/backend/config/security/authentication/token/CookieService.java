@@ -17,11 +17,11 @@ public class CookieService {
         log.info("시작: CookieService - 쿠키생성");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, refreshToken)
                 .domain("localhost")
-//                .domain("tripong-development.herokuapp.com")
+//                .domain("tripong-development.herokuapp.com") //서버  tripong.tk
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
-//                .sameSite("None")
+                .sameSite("None")
 //                .secure(true)
-                .httpOnly(true)
+//                .httpOnly(true)
                 .path("/")
                 .build();
         return refreshCookie.toString();

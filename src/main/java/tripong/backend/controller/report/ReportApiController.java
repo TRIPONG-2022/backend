@@ -8,12 +8,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.report.PostReportRequestDto;
+import tripong.backend.dto.report.ReportTypeResponseDto;
 import tripong.backend.dto.report.UserReportRequestDto;
 import tripong.backend.entity.report.ReportType;
 import tripong.backend.service.report.ReportService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,8 +30,8 @@ public class ReportApiController {
     */
     @GetMapping("/reports/type")
     public ResponseEntity userReportType(){
-        List<ReportType> types = Arrays.asList(ReportType.values());
-        return new ResponseEntity<>(types, HttpStatus.OK);
+        List<ReportTypeResponseDto> result = Arrays.stream(ReportType.values()).map(r -> new ReportTypeResponseDto(r.getEn(), r.getKr())).collect(Collectors.toList());
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**

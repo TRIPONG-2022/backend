@@ -24,11 +24,9 @@ public class UrlResourceMap implements FactoryBean<LinkedHashMap<RequestMatcher,
     @Override
     public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getObject() throws Exception {
 
-        log.info("url 리소스 입력 시작");
         if(requestMap == null){
             requestMap = authResourceService.getUrlRequestMap();
         }
-        System.out.println("requestMap = " + requestMap);
 
         return requestMap;
     }
