@@ -9,7 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.post.PostRequestDto;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.entity.post.Category;
@@ -31,6 +31,12 @@ public class PostApiController {
 
     private final RedisService redisService;
 
+    @GetMapping
+    public ResponseEntity<List<PostResponseDto>> getListAllPosts(Pageable pageable) {
+        List<PostResponseDto> postResponseDtoList = postService.findAll(pageable);
+        return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
+    }
+
     @GetMapping("/{category}")
     public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.findByCategory(category, pageable);
@@ -45,8 +51,8 @@ public class PostApiController {
     }
 
     @PostMapping("/{category}")
-    public ResponseEntity<Object> savePost(@ModelAttribute @Valid PostRequestDto postRequestDto, BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetail principal) {
-        postRequestDto.setAuthor(principal.getUser().getId());
+    public ResponseEntity<Object> savePost(@ModelAttribute @Valid PostRequestDto postRequestDto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal) {
+        postRequestDto.setAuthor(principal.getPk());
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
@@ -70,26 +76,26 @@ public class PostApiController {
     }
 
     @PostMapping("/like/{postId}")
-    public ResponseEntity<Object> saveLike(@PathVariable Long postId, @AuthenticationPrincipal PrincipalDetail principal) {
-        postService.saveLike(postId, principal.getUser().getId());
+    public ResponseEntity<Object> saveLike(@PathVariable Long postId, @AuthenticationPrincipal AuthDetail principal) {
+        postService.saveLike(postId, principal.getPk());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/like/{postId}")
-    public ResponseEntity<Object> deleteLike(@PathVariable Long postId, @AuthenticationPrincipal PrincipalDetail principal) {
-        postService.deleteLike(postId, principal.getUser().getId());
+    public ResponseEntity<Object> deleteLike(@PathVariable Long postId, @AuthenticationPrincipal AuthDetail principal) {
+        postService.deleteLike(postId, principal.getPk());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/join/{postId}")
-    public ResponseEntity<Object> joinGathering(@PathVariable Long postId, @AuthenticationPrincipal PrincipalDetail principal) {
-        postService.saveGatheringUser(postId, principal.getUser().getId());
+    public ResponseEntity<Object> joinGathering(@PathVariable Long postId, @AuthenticationPrincipal AuthDetail principal) {
+        postService.saveGatheringUser(postId, principal.getPk());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/join/{postId}/{userId}")
-    public ResponseEntity<Object> leaveGathering(@PathVariable Long postId, @AuthenticationPrincipal PrincipalDetail principal) {
-        postService.deleteGatheringUser(postId, principal.getUser().getId());
+    public ResponseEntity<Object> leaveGathering(@PathVariable Long postId, @AuthenticationPrincipal AuthDetail principal) {
+        postService.deleteGatheringUser(postId, principal.getPk());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

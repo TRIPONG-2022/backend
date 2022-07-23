@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.config.security.principal.PrincipalDetail;
+import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
@@ -34,14 +34,14 @@ public class UserProfileApiController {
     private final UserProfileService userProfileService;
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponseDto>> getListPosts(@RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable, @AuthenticationPrincipal PrincipalDetail principal) {
-        List<PostResponseDto> postResponseDtoList = postService.getPersonalPostList(principal.getUser().getId(), category, fromDate, endDate, pageable);
+    public ResponseEntity<List<PostResponseDto>> getMyListPosts(@RequestParam Category category, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, Pageable pageable, @AuthenticationPrincipal AuthDetail principal) {
+        List<PostResponseDto> postResponseDtoList = postService.getPersonalPostList(principal.getPk(), category, fromDate, endDate, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
     @GetMapping("/likes")
-    public ResponseEntity<List<PostResponseDto>> getListPosts(@RequestParam Category category, Pageable pageable, @AuthenticationPrincipal PrincipalDetail principal) {
-        List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(principal.getUser().getId(), category, pageable);
+    public ResponseEntity<List<PostResponseDto>> getMyListLikes(@RequestParam Category category, Pageable pageable, @AuthenticationPrincipal AuthDetail principal) {
+        List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(principal.getPk(), category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
 
@@ -52,7 +52,7 @@ public class UserProfileApiController {
     }
 
     @GetMapping("/likes/{userId}")
-    public ResponseEntity<List<PostResponseDto>> getListPosts(@PathVariable Long userId, @RequestParam Category category, Pageable pageable) {
+    public ResponseEntity<List<PostResponseDto>> getListLikes(@PathVariable Long userId, @RequestParam Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList = postService.getPersonalLikePostList(userId, category, pageable);
         return new ResponseEntity<>(postResponseDtoList, HttpStatus.OK);
     }
@@ -74,14 +74,14 @@ public class UserProfileApiController {
     }
 
     @GetMapping
-    public ResponseEntity<UserProfileResponseDto> getUserProfile(@AuthenticationPrincipal PrincipalDetail principal) {
-        UserProfileResponseDto userProfileResponseDto = userProfileService.getUserProfile(principal.getUser().getId());
+    public ResponseEntity<UserProfileResponseDto> getMyProfile(@AuthenticationPrincipal AuthDetail principal) {
+        UserProfileResponseDto userProfileResponseDto = userProfileService.getUserProfile(principal.getPk());
         return new ResponseEntity<>(userProfileResponseDto, HttpStatus.OK);
     }
 
     @PatchMapping
-    public ResponseEntity<Object> updateUserProfile(@ModelAttribute UserProfileRequestDto userProfileRequestDto, @AuthenticationPrincipal PrincipalDetail principal) {
-        userProfileService.updateUserProfile(principal.getUser().getId(), userProfileRequestDto);
+    public ResponseEntity<Object> updateMyProfile(@ModelAttribute UserProfileRequestDto userProfileRequestDto, @AuthenticationPrincipal AuthDetail principal) {
+        userProfileService.updateUserProfile(principal.getPk(), userProfileRequestDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

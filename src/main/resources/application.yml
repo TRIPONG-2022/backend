@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: oauth, aws, redis, db, mail, ssl
+    include: oauth, aws, redis, db, mail
 
   jpa:
     hibernate:
@@ -16,9 +16,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-server:
-  port: 8089
 
 #logging:
 #  level:
