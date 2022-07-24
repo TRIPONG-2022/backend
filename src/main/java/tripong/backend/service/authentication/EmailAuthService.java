@@ -15,11 +15,7 @@ import tripong.backend.repository.authentication.UserAuthRepository;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 

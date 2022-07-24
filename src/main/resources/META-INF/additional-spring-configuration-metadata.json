@@ -4,5 +4,10 @@
       "name": "cloud.aws.s3.bucket",
       "type": "java.lang.String",
       "description": "Description for cloud.aws.s3.bucket."
-  }
-] }
+    },
+    {
+      "name": "spring.server.port",
+      "type": "java.lang.String",
+      "description": "Description for spring.server.port."
+    }
+  ] }
