@@ -46,3 +46,5 @@ application-mysql.yml
 application-ssl.yml
 data.sql
 keystore.p12
+lucy-xss-servlet-filter-rule.xml
+web.xml

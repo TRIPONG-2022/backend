@@ -12,8 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Resource {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String resourceName;

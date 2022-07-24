@@ -22,13 +22,14 @@ public class AdminErrorAdvice {
     }
     @ExceptionHandler
     public ResponseEntity adminPKExceptionHandler(NoSuchElementException e) {
-        return new ResponseEntity<>(new ErrorResult(502, e.getMessage()), HttpStatus.OK);
+        return new ResponseEntity<>(new ErrorResult(500, e.getMessage()), HttpStatus.OK);
     }
 
     public int code_value(String message){
         switch (message){
             case AdminErrorMessage.Role_FORM_ERROR: return 501;
-            case AdminErrorMessage.ResourceName_DUP: return 510;
+            case AdminErrorMessage.RoleName_DUP: return 502;
+            case AdminErrorMessage.ResourceName_DUP: return 511;
             default: return 999;
         }
     }

@@ -9,9 +9,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class NormalLoginRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "입력이 필요합니다.")
     private String loginId;
 
-    @NotBlank
+    @NotBlank(message = "입력이 필요합니다.")
     private String password;
 }

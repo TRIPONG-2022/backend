@@ -9,6 +9,7 @@ import tripong.backend.dto.admin.role.CreateRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.service.admin.RoleService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 
@@ -32,17 +33,19 @@ public class AdminRoleApiController {
      * 권한 등록 API
      */
     @PostMapping("/admin/roles")
-    public ResponseEntity createRole(@RequestBody CreateRoleRequestDto dto){
+    public ResponseEntity createRole(@RequestBody CreateRoleRequestDto dto, HttpServletResponse response){
         roleService.createRole(dto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        response.setHeader("Location", "/admin/roles");
+        return new ResponseEntity<>(HttpStatus.FOUND);
     }
 
     /**
      * 권한 삭제 API
      */
     @DeleteMapping("/admin/roles/{roleId}")
-    public ResponseEntity deleteRole(@PathVariable("roleId") Long roleId){
+    public ResponseEntity deleteRole(@PathVariable("roleId") Long roleId, HttpServletResponse response){
         roleService.deleteRole(roleId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        response.setHeader("Location", "/admin/roles");
+        return new ResponseEntity<>(HttpStatus.FOUND);
     }
 }

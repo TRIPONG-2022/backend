@@ -50,7 +50,6 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
 
 
     public void reload_url() throws Exception {
-        log.info("리로드 url");
         LinkedHashMap<RequestMatcher, List<ConfigAttribute>> reloadedMap = authResourceService.getUrlRequestMap();
         Iterator<Map.Entry<RequestMatcher, List<ConfigAttribute>>> itr = reloadedMap.entrySet().iterator();
         requestMap.clear();
@@ -58,7 +57,6 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
         while (itr.hasNext()) {
             Map.Entry<RequestMatcher, List<ConfigAttribute>> entry = itr.next();
             requestMap.put(entry.getKey(), entry.getValue());
-            System.out.println("requestMap = " + requestMap);
         }
     }
 

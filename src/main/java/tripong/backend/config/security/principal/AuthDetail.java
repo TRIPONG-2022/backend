@@ -12,23 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class AuthDetail implements UserDetails, OAuth2User {
+public class AuthDetail implements UserDetails{
     private String loginId;
     private Long pk;
     private List<String> roles = new ArrayList<>();
-    private Map<String, Object> attributes;
 
-
-    public AuthDetail(String loginId, Long pk, List<String> roles){ //Normal
+    public AuthDetail(String loginId, Long pk, List<String> roles){
         this.loginId = loginId;
         this.pk = pk;
         this.roles = roles;
-    }
-    public AuthDetail(String loginId, Long pk, List<String> roles, Map<String, Object> attributes) { //OAuth
-        this.loginId = loginId;
-        this.pk = pk;
-        this.roles = roles;
-        this.attributes = attributes;
     }
 
     @Override
@@ -66,15 +58,5 @@ public class AuthDetail implements UserDetails, OAuth2User {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    @Override
-    public String getName() { //소셜로그인시의 닉네임 or 이름
-        return String.valueOf(attributes.get("name"));
     }
 }

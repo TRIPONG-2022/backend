@@ -24,7 +24,7 @@ public class ReportErrorAdvice {
 
     @ExceptionHandler
     public ResponseEntity reportPKExceptionHandler(NoSuchElementException e) {
-        return new ResponseEntity<>(new ErrorResult(601, e.getMessage()), HttpStatus.OK);
+        return new ResponseEntity<>(new ErrorResult(600, e.getMessage()), HttpStatus.OK);
     }
 
     public int code_value(String message){

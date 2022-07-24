@@ -83,9 +83,9 @@ public class InitDB {
         public void init1() throws Exception {
             String pw = passwordEncoder.encode("1234");
 
-            Role role_user = roleRepository.findByRoleName("ROLE_USER");
-            Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH");
-            Role role_admin = roleRepository.findByRoleName("ROLE_ADMIN");
+            Role role_user = roleRepository.findByRoleName("ROLE_USER").get();
+            Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH").get();
+            Role role_admin = roleRepository.findByRoleName("ROLE_ADMIN").get();
 
             UserRole user1_userRole = new UserRole(role_unauth); //user1 추가정보 미입력자 용
             UserRole user2_userRole = new UserRole(role_user); //user2 추가정보 입력자 용
@@ -114,7 +114,7 @@ public class InitDB {
                     .nickName("심사임당")
                     .email("abc12@gmail.com")
                     .birthDate(LocalDate.of(1995,1,1))
-                    .gender(GenderType.F)
+                    .gender(GenderType.female)
                     .joinMethod(JoinType.Normal)
                     .authentication(1)
                     .userRoles(user2_userRoleList)
@@ -147,7 +147,7 @@ public class InitDB {
                     .nickName("관리자")
                     .email("admin@gmail.com")
                     .birthDate(LocalDate.of(1995,1,1))
-                    .gender(GenderType.M)
+                    .gender(GenderType.male)
                     .joinMethod(JoinType.Normal)
                     .authentication(1)
                     .userRoles(admin1_userRoleList)

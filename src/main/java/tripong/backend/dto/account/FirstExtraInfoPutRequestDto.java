@@ -8,13 +8,14 @@ import tripong.backend.entity.user.GenderType;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 public class FirstExtraInfoPutRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "입력이 필요합니다.")
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -23,9 +24,9 @@ public class FirstExtraInfoPutRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-    @NotBlank
+    @NotBlank(message = "입력이 필요합니다.")
     private String city;
 
-    @NotBlank
+    @NotBlank(message = "입력이 필요합니다.")
     private String district;
 }
