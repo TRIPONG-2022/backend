@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CreateResourceRequestDto {
 
-    @NotBlank(message = "자원명이 입력이 필요합니다.")
+    @NotBlank(message = "입력이 필요합니다.")
     private String resourceName;
 
     @Enumerated(EnumType.STRING)
@@ -28,7 +28,7 @@ public class CreateResourceRequestDto {
     @Nullable
     private String description;
 
-    @Min(value = 1, message = "양수만 입력 가능합니다.")
+    @Min(value = 1, message = "양수 입력이 필요합니다.")
     private Integer priorityNum;
 
     @NotBlank(message = "권한 선택이 필요합니다.")
