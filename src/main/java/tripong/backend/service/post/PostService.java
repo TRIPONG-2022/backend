@@ -47,6 +47,22 @@ public class PostService {
 
     private final AmazonS3Service amazonS3Service;
 
+    public List<PostResponseDto> findAll(Pageable pageable) {
+        List<PostResponseDto> postResponseDtoList =
+                postRepository.findAll(pageable)
+                        .stream()
+                        .map(PostResponseDto::new)
+                        .collect(Collectors.toList());
+
+        postResponseDtoList.forEach(postResponseDto -> {
+            String fileName = postResponseDto.getThumbnail();
+            if (fileName != null) {
+                postResponseDto.setThumbnail(amazonS3Service.getFile(fileName));
+            }
+        });
+        return postResponseDtoList;
+    }
+
     public List<PostResponseDto> findByCategory(Category category, Pageable pageable) {
         List<PostResponseDto> postResponseDtoList =
                 postRepository.findByCategory(category, pageable)
