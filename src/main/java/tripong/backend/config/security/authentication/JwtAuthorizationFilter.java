@@ -50,10 +50,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }
         }
         String jwt = request.getHeader(JwtProperties.HEADER_STRING);
-        if (jwt == null || refresh_cookie == null || !jwt.startsWith(JwtProperties.TOKEN_PREFIX)) {
+        if (jwt == null || !jwt.startsWith(JwtProperties.TOKEN_PREFIX) || refresh_cookie == null || !refresh_cookie.isHttpOnly()) {
             chain.doFilter(request, response);
             return;
         }
+
         String refresh_info = refresh_cookie.getValue();
         jwt = jwt.replace(JwtProperties.TOKEN_PREFIX, "");
         try{

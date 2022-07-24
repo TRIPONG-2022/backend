@@ -74,6 +74,10 @@ public class InitDB {
             roleResources5.add(new RoleResource(user));
             resourceRepository.save(new Resource("/reports/**", ResourceType.Url, "이메일인증자만 신고 이용 가능", 1, roleResources5));
 
+            List<RoleResource> roleResources6 = new ArrayList<>(); //회원가입자 기본
+            roleResources6.add(new RoleResource(unauth));
+            resourceRepository.save(new Resource("/users/**", ResourceType.Url, "회원가입 후 이용 가능", 1, roleResources6));
+
 //            List<RoleResource> roleResources2 = new ArrayList<>(); //유저 신고 기능 리소스
 //            roleResources2.add(new RoleResource(user));
 //            roleResources2.add(new RoleResource(admin));

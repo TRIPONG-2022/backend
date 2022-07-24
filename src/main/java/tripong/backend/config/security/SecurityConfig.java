@@ -112,7 +112,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, tokenService);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
-            jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
+            jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
             JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, redisTemplate, tokenService);
 

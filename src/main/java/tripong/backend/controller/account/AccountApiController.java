@@ -34,7 +34,7 @@ public class AccountApiController {
     /**
      * 일반 회원가입 API
      */
-    @PostMapping("/users/signup/normal")
+    @PostMapping("/auth/signup/normal")
     public ResponseEntity normalJoin(@Validated @RequestBody NormalJoinRequestDto dto, BindingResult bindingResult, HttpServletRequest request, HttpServletResponse response){
         if(bindingResult.hasErrors()){
             System.out.println("bindingResult = " + bindingResult);
@@ -56,7 +56,7 @@ public class AccountApiController {
     /**
      * 추가정보 입력 API
      */
-    @PatchMapping("/users/extra-info")
+    @PatchMapping("/users/additional-info")
     public ResponseEntity firstExtraInfoPatch(@Validated @RequestBody FirstExtraInfoPutRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal, HttpServletRequest request, HttpServletResponse response){
         if(bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
