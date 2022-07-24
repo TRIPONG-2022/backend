@@ -32,7 +32,6 @@ public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
 
     @Override
     protected InterceptorStatusToken beforeInvocation(Object object) {
-        log.info("beforeInvocation - ");
         boolean flag = false;
         HttpServletRequest request_url = ((FilterInvocation) object).getRequest(); //url 경우
         for(RequestMatcher requestMatcher : permitAllRequestMatchers){
@@ -43,7 +42,6 @@ public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
         }
 
         if(flag) {
-            log.info("permit url");
             return null;
         }
 

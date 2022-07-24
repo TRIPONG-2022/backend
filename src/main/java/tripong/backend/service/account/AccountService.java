@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.security.authentication.token.CookieService;
 import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.config.security.oauth.oauthDetail.OAuthInfo;
@@ -150,19 +149,19 @@ public class AccountService {
 
 
     private void authorize_UNAUTH(User user){
-        Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH");
+        Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH").get();
         List<UserRole> only_unauth_userRoles = new ArrayList<>();
         only_unauth_userRoles.add(new UserRole(role_unauth));
         user.addUserRole(only_unauth_userRoles);
     }
     private void authorize_USER(User user){
-        Role role_user = roleRepository.findByRoleName("ROLE_USER");
+        Role role_user = roleRepository.findByRoleName("ROLE_USER").get();
         List<UserRole> only_user_userRoles = new ArrayList<>();
         only_user_userRoles.add(new UserRole(role_user));
         user.addUserRole(only_user_userRoles);
     }
     private List<UserRole> authorize_oauthJoin_userRoles() {
-        Role role_user = roleRepository.findByRoleName("ROLE_USER");
+        Role role_user = roleRepository.findByRoleName("ROLE_USER").get();
         List<UserRole> only_user_userRoles = new ArrayList<>();
         only_user_userRoles.add(new UserRole(role_user));
         return only_user_userRoles;

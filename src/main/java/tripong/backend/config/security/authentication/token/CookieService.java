@@ -16,11 +16,11 @@ public class CookieService {
     public String refreshCookieIn(String refreshToken){
         log.info("시작: CookieService - 쿠키생성");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, refreshToken)
-                .domain("localhost")
-//                .domain("tripong-development.herokuapp.com")
+//                .domain("localhost")
+                .domain("tripong-development.herokuapp.com")
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
-//                .sameSite("None")
-//                .secure(true)
+                .sameSite("None")
+                .secure(true)
                 .httpOnly(true)
                 .path("/")
                 .build();
@@ -33,11 +33,9 @@ public class CookieService {
      */
     public Cookie refreshCookieExpired(){
         log.info("시작: CookieService - 쿠키만료");
-
-        Cookie cookie = new Cookie(JwtProperties.HEADER_STRING, null);
+        Cookie cookie = new Cookie(RefreshTokenProperties.HEADER_STRING, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
-
         log.info("종료: CookieService - 쿠키만료");
         return cookie;
     }

@@ -50,12 +50,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }
         }
         String jwt = request.getHeader(JwtProperties.HEADER_STRING);
-        if (jwt == null || refresh_cookie == null) {
+        if (jwt == null || refresh_cookie == null || !jwt.startsWith(JwtProperties.TOKEN_PREFIX)) {
             chain.doFilter(request, response);
             return;
         }
         String refresh_info = refresh_cookie.getValue();
-
+        jwt = jwt.replace(JwtProperties.TOKEN_PREFIX, "");
         try{
             String pk = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(jwt).getClaim("pk").asString();
             String roles = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(jwt).getClaim("roles").asString();
@@ -75,10 +75,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 String pk = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("pk").asString();
                 String roles = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("roles").asString();
                 String agent = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("agent").asString();
+                String uuid = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("uuid").asString();
 
                 String redis_value = (String) redisTemplate.opsForValue().get("RefreshToken:" + loginId);
                 String redis_agent= JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(redis_value).getClaim("agent").asString();
-                if(!agent.equals(redis_agent)){
+                String redis_uuid= JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(redis_value).getClaim("uuid").asString();
+                if(!agent.equals(redis_agent) || !uuid.equals(redis_uuid)){
                     return;
                 }
                 tokenService.createTokens(pk, loginId, roles, request.getHeader("user-agent"), response);
@@ -89,7 +91,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 return;
             }
         }
-        chain.doFilter(request, response);
         log.info("종료: JwtAuthorizationFilter - 인가 ok");
+        chain.doFilter(request, response);
     }
 }

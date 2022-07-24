@@ -25,11 +25,9 @@ public class MethodResourceMap implements FactoryBean<LinkedHashMap<String, List
 
     @Override
     public LinkedHashMap<String, List<ConfigAttribute>> getObject(){
-        log.info("method 리소스 입력 시작");
         if(requestMap.size() == 0){
             requestMap = authResourceService.getMethodRequestMap();
         }
-        System.out.println("메소드 requestMap = " + requestMap);
 
         return requestMap;
     }

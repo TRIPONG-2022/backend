@@ -18,6 +18,8 @@ import tripong.backend.dto.admin.resource.GetResourceListResponseDto;
 import tripong.backend.entity.role.ResourceType;
 import tripong.backend.service.admin.ResourceService;
 
+import javax.servlet.http.HttpServletResponse;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,14 +52,15 @@ public class AdminResourceApiController {
      * 자원 등록 API
      */
     @PostMapping("/admin/resources")
-    public ResponseEntity createResource(@RequestBody CreateResourceRequestDto dto) throws Exception {
+    public ResponseEntity createResource(@RequestBody CreateResourceRequestDto dto, HttpServletResponse response) throws Exception {
         resourceService.createResource(dto);
         if(dto.getResourceType()== ResourceType.Url) {
             customFilterInvocationSecurityMetadataSource.reload_url();
         } else{
-            methodResourceLiveUpdateService.reload_add_method(dto.getResourceName(), dto.getRoleNames());
+            methodResourceLiveUpdateService.reload_add_method(dto.getResourceName(), dto.getRoles());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        response.setHeader("Location", "/admin/resources");
+        return new ResponseEntity<>(HttpStatus.FOUND);
     }
 
 
@@ -65,14 +68,15 @@ public class AdminResourceApiController {
      * 자원 삭제 API
      */
     @DeleteMapping("/admin/resources/{resourceId}")
-    public ResponseEntity deleteResource(@PathVariable("resourceId") Long resourceId) throws Exception {
+    public ResponseEntity deleteResource(@PathVariable("resourceId") Long resourceId, HttpServletResponse response) throws Exception {
         DeleteResourceReloadDto dto = resourceService.deleteResource(resourceId);
         if(dto.getResourceType()==ResourceType.Url){
             customFilterInvocationSecurityMetadataSource.reload_url();
         } else{
             methodResourceLiveUpdateService.reload_delete_method(dto.getResourceName());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        response.setHeader("Location", "/admin/resources");
+        return new ResponseEntity<>(HttpStatus.FOUND);
     }
 
 }
