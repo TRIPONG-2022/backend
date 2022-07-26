@@ -10,9 +10,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tripong.backend.dto.admin.user.GetUserAllListDto;
-import tripong.backend.dto.admin.user.GetUserReportedListResponseDto;
+import tripong.backend.dto.admin.user.GetUserPageANDSearchResponseDto;
+import tripong.backend.dto.admin.user.GetUserReportedPageANDSearchResponseDto;
 import tripong.backend.dto.admin.user.UpdateRolesRequestDto;
+import tripong.backend.dto.search.SearchAdminUserType;
 import tripong.backend.service.admin.AdminService;
 
 /**
@@ -29,14 +30,13 @@ public class AdminUserApiController {
     private final AdminService adminService;
 
     /**
-     * 유저 전체 목록 API
+     * 유저 전체 목록 + 검색 API
      */
     @GetMapping("/admin/users")
-    public ResponseEntity getUserList(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
-        Page<GetUserAllListDto> userList = adminService.getUserList(pageable);
-        return new ResponseEntity<>(userList, HttpStatus.OK);
+    public ResponseEntity getUserPageANDSearch(@RequestParam(value = "searchType", required = false) SearchAdminUserType searchType, @RequestParam(value = "keyword", required = false) String keyword, @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<GetUserPageANDSearchResponseDto> result = adminService.getUserPageANDSearch(searchType, keyword, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
 
     /**
      * 유저 권한 변경 API
@@ -48,11 +48,11 @@ public class AdminUserApiController {
     }
 
     /**
-     * 신고 접수(유저) 전체 목록 API
+     * 신고 접수(유저) 전체 목록 + 검색 API
      */
     @GetMapping("/admin/reports/users")
-    public ResponseEntity getUserReportedList(@PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable){
-        Page<GetUserReportedListResponseDto> result = adminService.getUserReportedList(pageable);
+    public ResponseEntity getUserReportedPageANDSearch(@RequestParam(value = "searchType", required = false) SearchAdminUserType searchType, @RequestParam(value = "keyword", required = false) String keyword, @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<GetUserReportedPageANDSearchResponseDto> result = adminService.getUserReportedPageANDSearch(searchType, keyword, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

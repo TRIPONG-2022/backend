@@ -90,12 +90,14 @@ public class InitDB {
             Role role_user = roleRepository.findByRoleName("ROLE_USER").get();
             Role role_unauth = roleRepository.findByRoleName("ROLE_UNAUTH").get();
             Role role_admin = roleRepository.findByRoleName("ROLE_ADMIN").get();
+            Role role_black = roleRepository.findByRoleName("ROLE_BLACK").get();
 
             UserRole user1_userRole = new UserRole(role_unauth); //user1 추가정보 미입력자 용
             UserRole user2_userRole = new UserRole(role_user); //user2 추가정보 입력자 용
             UserRole user3_userRole = new UserRole(role_unauth); //user3 소셜 회원가입자 + 추가정보 미입력
             UserRole user4_userRole = new UserRole(role_user); //탈퇴회원 용
             UserRole admin1_userRole = new UserRole(role_admin); //admin 용
+            UserRole black1_userRole = new UserRole(role_black); //black 용
 
 
             List<UserRole> user1_userRoleList = new ArrayList<>();
@@ -169,12 +171,25 @@ public class InitDB {
                     .userRoles(withdrawal_userRoleList)
                     .joinMethod(JoinType.Normal).build();
 
+            List<UserRole> black_userRoleList = new ArrayList<>();
+            black_userRoleList.add(black1_userRole);
+            User black= User.builder()
+                    .loginId("black")
+                    .password(pw)
+                    .nickName("신고유저")
+                    .email("report@gmail.com")
+                    .joinMethod(JoinType.Normal)
+                    .authentication(0)
+                    .userRoles(black_userRoleList)
+                    .build();
+
 
             em.persist(user1);
             em.persist(user2);
             em.persist(user3);
             em.persist(admin);
             em.persist(user4);
+            em.persist(black);
             customFilterInvocationSecurityMetadataSource.reload_url();
         }
     }

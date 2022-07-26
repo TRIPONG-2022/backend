@@ -13,5 +13,5 @@ public interface AccountErrorMessage {
 
 
     String LoginId_NOT_MATCH = "존재하지 않는 아이디 입니다."; //110
-    String Password_NOT_MATCH = "비밀번호가 틀렸습니다."; //111
+    String Password_NOT_MATCH = "비밀번호가 맞지 않습니다."; //111
 }
