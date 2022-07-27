@@ -37,5 +37,6 @@ public class TokenService {
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
         redisTemplate.opsForValue().set("RefreshToken:"+ loginId, refreshToken, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         response.addHeader("Set-Cookie", cookieService.refreshCookieIn(refreshToken));
+
     }
 }
