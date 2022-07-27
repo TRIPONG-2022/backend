@@ -28,7 +28,3 @@ spring:
 #    mode: always
 #main:
 #  allow-bean-definition-overriding: true
-
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
