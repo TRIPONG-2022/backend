@@ -19,8 +19,8 @@ public class CookieService {
                 .domain("localhost")
 //                .domain("tripong-development.herokuapp.com")
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
-                .sameSite("None")
-                .secure(true)
+//                .sameSite("None")
+//                .secure(true)
                 .httpOnly(true)
                 .path("/")
                 .build();
