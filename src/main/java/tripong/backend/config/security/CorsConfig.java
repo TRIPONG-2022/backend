@@ -18,6 +18,7 @@ public class CorsConfig {
         config.addAllowedOrigin("https://tripong-development.herokuapp.com/");
         config.addAllowedOrigin("http://localhost:3000/");
         config.addAllowedOrigin("https://localhost:3000/");
+        config.addAllowedOrigin("https://127.0.0.1/");
         config.addAllowedOrigin("https://13.209.251.206/");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
