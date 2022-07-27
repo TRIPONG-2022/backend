@@ -1,4 +1,1 @@
-test
-jenkins test
-ㄷㄱㅈㅂㄱㅎㅎ
-ㅁㄴㄹㄴ
+도커로 전환
