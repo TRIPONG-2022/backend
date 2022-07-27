@@ -16,11 +16,11 @@ public class CookieService {
     public String refreshCookieIn(String refreshToken){
         log.info("시작: CookieService - 쿠키생성");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, refreshToken)
-//                .domain("localhost")
+                .domain("127.0.0.1")
 //                .domain("tripong-development.herokuapp.com")
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
-                .secure(true)
                 .sameSite("None")
+                .secure(true)
                 .httpOnly(true)
                 .path("/")
                 .build();
