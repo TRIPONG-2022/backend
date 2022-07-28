@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 public class CustomLogoutHandler implements LogoutHandler {
 
     private final CookieService cookieService;
-    private final RedisTemplate redisTemplate;
 
     /**
      * 로그아웃 필터
@@ -26,7 +25,7 @@ public class CustomLogoutHandler implements LogoutHandler {
      */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-            response.addCookie(cookieService.refreshCookieExpired());
+        response.addHeader("Set-Cookie", cookieService.refreshCookieExpired());
     }
 
 

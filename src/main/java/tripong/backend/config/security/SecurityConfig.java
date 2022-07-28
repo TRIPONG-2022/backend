@@ -95,7 +95,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .logout()
                     .logoutUrl("/users/logout")
 //                    .logoutSuccessUrl("/")
-                    .addLogoutHandler(new CustomLogoutHandler(cookieService, redisTemplate))
+                    .addLogoutHandler(new CustomLogoutHandler(cookieService))
 
                     .and()
                     .oauth2Login()
