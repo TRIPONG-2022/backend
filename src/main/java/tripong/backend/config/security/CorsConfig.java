@@ -18,12 +18,12 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 //        config.addAllowedHeader("*");
-        config.setAllowedHeaders(Arrays.asList("Authorization", "X-Requested-With", "Cache-Control", "Content-Type"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.setExposedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000/",
                 "https://localhost:3000/"
         ));
-//        config.setExposedHeaders(Arrays.asList(""));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
