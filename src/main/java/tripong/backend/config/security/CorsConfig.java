@@ -20,8 +20,8 @@ public class CorsConfig {
 //        config.addAllowedHeader("*");
         config.setAllowedHeaders(Arrays.asList("Authorization", "X-Requested-With", "Cache-Control", "Content-Type"));
         config.setAllowedOrigins(Arrays.asList(
-                "https://tripong-development.herokuapp.com/",
-                "https://127.0.0.1/"
+//                "https://tripong-development.herokuapp.com/",
+                "http://localhost:3000/"
 //                "https://127.0.0.1:3000/" //포트번호까지 동일해야할 수 도 있음.
 //                "https://tripong.tk/"
         ));
