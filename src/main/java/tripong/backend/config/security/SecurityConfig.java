@@ -60,7 +60,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     private final RedisTemplate redisTemplate;
 
     private static final String[] permitAllResource = {
-            "/", "/about", "/oauth2/**", "/auth/**", "/error/**"
+            "/", "/about", "/posts", "/oauth2/**", "/auth/**", "/error/**"
     };
     private static final String[] SWAGGER_WHITELIST = {"/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**"};
 
