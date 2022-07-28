@@ -71,7 +71,7 @@ public class AccountApiController {
     @PatchMapping("/users/withdrawal")
     public ResponseEntity withdrawal(@AuthenticationPrincipal AuthDetail principal, HttpServletResponse response){
         accountService.withdrawal(principal);
-        response.addCookie(cookieService.refreshCookieExpired());
+        response.addHeader("Set-Cookie", cookieService.refreshCookieExpired());
         return new ResponseEntity(HttpStatus.OK);
     }
 }
