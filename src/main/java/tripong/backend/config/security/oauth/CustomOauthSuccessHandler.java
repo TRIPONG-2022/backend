@@ -57,7 +57,7 @@ public class CustomOauthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
         redisTemplate.opsForValue().set("RefreshToken:"+ principal.getUsername(), refreshToken, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         response.addHeader("Set-Cookie", cookieService.refreshCookieIn(refreshToken));
-        getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000");
+        getRedirectStrategy().sendRedirect(request, response,"https://localhost:3000");
         log.info("종료: CustomOauthSuccessHandler");
     }
 }

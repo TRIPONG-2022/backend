@@ -17,14 +17,12 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-//        config.addAllowedHeader("*");
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-        config.setExposedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.addAllowedHeader("*");
+        config.setExposedHeaders(Arrays.asList("Authorization"));
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000/",
                 "https://localhost:3000/"
         ));
-        config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
         source.registerCorsConfiguration("/**", config);
