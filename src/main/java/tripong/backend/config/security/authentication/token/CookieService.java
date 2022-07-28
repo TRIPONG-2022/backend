@@ -17,7 +17,7 @@ public class CookieService {
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, refreshToken)
 //                .domain("127.0.0.1")
 //                .domain("tripong-development.herokuapp.com")
-                .domain("localhost:3000")
+                .domain("http://localhost:3000/")
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
                 .sameSite("None")
                 .secure(true)
@@ -34,7 +34,7 @@ public class CookieService {
     public String refreshCookieExpired(){
         log.info("시작: CookieService - 쿠키만료");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, null)
-                .domain("localhost:3000")
+                .domain("http://localhost:3000/")
                 .maxAge(0)
                 .sameSite("None")
                 .secure(true)
