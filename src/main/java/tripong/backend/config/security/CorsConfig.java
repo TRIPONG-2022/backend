@@ -6,6 +6,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 public class CorsConfig {
 
@@ -15,13 +17,14 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://tripong-development.herokuapp.com/");
-        config.addAllowedOrigin("http://localhost:3000/");
-        config.addAllowedOrigin("https://localhost:3000/");
-        config.addAllowedOrigin("https://127.0.0.1/");
-        config.addAllowedOrigin("https://127.0.0.1:3000/");
-        config.addAllowedOrigin("https://13.209.251.206/");
-        config.addAllowedOrigin("https://tripong.tk/");
+//        config.addAllowedHeader("*");
+        config.setAllowedHeaders(Arrays.asList("Authorization", "X-Requested-With", "Cache-Control", "Content-Type"));
+        config.setAllowedOrigins(Arrays.asList(
+                "https://tripong-development.herokuapp.com/",
+                "https://127.0.0.1/"
+//                "https://127.0.0.1:3000/" //포트번호까지 동일해야할 수 도 있음.
+//                "https://tripong.tk/"
+        ));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
