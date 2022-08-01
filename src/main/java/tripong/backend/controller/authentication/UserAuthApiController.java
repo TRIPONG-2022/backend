@@ -24,7 +24,7 @@ public class UserAuthApiController {
     private final UserAuthService userAuthService;
 
     // 아이디 찾기
-    @PostMapping("/auth/find/id")
+    @PostMapping("/users/auth/find/id")
     public ResponseEntity<Object> findUserId (@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()){
@@ -38,7 +38,7 @@ public class UserAuthApiController {
     }
 
     // 비밀번호 찾기: 이메일 인증
-    @GetMapping("/auth/password/send/email")
+    @GetMapping("/users/auth/verify-request")
     public ResponseEntity<Object> findUserPassword(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult) throws MessagingException {
 
         if (bindingResult.hasErrors()){
@@ -51,7 +51,7 @@ public class UserAuthApiController {
     }
 
     // 비밀번호 찾기: 이메일 재인증
-    @GetMapping("/auth/password/resend/email")
+    @GetMapping("/users/auth/resend/verify-request")
     public ResponseEntity<Object> ResendfindUserPassword(@Validated @RequestBody EmailAuthRequestDto dto, BindingResult bindingResult) throws MessagingException{
 
         if (bindingResult.hasErrors()){
@@ -65,7 +65,7 @@ public class UserAuthApiController {
     }
 
     // 비밀번호 찾기: URL 매핑
-    @PatchMapping("/auth/password/verify/email")
+    @PatchMapping("/users/auth/reset-password")
     public ResponseEntity<Object> findUserPasswordEmailConfirm(@Validated @RequestBody PasswordRequestDto dto, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()){
@@ -79,7 +79,7 @@ public class UserAuthApiController {
     }
 
     // 비밀번호 바꾸기
-    @PatchMapping("/auth/change/password")
+    @PatchMapping("/users/auth/change/password")
     public ResponseEntity<Object> changeUserPassword(@Validated(AuthValidationGroup.groupA.class) @RequestBody PasswordRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal){
 
         if (bindingResult.hasErrors()){

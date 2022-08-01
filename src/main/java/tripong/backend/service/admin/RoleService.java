@@ -8,7 +8,7 @@ import tripong.backend.dto.admin.role.CreateRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
 import tripong.backend.entity.role.Role;
 import tripong.backend.exception.admin.AdminErrorMessage;
-import tripong.backend.controller.report.admin.role.RoleRepository;
+import tripong.backend.repository.admin.role.RoleRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;

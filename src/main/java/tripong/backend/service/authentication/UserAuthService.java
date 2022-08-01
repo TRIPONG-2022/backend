@@ -19,6 +19,7 @@ import tripong.backend.repository.user.UserRepository;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -61,14 +62,15 @@ public class UserAuthService {
 
         String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
-        EmailValidLink previousEmailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalStateException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
+        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalArgumentException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
-        previousEmailValidLink.makeInvalidLink();
-
-        EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
-        emailAuthRepository.save(validLink);
-
-        sendFindUserPasswordByGmail(dto, validLink);
+        if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
+            EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
+            emailAuthRepository.save(validLink);
+            sendFindUserPasswordByGmail(dto, validLink);
+        } else {
+            throw new IllegalStateException(AuthenticationErrorMessage.Resend_Email_Auth_FAIL);
+        }
 
 
     }
