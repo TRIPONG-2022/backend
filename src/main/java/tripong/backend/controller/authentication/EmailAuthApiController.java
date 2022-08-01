@@ -50,7 +50,7 @@ public class EmailAuthApiController {
     }
 
     // 이메일 인증: URL 매핑
-    @GetMapping("/users/auth/verify/email")
+    @GetMapping("/users/auth/confirm/email")
     public ResponseEntity<Object> emailConfirm(@Validated @NotBlank @RequestParam String emailValidLink, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()){

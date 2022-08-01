@@ -1,4 +1,4 @@
-package tripong.backend.controller.report.admin.role;
+package tripong.backend.repository.admin.role;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

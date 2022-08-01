@@ -70,8 +70,8 @@ public class UserProfileResponseDto {
         this.authentication = user.getAuthentication();
         this.city = user.getCity();
         this.district = user.getDistrict();
-//        this.latitude = user.getLatitude();
-//        this.longitude = user.getLongitude();
+        this.latitude = user.getLatitude();
+        this.longitude = user.getLongitude();
         this.tags.addAll(user.getTags().stream().map(Tag::getTagName).collect(Collectors.toList()));
     }
 }
