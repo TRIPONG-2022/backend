@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class DeleteRoleRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "입력이 필요합니다.")
     private String roleName;
 
 }

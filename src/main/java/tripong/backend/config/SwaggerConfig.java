@@ -21,7 +21,8 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("tripong.backend.controller"))
+//                .apis(RequestHandlerSelectors.basePackage("tripong.backend.controller"))
+                .apis(RequestHandlerSelectors.basePackage("tripong.backend"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
@@ -30,7 +31,6 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Tripong-API")
-                .description("..")
                 .version("1.0")
                 .build();
     }

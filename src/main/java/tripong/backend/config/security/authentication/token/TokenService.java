@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -24,15 +25,18 @@ public class TokenService {
                 .withClaim("roles", roles)
                 .withClaim("loginId", loginId)
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-        response.addHeader(JwtProperties.HEADER_STRING, jwtToken);
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken);
+        String uuid = UUID.randomUUID().toString().substring(0,10);
         String refreshToken = JWT.create()
                 .withExpiresAt(new Date(System.currentTimeMillis()+ RefreshTokenProperties.EXPIRATION_TIME))
                 .withClaim("pk", pk)
                 .withClaim("roles", roles)
                 .withClaim("loginId", loginId)
                 .withClaim("agent", agent)
+                .withClaim("uuid", uuid)
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
         redisTemplate.opsForValue().set("RefreshToken:"+ loginId, refreshToken, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         response.addHeader("Set-Cookie", cookieService.refreshCookieIn(refreshToken));
+
     }
 }

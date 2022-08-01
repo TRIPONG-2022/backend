@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Role {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String roleName;

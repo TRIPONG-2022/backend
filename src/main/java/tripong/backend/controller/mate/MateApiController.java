@@ -10,15 +10,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.mate.MateRequestDto;
-import tripong.backend.dto.mate.MateResponseDto;
-import tripong.backend.entity.favor.TravelerType;
-import tripong.backend.entity.user.User;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.mate.MateService;
-
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

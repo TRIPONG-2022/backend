@@ -60,10 +60,9 @@ public class ResourceService {
         if(resourceRepository.findByResourceName(dto.getResourceName()).isPresent()){
             throw new IllegalStateException(AdminErrorMessage.ResourceName_DUP);
         }
-
         List<RoleResource> roleResources = new ArrayList<>();
-        for(String role_name : dto.getRoleNames()){
-            Role role = roleRepository.findByRoleName(role_name);
+        for(String role_name : dto.getRoles()){
+            Role role = roleRepository.findByRoleName(role_name).get();
             roleResources.add(new RoleResource(role));
         }
         resourceRepository.save(new Resource(dto.getResourceName(), dto.getResourceType(), dto.getDescription(), dto.getPriorityNum(), roleResources));

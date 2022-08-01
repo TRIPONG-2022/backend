@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateRolesRequestDto {
 
-    @NotNull(message = "권한은 필수 입니다.")
+    @NotNull(message = "입력이 필요합니다.")
     private List<String> roleNames;
 }

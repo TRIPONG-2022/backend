@@ -1,7 +1,9 @@
 package tripong.backend.config.security;
 
+import com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,7 +60,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     private final RedisTemplate redisTemplate;
 
     private static final String[] permitAllResource = {
-            "/", "/about", "/oauth2/**", "/auth/**", "/error/**"
+            "/", "/about", "/posts", "/oauth2/**", "/auth/**", "/error/**"
     };
     private static final String[] SWAGGER_WHITELIST = {"/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**"};
 
@@ -73,24 +75,10 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
         http
                 .authorizeRequests()
                 .anyRequest().authenticated();
-
         http
-                .apply(new MyCustomDsl())
-                .and()
-                .logout()
-                .logoutUrl("/users/logout")
-                .addLogoutHandler(new CustomLogoutHandler(cookieService, redisTemplate))
-
-                .and()
-                .oauth2Login()
-                .loginPage("/auth/login")
-                .successHandler(customOauthSuccessHandler(cookieService, redisTemplate))
-                .userInfoEndpoint().userService(oauth2Service);
-
+                .apply(new MyCustomDsl());
         return http.build();
     }
-
-
     public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
         @Override
         public void init(HttpSecurity http) throws Exception {
@@ -99,13 +87,22 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                     .formLogin().disable()
-                    .httpBasic().disable();
-
-            http
+                    .httpBasic().disable()
                     .exceptionHandling()
-                    .accessDeniedHandler(customAccessDeniedHandler(http));
-        }
+                    .accessDeniedHandler(customAccessDeniedHandler(http))
 
+                    .and()
+                    .logout()
+                    .logoutUrl("/users/logout")
+//                    .logoutSuccessUrl("/")
+                    .addLogoutHandler(new CustomLogoutHandler(cookieService))
+
+                    .and()
+                    .oauth2Login()
+                    .loginPage("/auth/login")
+                    .successHandler(customOauthSuccessHandler(cookieService, redisTemplate))
+                    .userInfoEndpoint().userService(oauth2Service);
+        }
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -115,7 +112,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, tokenService);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
-            jwtAuthenticationFilter.setFilterProcessesUrl("/users/login");
+            jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
             JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, redisTemplate, tokenService);
 

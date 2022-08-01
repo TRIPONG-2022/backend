@@ -6,6 +6,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 public class CorsConfig {
 
@@ -15,13 +17,17 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://tripong-development.herokuapp.com/");
-        config.addAllowedOrigin("http://localhost:3000/");
         config.addAllowedHeader("*");
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000/",
+                "https://localhost:3000/"
+        ));
         config.addAllowedMethod("*");
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
 
 }

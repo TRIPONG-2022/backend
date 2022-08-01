@@ -13,7 +13,6 @@ import tripong.backend.repository.user.UserRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +67,6 @@ public class FavorService {
         User user = userRepository.findByLoginId(dto.getUserId()).orElseThrow(() -> new NoSuchElementException(FavorErrorMessage.User_NO_SUCH_ELEMENT));
         favor.setUserId(user);
         user.updateTravelerType(dto.getTravelerType());
-
 
         return favorRepository.save(favor);
     }
