@@ -14,4 +14,5 @@ public enum TravelerType {
 
     private final String key;
     private final String type;
+
 }

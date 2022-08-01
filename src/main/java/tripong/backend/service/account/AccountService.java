@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tripong.backend.config.security.authentication.token.CookieService;
 import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.config.security.oauth.oauthDetail.OAuthInfo;
@@ -19,7 +18,7 @@ import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 import tripong.backend.exception.account.AccountErrorMessage;
-import tripong.backend.repository.admin.role.RoleRepository;
+import tripong.backend.controller.report.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;

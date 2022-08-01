@@ -43,6 +43,9 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:5.0.0"
 	implementation "com.querydsl:querydsl-apt:5.0.0"
 
+	implementation 'org.hibernate.orm:hibernate-spatial:5.4.20.Final'
+	implementation 'org.locationtech.jts:jts-core:1.18.2'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'

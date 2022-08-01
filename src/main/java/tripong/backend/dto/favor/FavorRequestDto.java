@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor()
 public class FavorRequestDto {
 
     @NotEmpty(message = "유저 아이디를 입력해주세요.")

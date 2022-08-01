@@ -65,8 +65,10 @@ public class FavorService {
 
         Favor favor = dto.toEntity();
 
-        Optional<User> user = userRepository.findByLoginId(dto.getUserId());
-        favor.setUserId(user.orElseThrow(() -> new NoSuchElementException(FavorErrorMessage.User_NO_SUCH_ELEMENT)));
+        User user = userRepository.findByLoginId(dto.getUserId()).orElseThrow(() -> new NoSuchElementException(FavorErrorMessage.User_NO_SUCH_ELEMENT));
+        favor.setUserId(user);
+        user.updateTravelerType(dto.getTravelerType());
+
 
         return favorRepository.save(favor);
     }

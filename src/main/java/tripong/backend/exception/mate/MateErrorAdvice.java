@@ -1,4 +1,4 @@
-package tripong.backend.exception.favor;
+package tripong.backend.exception.mate;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,8 +8,8 @@ import tripong.backend.exception.ErrorResult;
 
 import java.util.NoSuchElementException;
 
-@RestControllerAdvice("tripong.backend.controller.favor")
-public class FavorErrorAdvice {
+@RestControllerAdvice("tripong.backend.controller.mate")
+public class MateErrorAdvice {
 
     @ExceptionHandler
     public ResponseEntity serverExceptionHandler(Exception e) {
@@ -17,9 +17,8 @@ public class FavorErrorAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity favorPKExceptionHandler(NoSuchElementException e) {
-        return new ResponseEntity<>(new ErrorResult(801, e.getMessage()), HttpStatus.OK);
+    public ResponseEntity matePKExceptionHandler(NoSuchElementException e) {
+        return new ResponseEntity<>(new ErrorResult(901, e.getMessage()), HttpStatus.OK);
     }
-
 
 }
