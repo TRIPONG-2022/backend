@@ -18,7 +18,7 @@ import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 import tripong.backend.exception.account.AccountErrorMessage;
-import tripong.backend.repository.admin.role.RoleRepository;
+import tripong.backend.controller.report.admin.role.RoleRepository;
 import tripong.backend.repository.user.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package tripong.backend.repository.admin.resource;
+package tripong.backend.controller.report.admin.resource;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

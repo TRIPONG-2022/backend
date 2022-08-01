@@ -13,8 +13,8 @@ import tripong.backend.entity.role.Resource;
 import tripong.backend.entity.role.Role;
 import tripong.backend.entity.role.RoleResource;
 import tripong.backend.exception.admin.AdminErrorMessage;
-import tripong.backend.repository.admin.resource.ResourceRepository;
-import tripong.backend.repository.admin.role.RoleRepository;
+import tripong.backend.controller.report.admin.resource.ResourceRepository;
+import tripong.backend.controller.report.admin.role.RoleRepository;
 
 import java.util.ArrayList;
 import java.util.List;

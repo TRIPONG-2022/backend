@@ -4,6 +4,7 @@ import lombok.*;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
+import tripong.backend.entity.favor.TravelerType;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.tag.Tag;
 
@@ -66,6 +67,9 @@ public class User extends BaseTimeEntity{
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Tag> tags = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private TravelerType travelerType;
+
     ////-----편의 메소드-----
     public User(String loginId, String password, String email, String nickName, JoinType joinMethod, Integer authentication){
         this.loginId=loginId;
@@ -103,7 +107,6 @@ public class User extends BaseTimeEntity{
     }
 
 
-
     //init 용
     @Builder
     public User(String loginId, String password, String name, String nickName,
@@ -136,8 +139,20 @@ public class User extends BaseTimeEntity{
         this.longitude = userProfileRequestDto.getLongitude();
     }
 
+    // 작성자: 김수연, 용도: 비밀번호 변경
     public void changePassword(String newPassword){
         this.password = newPassword;
+    }
+
+    // 작성자: 김수연, 용도: 위도, 경도 변경
+    public void changeCurrentLocation(BigDecimal longitude, BigDecimal latitude){
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    // 작성자: 김수연, 용도: 여행가 유형 변경
+    public void updateTravelerType(TravelerType travelerType){
+        this.travelerType = travelerType;
     }
 
 }
