@@ -1,30 +1,19 @@
 package tripong.backend.service.mate;
 
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.mate.MateRequestDto;
-import tripong.backend.dto.mate.MateResponseDto;
-import tripong.backend.entity.favor.Favor;
-import tripong.backend.entity.favor.TravelerType;
 import tripong.backend.entity.user.User;
 import tripong.backend.exception.mate.MateErrorMessage;
 import tripong.backend.repository.favor.FavorRepository;
-import tripong.backend.repository.mate.MateRepository;
 import tripong.backend.repository.user.UserRepository;
-import tripong.backend.utility.mate.Direction;
-import tripong.backend.utility.mate.GeometryUtil;
-import tripong.backend.utility.mate.Location;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -32,7 +21,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class MateService {
 
-    private final MateRepository mateRepository;
     private final UserRepository userRepository;
     private final FavorRepository favorRepository;
     private final EntityManager entityManager;

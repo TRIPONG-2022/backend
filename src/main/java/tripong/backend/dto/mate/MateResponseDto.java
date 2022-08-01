@@ -1,18 +1,12 @@
 package tripong.backend.dto.mate;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tripong.backend.entity.favor.TravelerType;
 import tripong.backend.entity.user.GenderType;
-import tripong.backend.entity.user.User;
-
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import static tripong.backend.entity.user.QUser.user;
-
 
 @Data
 @NoArgsConstructor

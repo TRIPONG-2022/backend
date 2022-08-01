@@ -6,9 +6,10 @@ import org.springframework.data.repository.query.Param;
 import tripong.backend.entity.favor.Favor;
 import tripong.backend.entity.favor.TravelerType;
 
-import java.util.Optional;
 
 public interface FavorRepository extends JpaRepository<Favor, Long> {
+
     @Query("SELECT f.travelerType FROM Favor f JOIN f.userId u where u.loginId = :loginId")
     TravelerType findByUserId(@Param(value = "loginId") String loginId);
+
 }
