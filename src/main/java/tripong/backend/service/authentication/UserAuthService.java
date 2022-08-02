@@ -44,7 +44,7 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 이메일 인증
     @Transactional
-    public void findUserPassword(EmailAuthRequestDto dto) throws MessagingException {
+    public String findUserPassword(EmailAuthRequestDto dto) throws MessagingException {
 
         String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
@@ -53,11 +53,12 @@ public class UserAuthService {
 
         sendFindUserPasswordByGmail(dto, validLink);
 
+        return userId;
     }
 
     // 비밀번호 찾기: 이메일 재인증
     @Transactional
-    public void verifyResendfindUserPassword(EmailAuthRequestDto dto) throws MessagingException {
+    public String verifyResendfindUserPassword(EmailAuthRequestDto dto) throws MessagingException {
 
         String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
@@ -70,7 +71,7 @@ public class UserAuthService {
 
         sendFindUserPasswordByGmail(dto, validLink);
 
-
+        return userId;
     }
 
     // 비밀번호 찾기: 비동기식 JavaMailSender
@@ -111,7 +112,7 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 유효 링크 확인인
    @Transactional
-    public void verifyfindUserPasswordEmail(PasswordRequestDto dto){
+    public EmailValidLink verifyfindUserPasswordEmail(PasswordRequestDto dto){
 
         EmailValidLink findValidLink = emailAuthService.findByIdAndExpirationDateAfterAndExpired(dto.getValidLink());
         String userId = findValidLink.getUserId();
@@ -120,6 +121,7 @@ public class UserAuthService {
 
         resetUserPassword(userId, dto);
 
+        return findValidLink;
     }
 
     // 비밀번호 찾기: 비밀번호 재설정
@@ -130,7 +132,6 @@ public class UserAuthService {
 
         User user = userRepository.findByLoginId(userId).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
-
     }
 
     // 비밀번호 바꾸기
@@ -141,7 +142,6 @@ public class UserAuthService {
 
         User user = userRepository.findByLoginId(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
-
     }
 
 }

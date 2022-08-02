@@ -1,6 +1,7 @@
 package tripong.backend.service.authentication;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -88,6 +90,8 @@ public class EmailAuthService {
         message.setText(text, "utf-8", "html");
 
         mailSender.send(message);
+
+        log.info(dto.getEmail() + " 이메일 인증 SMTP 발송");
 
     }
 

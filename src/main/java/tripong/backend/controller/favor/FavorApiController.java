@@ -28,8 +28,9 @@ public class FavorApiController {
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
 
-       Favor favor = favorService.saveTravelerType(dto);
+        Favor favor = favorService.saveTravelerType(dto);
 
+        log.info(dto.getUserId() + "의 여행가 타입은 " + favor.getTravelerType() + ": 테스트 완료" );
         return new ResponseEntity<>(favor.getTravelerType(), HttpStatus.OK);
     }
 
