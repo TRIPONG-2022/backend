@@ -2,7 +2,6 @@ package tripong.backend.controller.mate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.io.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +23,7 @@ public class MateApiController {
 
     // 사용자 현재 위치 변경
     @PatchMapping("/users/mate/change/location")
-    public ResponseEntity<Object> changeCurrentLocation(@Validated @RequestBody MateRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal) throws ParseException {
+    public ResponseEntity<Object> changeCurrentLocation(@Validated @RequestBody MateRequestDto dto, BindingResult bindingResult, @AuthenticationPrincipal AuthDetail principal) {
 
         if (bindingResult.hasErrors()){
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);

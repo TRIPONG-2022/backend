@@ -1,7 +1,6 @@
 package tripong.backend.service.mate;
 
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tripong.backend.config.security.principal.AuthDetail;
@@ -27,7 +26,7 @@ public class MateService {
 
     // 사용자 현재 위치 변경
     @Transactional
-    public void changeCurrentLocation(MateRequestDto dto, AuthDetail principal) throws ParseException {
+    public void changeCurrentLocation(MateRequestDto dto, AuthDetail principal) {
 
         User user = userRepository.findByLoginId(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(MateErrorMessage.User_NO_SUCH_ELEMENT));
         user.changeCurrentLocation(dto.getLongitude(), dto.getLatitude());
