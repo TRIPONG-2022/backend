@@ -1,11 +1,9 @@
 package tripong.backend.entity.user;
 
 import lombok.*;
-import org.locationtech.jts.geom.Point;
 import tripong.backend.dto.account.FirstExtraInfoPutRequestDto;
 import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.entity.base.BaseTimeEntity;
-import tripong.backend.entity.favor.Favor;
 import tripong.backend.entity.favor.TravelerType;
 import tripong.backend.entity.role.UserRole;
 import tripong.backend.entity.tag.Tag;
