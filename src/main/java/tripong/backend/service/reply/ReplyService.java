@@ -14,6 +14,7 @@ import tripong.backend.exception.reply.ReplyErrorMessage;
 import tripong.backend.repository.post.PostRepository;
 import tripong.backend.repository.reply.ReplyRepository;
 import tripong.backend.repository.user.UserRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,6 +31,7 @@ public class ReplyService {
     private final PostRepository postRepository;
 
     // 내가쓴 댓글 및 대댓글 조회
+    @Transactional
     public List<ReplyResponseDto> getReplyListByUserId(String userId, LocalDateTime startDate, LocalDateTime finishDate, Pageable pageable){
 
         List<ReplyResponseDto> ReplyList = replyRepository.findReplyByUserId(userId, startDate, finishDate, pageable)
@@ -41,6 +43,7 @@ public class ReplyService {
     }
 
     // 댓글 리스트
+    @Transactional
     public List<ReplyResponseDto> getListParentReply(Long postId, Pageable pageable){
 
         List<ReplyResponseDto> ReplyList = replyRepository.findParentReplyByPostId(postId, pageable).stream()
@@ -51,6 +54,7 @@ public class ReplyService {
     }
 
     // 대댓글 리스트
+    @Transactional
     public List<ReplyResponseDto> getListChildrenReply(Long postId, Long parentReply, Pageable pageable){
 
         List<ReplyResponseDto> ReplyList = replyRepository.findChildrenReplyByPostId(postId, parentReply, pageable).stream()
@@ -62,7 +66,7 @@ public class ReplyService {
 
     // 댓글 및 대댓글 작성
     @Transactional
-    public void saveReply(Long postId, ReplyRequestDto dto, AuthDetail principal){
+    public Reply saveReply(Long postId, ReplyRequestDto dto, AuthDetail principal){
 
         Reply reply = dto.toEntity();
 
@@ -76,8 +80,7 @@ public class ReplyService {
             reply.setParentReply(replyRepository.findById(dto.getParentReply()).orElseThrow(() -> new NoSuchElementException(ReplyErrorMessage.ParentReply_NO_SUCH_ELEMENT)));
         }
 
-        replyRepository.save(reply);
-
+        return replyRepository.save(reply);
     }
 
     // 댓글 및 대댓글 수정

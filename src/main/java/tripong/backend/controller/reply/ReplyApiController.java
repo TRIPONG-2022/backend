@@ -1,6 +1,7 @@
 package tripong.backend.controller.reply;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.reply.ReplyRequestDto;
 import tripong.backend.dto.reply.ReplyResponseDto;
+import tripong.backend.entity.reply.Reply;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.reply.ReplyService;
+
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ReplyApiController {
@@ -49,8 +53,9 @@ public class ReplyApiController {
             return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
         }
 
-        replyService.saveReply(postId, dto, principal);
+        Reply reply = replyService.saveReply(postId, dto, principal);
 
+        log.info(reply.getId() + "번 댓글 작성 완료");
         return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
@@ -65,6 +70,7 @@ public class ReplyApiController {
 
         replyService.updateReply(id, dto);
 
+        log.info(id + "번 댓글 업데이트 완료");
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
@@ -75,8 +81,8 @@ public class ReplyApiController {
 
         replyService.deleteReply(id);
 
+        log.info(id + "번 댓글 삭제 완료");
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
 }
