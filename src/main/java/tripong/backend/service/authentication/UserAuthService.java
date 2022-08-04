@@ -19,7 +19,6 @@ import tripong.backend.repository.user.UserRepository;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 이메일 인증
     @Transactional
-    public void findUserPassword(EmailAuthRequestDto dto) throws MessagingException {
+    public String findUserPassword(EmailAuthRequestDto dto) throws MessagingException {
 
         String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
@@ -54,25 +53,25 @@ public class UserAuthService {
 
         sendFindUserPasswordByGmail(dto, validLink);
 
+        return userId;
     }
 
     // 비밀번호 찾기: 이메일 재인증
     @Transactional
-    public void verifyResendfindUserPassword(EmailAuthRequestDto dto) throws MessagingException {
+    public String verifyResendfindUserPassword(EmailAuthRequestDto dto) throws MessagingException {
 
         String userId = String.valueOf(userAuthRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT)));
 
-        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalArgumentException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
+        EmailValidLink previousEmailValidLink = emailAuthRepository.findByTheLatestEmailToken(userId).orElseThrow(() -> new  IllegalStateException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
-        if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
-            EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
-            emailAuthRepository.save(validLink);
-            sendFindUserPasswordByGmail(dto, validLink);
-        } else {
-            throw new IllegalStateException(AuthenticationErrorMessage.Resend_Email_Auth_FAIL);
-        }
+        previousEmailValidLink.makeInvalidLink();
 
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(userId);
+        emailAuthRepository.save(validLink);
 
+        sendFindUserPasswordByGmail(dto, validLink);
+
+        return userId;
     }
 
     // 비밀번호 찾기: 비동기식 JavaMailSender
@@ -113,7 +112,7 @@ public class UserAuthService {
 
     // 비밀번호 찾기: 유효 링크 확인인
    @Transactional
-    public void verifyfindUserPasswordEmail(PasswordRequestDto dto){
+    public EmailValidLink verifyfindUserPasswordEmail(PasswordRequestDto dto){
 
         EmailValidLink findValidLink = emailAuthService.findByIdAndExpirationDateAfterAndExpired(dto.getValidLink());
         String userId = findValidLink.getUserId();
@@ -122,6 +121,7 @@ public class UserAuthService {
 
         resetUserPassword(userId, dto);
 
+        return findValidLink;
     }
 
     // 비밀번호 찾기: 비밀번호 재설정
@@ -132,7 +132,6 @@ public class UserAuthService {
 
         User user = userRepository.findByLoginId(userId).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
-
     }
 
     // 비밀번호 바꾸기
@@ -143,7 +142,6 @@ public class UserAuthService {
 
         User user = userRepository.findByLoginId(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.User_NO_SUCH_ELEMENT));
         user.changePassword(newPassword);
-
     }
 
 }
