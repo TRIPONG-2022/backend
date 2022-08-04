@@ -1,6 +1,7 @@
 package tripong.backend.controller.authentication;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,9 +15,11 @@ import tripong.backend.config.security.principal.AuthDetail;
 import tripong.backend.dto.authentication.EmailAuthRequestDto;
 import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.authentication.EmailAuthService;
+
 import javax.mail.MessagingException;
 import javax.validation.constraints.NotBlank;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class EmailAuthApiController {
@@ -33,6 +36,7 @@ public class EmailAuthApiController {
 
         emailAuthService.createEmailValidLink(dto, principal);
 
+        log.info("이메일 인증: " + principal.getLoginId() + " 유저 이메일 인증 승인");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -46,11 +50,12 @@ public class EmailAuthApiController {
 
         emailAuthService.verifyResendEmailValidLink(dto, principal);
 
+        log.info("이메일 인증: " + principal.getLoginId() + " 유저 이메일 재인증 승인");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 이메일 인증: URL 매핑
-    @GetMapping("/users/auth/confirm/email")
+    @GetMapping("/users/auth/verify/email")
     public ResponseEntity<Object> emailConfirm(@Validated @NotBlank @RequestParam String emailValidLink, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()){
@@ -59,6 +64,7 @@ public class EmailAuthApiController {
 
         emailAuthService.verifyEmailLink(emailValidLink);
 
+        log.info("이메일 인증: " + emailValidLink + " 유효 링크 인증 완료");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

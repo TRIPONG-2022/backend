@@ -1,6 +1,7 @@
 package tripong.backend.service.authentication;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import tripong.backend.entity.user.User;
 import tripong.backend.exception.authentication.AuthenticationErrorMessage;
 import tripong.backend.repository.authentication.EmailAuthRepository;
 import tripong.backend.repository.authentication.UserAuthRepository;
+
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,15 +47,14 @@ public class EmailAuthService {
     public void verifyResendEmailValidLink(EmailAuthRequestDto dto, AuthDetail principal) throws MessagingException {
 
         // 가장 최근 인증 토큰
-        EmailValidLink emailValidLink = emailAuthRepository.findByTheLatestEmailToken(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
+        EmailValidLink previousEmailValidLink = emailAuthRepository.findByTheLatestEmailToken(principal.getLoginId()).orElseThrow(() -> new NoSuchElementException(AuthenticationErrorMessage.Email_Valid_Link_NO_SUCH_ELEMENT));
 
-        if (emailValidLink.getCreatedTime().isBefore(LocalDateTime.now().minusMinutes(5))){
-            EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getLoginId());
-            emailAuthRepository.save(validLink);
-            sendEmailByGmail(dto, validLink);
-        } else {
-            throw new IllegalStateException(AuthenticationErrorMessage.Resend_Email_Auth_FAIL);
-        }
+        previousEmailValidLink.makeInvalidLink();
+
+        EmailValidLink validLink = EmailValidLink.createEmailValidLink(principal.getLoginId());
+        emailAuthRepository.save(validLink);
+
+        sendEmailByGmail(dto, validLink);
 
     }
 
@@ -90,6 +92,8 @@ public class EmailAuthService {
 
         mailSender.send(message);
 
+        log.info(dto.getEmail() + " 이메일 인증 SMTP 발송");
+
     }
 
     // 이메일 인증: 유효 링크 확인
@@ -98,7 +102,7 @@ public class EmailAuthService {
 
         Optional<EmailValidLink> validLink  = emailAuthRepository.findByIdAndExpirationDateAfterAndExpired(emailValidLink, LocalDateTime.now(), false);
 
-        return validLink.orElseThrow(()  -> new IllegalArgumentException(AuthenticationErrorMessage.Email_Valid_Link_EXPIRED));
+        return validLink.orElseThrow(()  -> new IllegalStateException(AuthenticationErrorMessage.Email_Valid_Link_EXPIRED));
 
     }
 
@@ -114,6 +118,14 @@ public class EmailAuthService {
         findValidLink.makeInvalidLink();
 
         userAuthRepository.updateAuthenticationStatus(user.getLoginId());
+
+    }
+
+    // 스케줄러: 이메일 유효 링크 삭제
+    @Transactional
+    public void deleteValidLink(){
+        LocalDateTime currentDateTime = LocalDateTime.now().withNano(0);
+        emailAuthRepository.deleteValidLink(currentDateTime);
 
     }
 

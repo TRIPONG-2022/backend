@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tripong.backend.exception.ErrorResult;
+
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice("tripong.backend.controller.authentication")
@@ -17,20 +18,12 @@ public class AuthenticationErrorAdvice {
 
     @ExceptionHandler
     public ResponseEntity authenticationExceptionHandler(IllegalStateException e) {
-        return new ResponseEntity<>(new ErrorResult(code_value_illegal(e.getMessage()), e.getMessage()), HttpStatus.OK);
+        return new ResponseEntity<>(new ErrorResult(703, e.getMessage()), HttpStatus.OK);
     }
 
     @ExceptionHandler
     public ResponseEntity authenticationPKExceptionHandler(NoSuchElementException e) {
         return new ResponseEntity<>(new ErrorResult(code_value_noSuchElement(e.getMessage()), e.getMessage()), HttpStatus.OK);
-    }
-
-    public int code_value_illegal(String message){
-        switch (message){
-            case AuthenticationErrorMessage.Email_Valid_Link_EXPIRED: return 703;
-            case AuthenticationErrorMessage.Resend_Email_Auth_FAIL: return 704;
-            default: return 999;
-        }
     }
 
     public int code_value_noSuchElement(String message) {

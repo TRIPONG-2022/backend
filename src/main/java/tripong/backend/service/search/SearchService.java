@@ -8,6 +8,7 @@ import tripong.backend.dto.post.PostResponseDto;
 import tripong.backend.dto.search.SearchType;
 import tripong.backend.repository.search.SearchRepository;
 import tripong.backend.service.aws.AmazonS3Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
