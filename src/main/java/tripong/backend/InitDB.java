@@ -45,8 +45,8 @@ public class InitDB {
 
         public void init0(){ //초기 ROLE
             Role admin = new Role("ROLE_ADMIN", "관리자");
-            Role unauth = new Role("ROLE_UNAUTH", "이메일 미인증자");
-            Role user = new Role("ROLE_USER", "이메일 인증자");
+            Role unauth = new Role("ROLE_UNAUTH", "추가정보 미입력자");
+            Role user = new Role("ROLE_USER", "추가정보 입력자");
             Role black = new Role("ROLE_BLACK", "블랙리스트");
             roleRepository.save(admin);
             roleRepository.save(unauth);
@@ -60,22 +60,23 @@ public class InitDB {
 
             List<RoleResource> roleResources2 = new ArrayList<>(); //게시글 열람
             roleResources2.add(new RoleResource(user));
-            resourceRepository.save(new Resource("/posts/**", ResourceType.Url, "이메일인증자만 게시물 이용 가능", 1, roleResources2));
+            resourceRepository.save(new Resource("/posts/**", ResourceType.Url, "추가정보입력자만 게시물 이용 가능", 1, roleResources2));
 
             List<RoleResource> roleResources3 = new ArrayList<>(); //댓글 사용
             roleResources3.add(new RoleResource(user));
-            resourceRepository.save(new Resource("/replies/**", ResourceType.Url, "이메일인증자만 댓글 이용 가능", 1, roleResources3));
+            resourceRepository.save(new Resource("/replies/**", ResourceType.Url, "추가정보입력자만 댓글 이용 가능", 1, roleResources3));
 
             List<RoleResource> roleResources4 = new ArrayList<>(); //채팅 사용
             roleResources4.add(new RoleResource(user));
-            resourceRepository.save(new Resource("/chat/**", ResourceType.Url, "이메일인증자만 채팅 이용 가능", 1, roleResources4));
+            resourceRepository.save(new Resource("/chat/**", ResourceType.Url, "추가정보입력자만 채팅 이용 가능", 1, roleResources4));
 
             List<RoleResource> roleResources5 = new ArrayList<>(); //채팅 사용
             roleResources5.add(new RoleResource(user));
-            resourceRepository.save(new Resource("/reports/**", ResourceType.Url, "이메일인증자만 신고 이용 가능", 1, roleResources5));
+            resourceRepository.save(new Resource("/reports/**", ResourceType.Url, "추가정보입력자만 신고 이용 가능", 1, roleResources5));
 
             List<RoleResource> roleResources6 = new ArrayList<>(); //회원가입자 기본
             roleResources6.add(new RoleResource(unauth));
+            roleResources6.add(new RoleResource(user));
             resourceRepository.save(new Resource("/users/**", ResourceType.Url, "회원가입 후 이용 가능", 1, roleResources6));
 
 //            List<RoleResource> roleResources2 = new ArrayList<>(); //유저 신고 기능 리소스
@@ -130,7 +131,7 @@ public class InitDB {
 
             List<UserRole> user3_userRoleList = new ArrayList<>();
             user3_userRoleList.add(user3_userRole);
-            User user3 = User.builder() //소셜 회원가입자 + 추가정보 미입력
+            User user3 = User.builder() //소셜 회원가입자 + 추가정보 미입력 + 이메일 인증
                     .loginId("user3")
                     .password(pw)
                     .name("이순신")
@@ -144,8 +145,10 @@ public class InitDB {
 
             List<UserRole> admin1_userRoleList = new ArrayList<>();
             UserRole add_userRole = new UserRole((role_user));
+            UserRole add_unauthRole = new UserRole((role_unauth));
             admin1_userRoleList.add(admin1_userRole);
             admin1_userRoleList.add(add_userRole);
+            admin1_userRoleList.add(add_unauthRole);
             User admin = User.builder() //관리자용
                     .loginId("admin")
                     .password(pw)
