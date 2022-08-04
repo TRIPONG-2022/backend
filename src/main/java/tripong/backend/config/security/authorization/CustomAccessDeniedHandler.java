@@ -67,13 +67,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             message = "정지당한 유저 입니다. 사이트 이용이 제한됩니다.";
             code = 901;
         }
-        else if(!(user_authorities.toString().contains("ROLE_USER"))){
-            message = "추가정보 입력 후 사용 가능합니다.";
-            code = 903;
-        }
         else if(role.toString().contains("ADMIN")){
             message = "관리자만 접근 가능합니다.";
             code = 902;
+        }
+        else if(!(user_authorities.toString().contains("ROLE_USER"))){
+            message = "추가정보 입력 후 사용 가능합니다.";
+            code = 903;
         }
         else{
             message = "다음의 권한이 필요합니다." + role;

@@ -20,8 +20,8 @@ public class CorsConfig {
         config.addAllowedHeader("*");
         config.setExposedHeaders(Arrays.asList("Authorization"));
         config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000/",
-                "https://localhost:3000/"
+                "http://localhost:3000/", "https://localhost:3000/",
+                "https://tripong-development.herokuapp.com/"
         ));
         config.addAllowedMethod("*");
 
