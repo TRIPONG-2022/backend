@@ -16,8 +16,8 @@ public class CookieService {
         log.info("시작: CookieService - 쿠키생성");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, refreshToken)
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
-                .sameSite("None")
-                .secure(true)
+//                .sameSite("None")
+//                .secure(true)
                 .httpOnly(true)
                 .path("/")
                 .build();
@@ -32,8 +32,8 @@ public class CookieService {
         log.info("시작: CookieService - 쿠키만료");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, null)
                 .maxAge(0)
-                .sameSite("None")
-                .secure(true)
+//                .sameSite("None")
+//                .secure(true)
                 .httpOnly(true)
                 .path("/")
                 .build();

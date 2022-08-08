@@ -51,7 +51,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         String jwt = request.getHeader(JwtProperties.HEADER_STRING);
         if (jwt == null || !jwt.startsWith(JwtProperties.TOKEN_PREFIX) || refresh_cookie == null) {
-            chain.doFilter(request, response);// || !refresh_cookie.isHttpOnly()
+            chain.doFilter(request, response);
             return;
         }
 
@@ -82,6 +82,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 String redis_agent= JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(redis_value).getClaim("agent").asString();
                 String redis_uuid= JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(redis_value).getClaim("uuid").asString();
                 if(!agent.equals(redis_agent) || !uuid.equals(redis_uuid)){
+                    chain.doFilter(request, response);
                     return;
                 }
                 tokenService.createTokens(pk, loginId, roles, request.getHeader("user-agent"), response);
@@ -89,8 +90,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception exception){
+                chain.doFilter(request, response);
                 return;
             }
+        } catch (Exception e){
+            chain.doFilter(request, response);
+            return;
         }
         log.info("종료: JwtAuthorizationFilter - 인가 ok");
         chain.doFilter(request, response);
