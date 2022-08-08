@@ -94,11 +94,9 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                     .accessDeniedHandler(customAccessDeniedHandler(http))
 
-
                     .and()
                     .logout()
                     .logoutUrl("/users/logout")
-//                    .logoutSuccessUrl("/")
                     .addLogoutHandler(new CustomLogoutHandler(cookieService))
 
                     .and()
