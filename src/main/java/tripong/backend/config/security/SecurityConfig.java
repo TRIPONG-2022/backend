@@ -7,6 +7,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.intercept.RunAsManager;
 import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
@@ -27,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import tripong.backend.config.security.authentication.token.TokenService;
@@ -89,7 +91,9 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .formLogin().disable()
                     .httpBasic().disable()
                     .exceptionHandling()
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                     .accessDeniedHandler(customAccessDeniedHandler(http))
+
 
                     .and()
                     .logout()
@@ -189,17 +193,5 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
         return customMethodSecurityInterceptor;
     }
-//
-//    private final RedisConnectionFactory redisConnectionFactory;
-//
-//    @Bean(name="rtRedisTemplate")
-//    public RedisTemplate<String, String> redisTemplate() {
-//        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-//        redisTemplate.setConnectionFactory(redisConnectionFactory);
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setValueSerializer(new StringRedisSerializer());
-//        return redisTemplate;
-//    }
-
 }
 
