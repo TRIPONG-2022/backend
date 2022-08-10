@@ -33,7 +33,6 @@ public class PrincipalDetail implements UserDetails, OAuth2User {
         Collection<GrantedAuthority> collectors = new ArrayList<>();
         for(UserRole userRole : user.getUserRoles()){
             collectors.add(new SimpleGrantedAuthority(userRole.getRole().getRoleName()));
-            System.out.println("userRole = " + userRole.getRole().getRoleName());
         }
         return collectors;
     }

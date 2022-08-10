@@ -31,6 +31,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import tripong.backend.config.security.authentication.handler.CustomLogoutSuccessHandler;
 import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.PrincipalService;
 import tripong.backend.config.security.authentication.handler.CustomLoginFailureHandler;
@@ -60,6 +61,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     private final MethodResourceMap methodResourceMap;
     private final TokenService tokenService;
     private final RedisTemplate redisTemplate;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     private static final String[] permitAllResource = {
             "/", "/about", "/posts", "/oauth2/**", "/auth/**", "/error/**"
@@ -98,6 +100,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .logout()
                     .logoutUrl("/users/logout")
                     .addLogoutHandler(new CustomLogoutHandler(cookieService))
+                    .logoutSuccessHandler(customLogoutSuccessHandler)
 
                     .and()
                     .oauth2Login()

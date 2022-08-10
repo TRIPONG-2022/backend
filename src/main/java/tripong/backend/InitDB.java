@@ -11,22 +11,28 @@ import tripong.backend.entity.user.JoinType;
 import tripong.backend.entity.user.User;
 import tripong.backend.repository.admin.resource.ResourceRepository;
 import tripong.backend.repository.admin.role.RoleRepository;
+import tripong.backend.repository.user.UserRepository;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class InitDB {
 
     private final InitService initService;
-
+    private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
 
     @PostConstruct
     public void init() throws Exception {
+        if(initService.init()) {
+            customFilterInvocationSecurityMetadataSource.reload_url();
+            return;
+        }
         initService.init0();
         initService.init1();
     }
@@ -36,12 +42,15 @@ public class InitDB {
     @RequiredArgsConstructor
     static class InitService{
 
-        private final EntityManager em;
+        private final UserRepository userRepository;
         private final BCryptPasswordEncoder passwordEncoder;
         private final RoleRepository roleRepository;
         private final ResourceRepository resourceRepository;
         private final CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource;
 
+        public Boolean init(){
+            return roleRepository.findByRoleName("ROLE_ADMIN").isPresent();
+        }
 
         public void init0(){ //초기 ROLE
             Role admin = new Role("ROLE_ADMIN", "관리자");
@@ -186,13 +195,13 @@ public class InitDB {
                     .userRoles(black_userRoleList)
                     .build();
 
+            userRepository.save(user1);
+            userRepository.save(user2);
+            userRepository.save(user3);
+            userRepository.save(user4);
+            userRepository.save(admin);
+            userRepository.save(black);
 
-            em.persist(user1);
-            em.persist(user2);
-            em.persist(user3);
-            em.persist(admin);
-            em.persist(user4);
-            em.persist(black);
             customFilterInvocationSecurityMetadataSource.reload_url();
         }
     }
