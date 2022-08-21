@@ -4,6 +4,7 @@ package tripong.backend.config.security.authentication.token;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +18,9 @@ public class TokenService {
     private final RedisTemplate redisTemplate;
     private final CookieService cookieService;
 
+    @Value("${tripong.skey}")
+    private String sKey;
+
     public void createTokens (String pk, String loginId, String roles, String agent, HttpServletResponse response){
         String jwtToken = JWT.create()
                 .withSubject(JwtProperties.SUBJECT)
@@ -24,7 +28,7 @@ public class TokenService {
                 .withClaim("pk", pk)
                 .withClaim("roles", roles)
                 .withClaim("loginId", loginId)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+                .sign(Algorithm.HMAC512(sKey));
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX+jwtToken);
         String uuid = UUID.randomUUID().toString().substring(0,10);
         String refreshToken = JWT.create()
@@ -34,9 +38,8 @@ public class TokenService {
                 .withClaim("loginId", loginId)
                 .withClaim("agent", agent)
                 .withClaim("uuid", uuid)
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+                .sign(Algorithm.HMAC512(sKey));
         redisTemplate.opsForValue().set("RefreshToken:"+ loginId, refreshToken, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         response.addHeader("Set-Cookie", cookieService.refreshCookieIn(refreshToken));
-
     }
 }

@@ -4,12 +4,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
 public class CreateRoleRequestDto {
 
     @NotBlank(message = "입력이 필요합니다.")
-    private String roleName; //서버단에서 ROLE_로 시작하는지 판단
+    @Pattern(regexp = "^(ROLE_).*$", message = "ROLE_~~ 으로 작성해 주세요.")
+    private String roleName;
     private String description;
 }
