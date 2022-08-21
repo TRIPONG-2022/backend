@@ -8,14 +8,15 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class CustomFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
-    private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+    private ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new ConcurrentHashMap<>();
     private AuthResourceService authResourceService;
 
-    public CustomFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap, AuthResourceService authResourceService) {
+    public CustomFilterInvocationSecurityMetadataSource(ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> requestMap, AuthResourceService authResourceService) {
         this.requestMap = requestMap;
         this.authResourceService=authResourceService;
     }
@@ -50,7 +51,7 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
 
 
     public void reload_url() throws Exception {
-        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> reloadedMap = authResourceService.getUrlRequestMap();
+        ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> reloadedMap = authResourceService.getUrlRequestMap();
         Iterator<Map.Entry<RequestMatcher, List<ConfigAttribute>>> itr = reloadedMap.entrySet().iterator();
         requestMap.clear();
 

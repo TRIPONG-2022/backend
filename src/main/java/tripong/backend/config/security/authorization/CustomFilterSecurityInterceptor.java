@@ -12,28 +12,29 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 public class CustomFilterSecurityInterceptor extends FilterSecurityInterceptor {
 
     private static final String FILTER_APPLIED = "__spring_security_filterSecurityInterceptor_filterApplied";
     private boolean observeOncePerRequest = true;
-
+    private static final String[] permitAllResource = {
+            "/", "/about", "/posts", "/oauth2/**", "/auth/**", "/error/**"
+    };
     private List<RequestMatcher> permitAllRequestMatchers = new ArrayList<>();
 
-    public CustomFilterSecurityInterceptor(String... resources){
-        for(String resource: resources){
-            permitAllRequestMatchers.add(new AntPathRequestMatcher(resource));
-        }
-    }
 
+    public CustomFilterSecurityInterceptor() {
+        Arrays.stream(permitAllResource).forEach(
+                p -> this.permitAllRequestMatchers.add(new AntPathRequestMatcher(p)));
+    }
 
     @Override
     protected InterceptorStatusToken beforeInvocation(Object object) {
         boolean flag = false;
-        HttpServletRequest request_url = ((FilterInvocation) object).getRequest(); //url 경우
+        HttpServletRequest request_url = ((FilterInvocation) object).getRequest();
         for(RequestMatcher requestMatcher : permitAllRequestMatchers){
             if(requestMatcher.matches(request_url)){
                 flag = true;

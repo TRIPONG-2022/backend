@@ -1,9 +1,8 @@
 package tripong.backend.config.security;
 
-import com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +30,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 import tripong.backend.config.security.authentication.handler.CustomLogoutSuccessHandler;
 import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.PrincipalService;
@@ -38,7 +38,6 @@ import tripong.backend.config.security.authentication.handler.CustomLoginFailure
 import tripong.backend.config.security.authentication.handler.CustomLogoutHandler;
 import tripong.backend.config.security.authentication.JwtAuthenticationFilter;
 import tripong.backend.config.security.authentication.JwtAuthorizationFilter;
-import tripong.backend.config.security.authentication.token.CookieService;
 import tripong.backend.config.security.authorization.*;
 import tripong.backend.config.security.oauth.CustomOauthSuccessHandler;
 import tripong.backend.config.security.oauth.PrincipalOauth2Service;
@@ -52,20 +51,21 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
+    @Value("${tripong.skey}")
+    private String sKey;
+
     private final CorsConfig corsConfig;
     private final BCryptPasswordEncoder encoder;
     private final PrincipalOauth2Service oauth2Service;
-    private final CookieService cookieService;
     private final PrincipalService principalService;
     private final AuthResourceService authResourceService;
     private final MethodResourceMap methodResourceMap;
     private final TokenService tokenService;
     private final RedisTemplate redisTemplate;
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final CustomOauthSuccessHandler customOauthSuccessHandler;
+    private final CustomLogoutHandler customLogoutHandler;
 
-    private static final String[] permitAllResource = {
-            "/", "/about", "/posts", "/oauth2/**", "/auth/**", "/error/**"
-    };
     private static final String[] SWAGGER_WHITELIST = {"/swagger-resources/**", "/swagger-ui.html", "/v3/api-docs", "/webjars/**"};
 
     @Bean
@@ -77,21 +77,19 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .anyRequest().authenticated();
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .formLogin().disable()
+                .httpBasic().disable();
         http
-                .apply(new MyCustomDsl());
+                .apply(new TripongDSLs());
         return http.build();
     }
-    public class MyCustomDsl extends AbstractHttpConfigurer<MyCustomDsl, HttpSecurity> {
+    public class TripongDSLs extends AbstractHttpConfigurer<TripongDSLs, HttpSecurity> {
         @Override
         public void init(HttpSecurity http) throws Exception {
             http
-                    .csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .formLogin().disable()
-                    .httpBasic().disable()
                     .exceptionHandling()
                     .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                     .accessDeniedHandler(customAccessDeniedHandler(http))
@@ -99,29 +97,28 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
                     .and()
                     .logout()
                     .logoutUrl("/users/logout")
-                    .addLogoutHandler(new CustomLogoutHandler(cookieService))
+                    .addLogoutHandler(customLogoutHandler)
                     .logoutSuccessHandler(customLogoutSuccessHandler)
 
                     .and()
                     .oauth2Login()
                     .loginPage("/auth/login")
-                    .successHandler(customOauthSuccessHandler(cookieService, redisTemplate))
+                    .successHandler(customOauthSuccessHandler)
                     .userInfoEndpoint().userService(oauth2Service);
         }
         @Override
         public void configure(HttpSecurity http) throws Exception {
             AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
             authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider());
-
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
 
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager, tokenService);
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new CustomLoginFailureHandler());
             jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
-            JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, redisTemplate, tokenService);
+            JwtAuthorizationFilter jwtAuthorizationFilter = new JwtAuthorizationFilter(authenticationManager, redisTemplate, tokenService, sKey);
 
-            CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor(permitAllResource);
+            CustomFilterSecurityInterceptor customFilterSecurityInterceptor = new CustomFilterSecurityInterceptor();
             customFilterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
             customFilterSecurityInterceptor.setAuthenticationManager(authenticationManager);
             customFilterSecurityInterceptor.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource(urlResourceMap()));
@@ -134,15 +131,10 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
         }
     }
 
-    @Bean
-    public CustomOauthSuccessHandler customOauthSuccessHandler(CookieService cookieService, RedisTemplate redisTemplate){
-        return new CustomOauthSuccessHandler(cookieService, redisTemplate);
-    }
 
     @Bean
     public AccessDeniedHandler customAccessDeniedHandler(HttpSecurity http)  {
-        CustomAccessDeniedHandler customAccessDeniedHandler = new CustomAccessDeniedHandler(http);
-        return customAccessDeniedHandler;
+        return new CustomAccessDeniedHandler(http);
     }
 
     @Bean
@@ -161,7 +153,6 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
         return affirmativeBased;
     }
 
-    ///
     @Bean
     public CustomFilterInvocationSecurityMetadataSource customFilterInvocationSecurityMetadataSource(UrlResourceMap urlResourceMap) throws Exception {
         return new CustomFilterInvocationSecurityMetadataSource(urlResourceMap().getObject(), authResourceService);
@@ -173,7 +164,7 @@ public class SecurityConfig extends GlobalMethodSecurityConfiguration{
 
     @Override
     protected MethodSecurityMetadataSource customMethodSecurityMetadataSource() {
-        return mapBasedMethodSecurityMetadataSource(); //나중엔 밑에꺼 합쳐보기
+        return mapBasedMethodSecurityMetadataSource();
     }
     @Bean
     public MapBasedMethodSecurityMetadataSource mapBasedMethodSecurityMetadataSource(){

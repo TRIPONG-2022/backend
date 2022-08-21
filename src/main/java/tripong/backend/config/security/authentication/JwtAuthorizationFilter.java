@@ -17,7 +17,6 @@ import tripong.backend.config.security.principal.AuthDetail;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,39 +28,29 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private RedisTemplate redisTemplate;
     private TokenService tokenService;
+    private String sKey;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisTemplate redisTemplate, TokenService tokenService){
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisTemplate redisTemplate, TokenService tokenService, String sKey){
         super(authenticationManager);
         this.redisTemplate=redisTemplate;
         this.tokenService=tokenService;
+        this.sKey = sKey;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        log.info("시작: JwtAuthorizationFilter");
 
-        Cookie[] cookies = request.getCookies();
-        Cookie refresh_cookie = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(RefreshTokenProperties.HEADER_STRING)) {
-                    refresh_cookie = cookie;
-                }
-            }
-        }
-        String jwt = request.getHeader(JwtProperties.HEADER_STRING);
-        if (jwt == null || !jwt.startsWith(JwtProperties.TOKEN_PREFIX) || refresh_cookie == null) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        String refresh_info = refresh_cookie.getValue();
-        jwt = jwt.replace(JwtProperties.TOKEN_PREFIX, "");
+        String jwt = null;
+        String refresh_info = null;
         try{
-            String pk = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(jwt).getClaim("pk").asString();
-            String roles = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(jwt).getClaim("roles").asString();
-            String loginId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(jwt).getClaim("loginId").asString();
-            String agent = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("agent").asString();
+            refresh_info = Arrays.stream(request.getCookies())
+                    .filter(c -> c.getName().equals(RefreshTokenProperties.HEADER_STRING)).findFirst().get().getValue();
+            jwt = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
+
+            String pk = JWT.require(Algorithm.HMAC512(sKey)).build().verify(jwt).getClaim("pk").asString();
+            String roles = JWT.require(Algorithm.HMAC512(sKey)).build().verify(jwt).getClaim("roles").asString();
+            String loginId = JWT.require(Algorithm.HMAC512(sKey)).build().verify(jwt).getClaim("loginId").asString();
+            String agent = JWT.require(Algorithm.HMAC512(sKey)).build().verify(refresh_info).getClaim("agent").asString();
             if(redisTemplate.hasKey("RoleUpdate:"+loginId)){
                 roles = (String) redisTemplate.opsForValue().get("RoleUpdate:" + loginId);
                 tokenService.createTokens(pk, loginId, roles, agent, response);
@@ -72,15 +61,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (TokenExpiredException tokenExpiredException){
             try {
-                String loginId = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("loginId").asString();
-                String pk = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("pk").asString();
-                String roles = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("roles").asString();
-                String agent = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("agent").asString();
-                String uuid = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(refresh_info).getClaim("uuid").asString();
+                String loginId = JWT.require(Algorithm.HMAC512(sKey)).build().verify(refresh_info).getClaim("loginId").asString();
+                String pk = JWT.require(Algorithm.HMAC512(sKey)).build().verify(refresh_info).getClaim("pk").asString();
+                String roles = JWT.require(Algorithm.HMAC512(sKey)).build().verify(refresh_info).getClaim("roles").asString();
+                String agent = JWT.require(Algorithm.HMAC512(sKey)).build().verify(refresh_info).getClaim("agent").asString();
+                String uuid = JWT.require(Algorithm.HMAC512(sKey)).build().verify(refresh_info).getClaim("uuid").asString();
 
                 String redis_value = (String) redisTemplate.opsForValue().get("RefreshToken:" + loginId);
-                String redis_agent= JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(redis_value).getClaim("agent").asString();
-                String redis_uuid= JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(redis_value).getClaim("uuid").asString();
+                String redis_agent= JWT.require(Algorithm.HMAC512(sKey)).build().verify(redis_value).getClaim("agent").asString();
+                String redis_uuid= JWT.require(Algorithm.HMAC512(sKey)).build().verify(redis_value).getClaim("uuid").asString();
                 if(!agent.equals(redis_agent) || !uuid.equals(redis_uuid)){
                     chain.doFilter(request, response);
                     return;
@@ -97,7 +86,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        log.info("종료: JwtAuthorizationFilter - 인가 ok");
         chain.doFilter(request, response);
     }
 }

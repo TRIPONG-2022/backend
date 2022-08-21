@@ -9,25 +9,24 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-public class UrlResourceMap implements FactoryBean<LinkedHashMap<RequestMatcher, List<ConfigAttribute>>> {
+public class UrlResourceMap implements FactoryBean<ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>>> {
 
     private AuthResourceService authResourceService;
-    private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+    private ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new ConcurrentHashMap<>();
 
     public UrlResourceMap(AuthResourceService authResourceService) {
         this.authResourceService = authResourceService;
     }
 
     @Override
-    public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getObject() throws Exception {
-
+    public ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> getObject() throws Exception {
         if(requestMap == null){
             requestMap = authResourceService.getUrlRequestMap();
         }
-
         return requestMap;
     }
 
