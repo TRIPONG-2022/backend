@@ -13,6 +13,7 @@ import tripong.backend.repository.admin.resource.ResourceRepository;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +26,9 @@ public class AuthResourceService {
     /**
      * DB 자원 url requestMap 변환
      */
-    public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getUrlRequestMap(){
+    public ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> getUrlRequestMap(){
         List<Resource> resources = resourceRepository.findUrlAllResources();
-        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> beforeRequestMap = new LinkedHashMap<>();
+        ConcurrentHashMap<RequestMatcher, List<ConfigAttribute>> beforeRequestMap = new ConcurrentHashMap<>();
         resources.forEach( r->{
             List<ConfigAttribute> configAttributeList = new ArrayList<>();
             r.getRoleResources().forEach( role ->{

@@ -36,11 +36,7 @@ public class RoleService {
     @Transactional
     public void createRole(CreateRoleRequestDto dto) {
         log.info("시작: RoleService 권한등록");
-        if(!dto.getRoleName().startsWith("ROLE_")){
-            throw new IllegalArgumentException(AdminErrorMessage.Role_FORM_ERROR);
-        }
         Optional<Role> role = roleRepository.findByRoleName(dto.getRoleName());
-        System.out.println("role = " + role);
         if(role.isPresent()) throw new IllegalStateException(AdminErrorMessage.RoleName_DUP);
         roleRepository.save(new Role(dto.getRoleName(), dto.getDescription()));
         log.info("종료: RoleService 권한등록");

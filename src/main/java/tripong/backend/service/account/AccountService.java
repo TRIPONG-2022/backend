@@ -46,8 +46,8 @@ public class AccountService {
 
     /**
      * 일반 회원가입
-     * -이메일 인증기반이므로, 이메일 중복 먼저 체크
-     * -아이디와 닉네임 중복 체크
+     * - 중복체크 (email, loginId, nickName)
+     * - 초기 권한 (ROLE_UNAUTH)
      */
     @Transactional
     public void normalJoin(NormalJoinRequestDto dto, HttpServletRequest request, HttpServletResponse response){
@@ -93,25 +93,24 @@ public class AccountService {
 
     /**
      * 소셜 회원가입
-     * -일반 회원가입시, 아이디와 닉네임을 소셜명으로 시작을 금지시키고
-     *  소셜 회원가입시에 아이디와 닉네임을 소셜 이름+ 소셜에서의 닉네임 +소셜 id 로 설정해 중복방지
+     *  소셜 회원가입시에 아이디와 닉네임을 소셜 이름+ 소셜에서의 닉네임 +소셜 id 으로 중복방지
      * -소셜 회원가입자는 이메일 인증 처리
      * */
     @Transactional
     public User oauthJoin(OAuthInfo oAuthInfo){
         log.info("시작: AccountService 소셜회원가입");
 
-        OauthJoinRequestDto dto = new OauthJoinRequestDto();
-        dto.setLoginId(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
-        dto.setPassword(encoder.encode(sKey + oAuthInfo.getProviderId()));
-        dto.setEmail(oAuthInfo.getEmail());
-        dto.setNickName(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId());
-        dto.setJoinMethod(getJoin(oAuthInfo.getProviderName()));
-        dto.setUserRoles(authorize_oauthJoin_userRoles());
-        User yet = dto.toEntity();
+        User user = new User(oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId(),
+                encoder.encode(sKey + oAuthInfo.getProviderId()),
+                oAuthInfo.getEmail(),
+                oAuthInfo.getProviderName() + "_" + oAuthInfo.getNickName() + oAuthInfo.getProviderId(),
+                getJoin(oAuthInfo.getProviderName()),
+                1);
+        authorize_UNAUTH(user);
+        authorize_USER(user);
 
         log.info("종료: AccountService 소셜회원가입");
-        return userRepository.save(yet);
+        return userRepository.save(user);
     }
 
     private JoinType getJoin(String providerName) {
@@ -160,12 +159,6 @@ public class AccountService {
         only_user_userRoles.add(new UserRole(role_user));
         user.addUserRole(only_user_userRoles);
     }
-    private List<UserRole> authorize_oauthJoin_userRoles() {
-        Role role_user = roleRepository.findByRoleName("ROLE_USER").get();
-        List<UserRole> only_user_userRoles = new ArrayList<>();
-        only_user_userRoles.add(new UserRole(role_user));
-        return only_user_userRoles;
-    }
 
 
     /**
@@ -177,7 +170,7 @@ public class AccountService {
     public void withdrawal(AuthDetail principal) {
         log.info("시작: AccountService 회원탈퇴");
         User user = userRepository.findById(principal.getPk()).orElseThrow(() -> new NoSuchElementException("해당 유저가 없습니다. userId=" + principal.getPk()));
-        user.account_withdrawal(sKey);
+        user.account_withdrawal();
         redisTemplate.delete("RoleUpdate:"+principal.getLoginId());
         log.info("종료: AccountService 회원탈퇴");
     }

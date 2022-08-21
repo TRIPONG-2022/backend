@@ -24,15 +24,18 @@ public class User extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private String loginId; //로그인ID
+    @Column(unique = true, nullable = false)
+    private String loginId;
+
     @NotNull
     private String password;
 
     private String name;
-    @NotNull
+
+    @Column(unique = true, nullable = false)
     private String nickName;
-    @NotNull
+
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String picture;
@@ -71,6 +74,7 @@ public class User extends BaseTimeEntity{
     private TravelerType travelerType;
 
     ////-----편의 메소드-----
+    //회원가입
     public User(String loginId, String password, String email, String nickName, JoinType joinMethod, Integer authentication){
         this.loginId=loginId;
         this.password=password;
@@ -90,11 +94,11 @@ public class User extends BaseTimeEntity{
     }
 
     //회원탈퇴시
-    public void account_withdrawal(String skey){
-        this.name = "탈퇴 회원";
-        this.loginId = "탈퇴 회원";
-        this.email = this.email+skey;
-        this.nickName = "탈퇴 회원";
+    public void account_withdrawal(){
+        this.loginId = "(탈퇴 회원)" + this.id;
+        this.nickName = "(탈퇴 회원)" + this.id;
+        this.name = "(탈퇴 회원)"+ this.id;
+        this.email = this.email+"(탈퇴 회원)" + this.id;
     }
 
 

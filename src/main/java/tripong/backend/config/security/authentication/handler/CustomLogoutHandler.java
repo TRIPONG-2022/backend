@@ -12,7 +12,6 @@ import tripong.backend.config.security.authentication.token.CookieService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomLogoutHandler implements LogoutHandler {

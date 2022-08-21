@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import tripong.backend.dto.account.NormalJoinRequestDto;
 import tripong.backend.dto.admin.role.CreateRoleRequestDto;
 import tripong.backend.dto.admin.role.GetRoleListResponseDto;
+import tripong.backend.exception.ErrorResult;
 import tripong.backend.service.admin.RoleService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -33,7 +38,10 @@ public class AdminRoleApiController {
      * 권한 등록 API
      */
     @PostMapping("/admin/roles")
-    public ResponseEntity createRole(@RequestBody CreateRoleRequestDto dto, HttpServletResponse response){
+    public ResponseEntity createRole(@Validated @RequestBody CreateRoleRequestDto dto, BindingResult bindingResult, HttpServletResponse response){
+        if(bindingResult.hasErrors()){
+            return new ResponseEntity<>(new ErrorResult(bindingResult), HttpStatus.BAD_REQUEST);
+        }
         roleService.createRole(dto);
         response.setHeader("Location", "/admin/roles");
         return new ResponseEntity<>(HttpStatus.FOUND);

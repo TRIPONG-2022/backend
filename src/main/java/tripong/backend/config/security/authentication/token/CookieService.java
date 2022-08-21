@@ -5,7 +5,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 
-@Slf4j
 @Component
 public class CookieService {
 
@@ -13,7 +12,6 @@ public class CookieService {
      * refresh 쿠키 추가
      */
     public String refreshCookieIn(String refreshToken){
-        log.info("시작: CookieService - 쿠키생성");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, refreshToken)
                 .maxAge(RefreshTokenProperties.EXPIRATION_TIME)
                 .sameSite("None")
@@ -29,7 +27,6 @@ public class CookieService {
      * refresh 쿠키 만료 처리
      */
     public String refreshCookieExpired(){
-        log.info("시작: CookieService - 쿠키만료");
         ResponseCookie refreshCookie = ResponseCookie.from(RefreshTokenProperties.HEADER_STRING, null)
                 .maxAge(0)
                 .sameSite("None")
@@ -37,7 +34,6 @@ public class CookieService {
                 .httpOnly(true)
                 .path("/")
                 .build();
-        log.info("종료: CookieService - 쿠키만료");
         return refreshCookie.toString();
     }
 
