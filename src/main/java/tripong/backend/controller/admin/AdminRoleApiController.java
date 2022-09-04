@@ -44,7 +44,7 @@ public class AdminRoleApiController {
         }
         roleService.createRole(dto);
         response.setHeader("Location", "/admin/roles");
-        return new ResponseEntity<>(HttpStatus.FOUND);
+        return new ResponseEntity<>(HttpStatus.SEE_OTHER);
     }
 
     /**
@@ -54,6 +54,6 @@ public class AdminRoleApiController {
     public ResponseEntity deleteRole(@PathVariable("roleId") Long roleId, HttpServletResponse response){
         roleService.deleteRole(roleId);
         response.setHeader("Location", "/admin/roles");
-        return new ResponseEntity<>(HttpStatus.FOUND);
+        return new ResponseEntity<>(HttpStatus.SEE_OTHER);
     }
 }
