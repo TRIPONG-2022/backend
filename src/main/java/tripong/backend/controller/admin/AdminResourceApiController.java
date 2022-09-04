@@ -60,7 +60,7 @@ public class AdminResourceApiController {
             methodResourceLiveUpdateService.reload_add_method(dto.getResourceName(), dto.getRoles());
         }
         response.setHeader("Location", "/admin/resources");
-        return new ResponseEntity<>(HttpStatus.FOUND);
+        return new ResponseEntity<>(HttpStatus.SEE_OTHER);
     }
 
 
@@ -76,7 +76,7 @@ public class AdminResourceApiController {
             methodResourceLiveUpdateService.reload_delete_method(dto.getResourceName());
         }
         response.setHeader("Location", "/admin/resources");
-        return new ResponseEntity<>(HttpStatus.FOUND);
+        return new ResponseEntity<>(HttpStatus.SEE_OTHER);
     }
 
 }
