@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 import tripong.backend.config.security.authentication.token.TokenService;
 import tripong.backend.config.security.principal.PrincipalDetail;
 
@@ -28,7 +29,9 @@ public class CustomOauthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         String roles = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        tokenService.createTokens(principal.getUser().getId().toString(), principal.getUsername(), roles, request.getHeader("user-agent"), response);
-        getRedirectStrategy().sendRedirect(request, response,"https://tripong-development.herokuapp.com/");
+        String param = tokenService.oauth_createToken(principal.getUser().getId().toString(), principal.getUsername(), roles, request.getHeader("user-agent"), response);
+        String url = UriComponentsBuilder.fromUriString("https://tripong-development.herokuapp.com")
+                        .queryParam("token", param).build().toUriString();
+        getRedirectStrategy().sendRedirect(request, response, url);
     }
 }
