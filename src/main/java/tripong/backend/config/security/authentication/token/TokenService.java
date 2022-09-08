@@ -42,4 +42,26 @@ public class TokenService {
         redisTemplate.opsForValue().set("RefreshToken:"+ loginId, refreshToken, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
         response.addHeader("Set-Cookie", cookieService.refreshCookieIn(refreshToken));
     }
+
+    public String oauth_createToken (String pk, String loginId, String roles, String agent, HttpServletResponse response){
+        String jwtToken = JWT.create()
+                .withSubject(JwtProperties.SUBJECT)
+                .withExpiresAt(new Date(System.currentTimeMillis()+ (JwtProperties.EXPIRATION_TIME)))
+                .withClaim("pk", pk)
+                .withClaim("roles", roles)
+                .withClaim("loginId", loginId)
+                .sign(Algorithm.HMAC512(sKey));
+        String uuid = UUID.randomUUID().toString().substring(0,10);
+        String refreshToken = JWT.create()
+                .withExpiresAt(new Date(System.currentTimeMillis()+ RefreshTokenProperties.EXPIRATION_TIME))
+                .withClaim("pk", pk)
+                .withClaim("roles", roles)
+                .withClaim("loginId", loginId)
+                .withClaim("agent", agent)
+                .withClaim("uuid", uuid)
+                .sign(Algorithm.HMAC512(sKey));
+        redisTemplate.opsForValue().set("RefreshToken:"+ loginId, refreshToken, RefreshTokenProperties.EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+        response.addHeader("Set-Cookie", cookieService.refreshCookieIn(refreshToken));
+        return JwtProperties.TOKEN_PREFIX+jwtToken;
+    }
 }
