@@ -59,7 +59,9 @@ public class UserProfileService {
 
         /* 태그 저장 */
         user.getTags().clear();
-        userProfileRequestDto.getTags().forEach(tag -> userTagRepository.save(Tag.builder().user(user).tagName(tag).build()));
+        userProfileRequestDto.getTags().forEach(tag -> {
+            user.getTags().add(Tag.builder().user(user).tagName(tag).build());
+        });
         user.update(userProfileRequestDto, pictureUrl);
 
         return user;
