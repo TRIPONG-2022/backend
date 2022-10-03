@@ -63,7 +63,7 @@ public class User extends BaseTimeEntity{
 
     private BigDecimal longitude;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Tag> tags = new ArrayList<>();
 
     ////-----편의 메소드-----
