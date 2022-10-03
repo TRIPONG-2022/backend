@@ -1,6 +1,7 @@
 package tripong.backend.service.profile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,9 +18,11 @@ import tripong.backend.service.aws.AmazonS3Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class UserProfileService {
 
@@ -55,14 +58,16 @@ public class UserProfileService {
         String fileName = user.getPicture();
         if (fileName != null){
             amazonS3Service.deleteFile(fileName);
-            user.setPicture(null);
         }
 
         /* 태그 저장 */
-        user.getTags().forEach(tag -> user.getTags().remove(tag));
+        userTagRepository.deleteAllById(user.getTags().stream().map(Tag::getId).collect(Collectors.toList()));
+        user.getTags().clear();
         userProfileRequestDto.getTags().forEach(tag -> {
             user.getTags().add(Tag.builder().user(user).tagName(tag).build());
         });
+        user.getTags().forEach(tag -> System.out.println(tag));
+        log.info("이미지 url" + pictureUrl);
         user.update(userProfileRequestDto, pictureUrl);
 
         return user;
