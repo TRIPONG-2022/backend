@@ -58,7 +58,7 @@ public class UserProfileService {
         }
 
         /* 태그 저장 */
-        user.getTags().clear();
+        user.getTags().forEach(tag -> user.getTags().remove(tag));
         userProfileRequestDto.getTags().forEach(tag -> {
             user.getTags().add(Tag.builder().user(user).tagName(tag).build());
         });
