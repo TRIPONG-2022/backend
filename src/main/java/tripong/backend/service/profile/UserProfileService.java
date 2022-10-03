@@ -55,6 +55,7 @@ public class UserProfileService {
         String fileName = user.getPicture();
         if (fileName != null){
             amazonS3Service.deleteFile(fileName);
+            user.setPicture(null);
         }
 
         /* 태그 저장 */
