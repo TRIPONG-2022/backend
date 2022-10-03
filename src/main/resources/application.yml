@@ -10,7 +10,6 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 500
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
 
   mvc:
