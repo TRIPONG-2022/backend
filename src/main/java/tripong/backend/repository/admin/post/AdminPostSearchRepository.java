@@ -32,7 +32,7 @@ public class AdminPostSearchRepository {
     public Page<GetPostPageANDSearchResponseDto> getPostPageANDSearch(SearchAdminPostType searchType, String keyword, Pageable pageable) {
         List<GetPostPageANDSearchResponseDto> content = queryFactory
                 .select(new QGetPostPageANDSearchResponseDto(
-                        post.author.id, post.id, post.title, post.author.loginId, post.author.nickName, post.createdDate
+                        post.author.id, post.id, post.title, post.author.loginId, post.author.nickName, post.createdDate, post.category
                 ))
                 .from(post)
                 .leftJoin(post.author, user)
@@ -54,7 +54,7 @@ public class AdminPostSearchRepository {
                         postReport.reportedPostId.id, postReport.kind, postReport.reportedPostId.title
                         ,postReport.reportedPostId.createdDate, postReport.reportedPostId.author.id
                         ,postReport.reportedPostId.author.loginId, postReport.reportedPostId.author.nickName
-                        ,postReport.reportUserId.loginId, postReport.createdDate))
+                        ,postReport.reportUserId.loginId, postReport.createdDate, postReport.reportedPostId.category))
                 .from(postReport)
                 .leftJoin(postReport.reportedPostId, post)
                 .leftJoin(postReport.reportUserId, user)
