@@ -5,6 +5,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tripong.backend.entity.post.Category;
 import tripong.backend.entity.report.PostReport;
 import tripong.backend.entity.report.ReportType;
 
@@ -26,16 +27,18 @@ public class GetPostReportedPageANDSearchResponseDto {
     private String reporterLoginId;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime reportCreatedDate;
+    private Category category;
 
     public GetPostReportedPageANDSearchResponseDto(){}
 
     @QueryProjection
     public GetPostReportedPageANDSearchResponseDto(Long postId, ReportType reportType, String title, LocalDateTime postCreatedDate,
-                                                   Long userId, String loginId, String nickName, String reporterLoginId, LocalDateTime reportCreatedDate){
+                                                   Long userId, String loginId, String nickName, String reporterLoginId, LocalDateTime reportCreatedDate, Category category){
         this.postId = postId;
         this.reportType = reportType;
         this.title = title;
         this.postCreatedDate = postCreatedDate;
+        this.category = category;
         this.userId = userId;
         this.loginId = loginId;
         this.nickName = nickName;
