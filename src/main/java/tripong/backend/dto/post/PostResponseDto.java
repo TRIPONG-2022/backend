@@ -60,6 +60,7 @@ public class PostResponseDto implements Serializable {
         this.content = post.getContent();
         this.category = post.getCategory();
         this.tags.addAll(post.getTags());
+        this.tags = post.getTags();
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
         this.startDate = post.getStartDate();
