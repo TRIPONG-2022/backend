@@ -15,7 +15,7 @@ import tripong.backend.dto.profile.UserProfileRequestDto;
 import tripong.backend.dto.profile.UserProfileResponseDto;
 import tripong.backend.entity.post.Category;
 import tripong.backend.service.post.PostService;
-import tripong.backend.service.profile.UserProfileService;
+import tripong.backend.entity.profile.UserProfileService;
 import tripong.backend.service.reply.ReplyService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/users/profile")
 public class UserProfileApiController {
 
     private final PostService postService;
