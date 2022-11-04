@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users/profile")
+@RequestMapping("/profile")
 public class UserProfileApiController {
 
     private final PostService postService;
