@@ -1,4 +1,4 @@
-package tripong.backend.service.profile;
+package tripong.backend.entity.profile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
