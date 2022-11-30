@@ -41,7 +41,8 @@ Tripong은 Trip과 Pong의 합성어로 총 2가지 뜻을 가지고 있습니�
 
 > Frontend
 
-![Tripong_기술스택_Frontend](https://user-images.githubusercontent.com/85857565/188465248-c2645bf4-2916-4001-96ba-1d26351612fc.png)
+![Tripong_기술스택_Frontend](https://user-images.githubusercontent.com/56021431/204719250-011b1684-720a-4f5a-b2b4-832f1ad238dd.png)
+
 
 > Backend
 
@@ -64,9 +65,7 @@ https://www.erdcloud.com/d/hYSbvQPgASgbQtNMs
 
 ## 🎓 프로젝트 팀원 역할
 
-![역할분담](https://user-images.githubusercontent.com/85857565/188479811-2dfa040c-19d4-45ff-9749-b08f2a9d1646.png)
-
-
+![역할분담](https://user-images.githubusercontent.com/56021431/204719174-075cb87e-22ef-4b3f-94cd-8ba8ed90dad4.png)
 
 
 
